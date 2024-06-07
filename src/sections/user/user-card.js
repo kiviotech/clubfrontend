@@ -117,8 +117,80 @@ export default function UserCard({ user }) {
       </Box>
     </Card>
   );
+  
 }
 
 UserCard.propTypes = {
   user: PropTypes.object,
+  design: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    image: PropTypes.string.isRequired,
+    category: PropTypes.string.isRequired,
+    budget: PropTypes.number.isRequired,
+    description: PropTypes.string.isRequired,
+  }).isRequired,
 };
+
+
+// import PropTypes from 'prop-types';
+
+// import Box from '@mui/material/Box';
+// import Card from '@mui/material/Card';
+// import Stack from '@mui/material/Stack';
+// import Typography from '@mui/material/Typography';
+// import Divider from '@mui/material/Divider';
+// import { alpha, useTheme } from '@mui/material/styles';
+
+
+// import Image from 'src/components/image';
+
+// // ----------------------------------------------------------------------
+
+// export default function FashionDesignCard({ design }) {
+//   const theme = useTheme();
+
+//   const { title, image, category, budget, description } = design;
+
+//   return (
+//     <Card sx={{ textAlign: 'center' }}>
+//       <Box sx={{ position: 'relative' }}>
+//         <Image
+//           src={image}
+//           alt={title}
+//           ratio="16/9"
+//           overlay={alpha(theme.palette.grey[900], 0.48)}
+//         />
+//       </Box>
+
+//       <Stack spacing={2} sx={{ p: 3 }}>
+//         <Typography variant="h6" component="div">
+//           {title}
+//         </Typography>
+
+//         <Typography variant="subtitle1" component="div" color="text.secondary">
+//           Category: {category}
+//         </Typography>
+
+//         <Typography variant="subtitle2" component="div" color="text.secondary">
+//           Budget: ${budget}
+//         </Typography>
+
+//         <Divider sx={{ borderStyle: 'dashed' }} />
+
+//         <Typography variant="body2" component="div">
+//           {description}
+//         </Typography>
+//       </Stack>
+//     </Card>
+//   );
+// }
+
+// FashionDesignCard.propTypes = {
+//   design: PropTypes.shape({
+//     title: PropTypes.string.isRequired,
+//     image: PropTypes.string.isRequired,
+//     category: PropTypes.string.isRequired,
+//     budget: PropTypes.number.isRequired,
+//     description: PropTypes.string.isRequired,
+//   }).isRequired,
+// };

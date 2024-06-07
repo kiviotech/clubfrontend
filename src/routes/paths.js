@@ -99,7 +99,7 @@ export const paths = {
   // DASHBOARD
   dashboard: {
     // Here is the root path for the dashboard
-    root: `${ROOTS.DASHBOARD}/user`,
+    root: `${ROOTS.DASHBOARD}`,
     mail: `${ROOTS.DASHBOARD}/mail`,
     chat: `${ROOTS.DASHBOARD}/chat`,
     blank: `${ROOTS.DASHBOARD}/blank`,

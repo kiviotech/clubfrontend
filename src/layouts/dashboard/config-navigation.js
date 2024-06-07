@@ -111,20 +111,34 @@ export function useNavData() {
           },
 
           // // PRODUCT
-          // {
-          //   title: t('product'),
-          //   path: paths.dashboard.product.root,
-          //   icon: ICONS.product,
-          //   children: [
-          //     { title: t('list'), path: paths.dashboard.product.root },
-          //     {
-          //       title: t('details'),
-          //       path: paths.dashboard.product.demo.details,
-          //     },
-          //     { title: t('create'), path: paths.dashboard.product.new },
-          //     { title: t('edit'), path: paths.dashboard.product.demo.edit },
-          //   ],
-          // },
+          {
+            title: t('Post Design'),
+            path: paths.dashboard.product.new,
+            icon: ICONS.product,
+            // children: [
+            //   { title: t('list'), path: paths.dashboard.product.root },
+            //   {
+            //     title: t('details'),
+            //     path: paths.dashboard.product.demo.details,
+            //   },
+            //   { title: t('create'), path: paths.dashboard.product.new },
+            //   { title: t('edit'), path: paths.dashboard.product.demo.edit },
+            // ],
+          },
+
+          {
+            title: t('Veiw Desgins'),
+            path: paths.dashboard.user.cards,
+            icon: ICONS.product,
+            // children: [
+              // { title: t('profile'), path: paths.dashboard.user.root },
+              // { title: t('cards'), path: paths.dashboard.user.cards },
+              // { title: t('list'), path: paths.dashboard.user.list },
+              // { title: t('create'), path: paths.dashboard.user.new },
+              // { title: t('edit'), path: paths.dashboard.user.demo.edit },
+              // { title: t('account'), path: paths.dashboard.user.account },
+            // ],
+          },
 
           // // ORDER
           // {

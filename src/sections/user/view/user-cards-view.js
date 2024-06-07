@@ -22,11 +22,11 @@ export default function UserCardsView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="User Cards"
+        heading="Bid on Designs"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'User', href: paths.dashboard.user.root },
-          { name: 'Cards' },
+          { name: 'Designs' },
         ]}
         action={
           <Button
