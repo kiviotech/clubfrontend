@@ -82,7 +82,7 @@ export default function JwtRegisterView() {
       <Typography variant="h4">Get started absolutely free</Typography>
 
       <Stack direction="row" spacing={0.5}>
-        <Typography variant="body2"> Already have an account? </Typography>
+        <Typography variant="body2"> Already have an account?</Typography>
 
         <Link href={paths.auth.jwt.login} component={RouterLink} variant="subtitle2">
           Sign in
@@ -145,14 +145,25 @@ export default function JwtRegisterView() {
         variant="contained"
         loading={isSubmitting}
       >
-        Create account
+        Sign Up as Designer
+      </LoadingButton>
+
+      <LoadingButton
+        fullWidth
+        color="inherit"
+        size="large"
+        type="submit"
+        variant="contained"
+        loading={isSubmitting}
+      >
+        Sign Up as Styler
       </LoadingButton>
     </Stack>
   );
 
   return (
     <>
-      {renderHead}
+      {/* {renderHead} */}
 
       {!!errorMsg && (
         <Alert severity="error" sx={{ m: 3 }}>

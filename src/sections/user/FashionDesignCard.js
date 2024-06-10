@@ -143,6 +143,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 
 
 import Image from 'src/components/image';
+import { Button } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -182,6 +183,7 @@ export default function UserCard({ design }) {
         <Typography variant="body2" component="div">
           {description}
         </Typography>
+        <Button variant="contained" color="primary">Interested</Button>
       </Stack>
     </Card>
   );

@@ -12,7 +12,6 @@ import { useAuthContext } from '../hooks';
 
 export default function GuestGuard({ children }) {
   const { loading } = useAuthContext();
-
   return <>{loading ? <SplashScreen /> : <Container> {children}</Container>}</>;
 }
 

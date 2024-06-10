@@ -88,7 +88,7 @@ export const _userFeeds = [...Array(3)].map((_, index) => ({
   ],
 }));
 
-export const _userCards = [...Array(21)].map((_, index) => ({
+export const _userCards = [...Array(20)].map((_, index) => ({
   id: _mock.id(index),
   role: _mock.role(index),
   name: _mock.fullName(index),
