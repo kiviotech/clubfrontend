@@ -127,7 +127,7 @@ export function useNavData() {
           },
 
           {
-            title: t('Veiw Desgins'),
+            title: t('Veiw Requests'),
             path: paths.dashboard.user.cards,
             icon: ICONS.product,
             // children: [
@@ -336,3 +336,5 @@ export function useNavData() {
 
   return data;
 }
+
+

@@ -2,11 +2,23 @@ import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
 
-import UserCard from './user-card';
+import UserCard from './FashionDesignCard';
 
 // ----------------------------------------------------------------------
 
+
 export default function UserCardList({ users }) {
+
+
+const design = {
+  title: 'Elegant Evening Gown',
+  image: '/assets/tempDesgins/designtemp.jpg',
+  category: 'Evening Wear',
+  budget: 500,
+  description: 'An elegant evening gown perfect for formal occasions.',
+  };
+
+
   return (
     <Box
       gap={3}
@@ -18,7 +30,7 @@ export default function UserCardList({ users }) {
       }}
     >
       {users.map((user) => (
-        <UserCard key={user.id} user={user} />
+        <UserCard key={user.id} design = {design} />
       ))}
     </Box>
   );
