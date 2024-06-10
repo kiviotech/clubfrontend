@@ -16,24 +16,6 @@ export default function ProductCreateView() {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      <CustomBreadcrumbs
-        heading="Post a New Desgin"
-        links={[
-          {
-            name: 'Dashboard',
-            href: paths.dashboard.root,
-          },
-          {
-            name: 'View Designs',
-            href: paths.dashboard.product.root,
-          },
-          { name: 'New Design' },
-        ]}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-      />
-
       <ProductNewEditForm />
     </Container>
   );

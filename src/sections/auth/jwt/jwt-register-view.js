@@ -145,7 +145,18 @@ export default function JwtRegisterView() {
         variant="contained"
         loading={isSubmitting}
       >
-        Create account
+        Sign-up as Styler
+      </LoadingButton>
+
+      <LoadingButton
+        fullWidth
+        color="inherit"
+        size="large"
+        type="submit"
+        variant="contained"
+        loading={isSubmitting}
+      >
+        Sign-up as Stylist
       </LoadingButton>
     </Stack>
   );
