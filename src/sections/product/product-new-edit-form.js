@@ -81,7 +81,7 @@ export default function DesignRequestForm({ currentRequest }) {
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
       enqueueSnackbar(currentRequest ? 'Update success!' : 'Create success!');
-      router.push('/dashboard/user/requests'); // Adjust the redirect path as needed
+      router.push('/dashboard/product/new/'); // Adjust the redirect path as needed
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
@@ -121,15 +121,15 @@ export default function DesignRequestForm({ currentRequest }) {
 
       <Grid xs={12} md={8}>
         <Card>
-          {!mdUp && <CardHeader title="Details" />}
+          {!mdUp && <CardHeader title="Outfit Details" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
-            <RHFTextField name="title" label="Title" />
+            <RHFTextField name="title" label="Outfit Nick Name" />
 
             <RHFTextField name="description" label="Description of Design" multiline rows={4} />
 
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Images of Desgin (Optional)</Typography>
+              <Typography variant="subtitle2">Design Reference</Typography>
               <RHFUpload
                 multiple
                 thumbnail
