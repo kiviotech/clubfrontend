@@ -69,6 +69,7 @@ export default function JwtRegisterView() {
     try {
       // await register?.(data.email, data.password, data.firstName, data.lastName);
       await register(data.email, data.username, data.password);
+      localStorage.setItem('isAuthenticated', true);
 
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
