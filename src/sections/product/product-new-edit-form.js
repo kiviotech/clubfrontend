@@ -142,12 +142,27 @@ export default function DesignRequestForm({ currentRequest }) {
             </Stack>
             <RHFSelect native name="category" label="Category" InputLabelProps={{ shrink: true }}>
               <option value="">Select category</option>
-              <option value="casual">Casual</option>
-              <option value="formal">Formal</option>
-              <option value="sportswear">Sportswear</option>
-              <option value="ethnic">Ethnic</option>
-              <option value="partywear">Partywear</option>
-              <option value="unique">Unique</option>
+              <option value="avant-garde">Avant-Garde</option>
+              <option value="bohemian">Bohemian</option>
+              <option value="business-formal-wear">Business/Formal Wear</option>
+              <option value="ethnical-traditional-wear">Ethnical/Traditional Wear</option>
+              <option value="gender-neutral-androgynous-fashion">Gender-Neutral/Androgynous Fashion</option>
+              <option value="gothic">Gothic</option>
+              <option value="haute-couture">Haute Couture</option>
+              <option value="leather">Leather</option>
+              <option value="lingerie-intimate-apparel">Lingerie/Intimate Apparel</option>
+              <option value="minimalist">Minimalist</option>
+              <option value="punk">Punk</option>
+              <option value="retro-vintage-inspired">Retro/Vintage-Inspired</option>
+              <option value="romantic">Romantic</option>
+              <option value="sportswear-activewear">Sportswear/Activewear</option>
+              <option value="streetwear">Streetwear</option>
+              <option value="sustainable-fashion">Sustainable Fashion</option>
+              <option value="swimwear">Swimwear</option>
+              <option value="techwear">Techwear</option>
+              <option value="vintage">Vintage</option>
+              <option value="western-wear">Western Wear</option>
+
             </RHFSelect>
 
             <RHFTextField

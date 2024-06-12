@@ -4,6 +4,7 @@ import { paths } from 'src/routes/paths';
 
 import { useTranslate } from 'src/locales';
 
+
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
@@ -43,6 +44,7 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
+  plus: icon('ic_plus.svg')
 };
 
 // ----------------------------------------------------------------------
@@ -129,7 +131,7 @@ export function useNavData() {
           {
             title: t('Veiw Requests'),
             path: paths.dashboard.user.cards,
-            icon: ICONS.product,
+            icon: ICONS.ecommerce,
             // children: [
               // { title: t('profile'), path: paths.dashboard.user.root },
               // { title: t('cards'), path: paths.dashboard.user.cards },

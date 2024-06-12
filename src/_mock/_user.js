@@ -24,7 +24,7 @@ export const _userAbout = {
   totalFollowers: _mock.number.nativeL(1),
   totalFollowing: _mock.number.nativeL(2),
   quote:
-    'Tart I love sugar plum I love oat cake. Sweet roll caramels I love jujubes. Topping cake wafer..',
+    'Aditya is a visionary fashion designer known for her avant-garde approach and sustainable designs. A graduate of the Parsons School of Design, she has quickly risen to fame for her innovative use of recycled materials and bold, contemporary aesthetics.',
   socialLinks: {
     facebook: `https://www.facebook.com/caitlyn.kerluke`,
     instagram: `https://www.instagram.com/caitlyn.kerluke`,

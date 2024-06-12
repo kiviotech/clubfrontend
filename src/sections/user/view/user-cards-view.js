@@ -35,7 +35,7 @@ export default function UserCardsView() {
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
-            New User
+
           </Button>
         }
         sx={{ mb: { xs: 3, md: 5 } }}
