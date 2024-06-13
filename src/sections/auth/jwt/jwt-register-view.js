@@ -19,7 +19,8 @@ import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { useAuthContext } from 'src/auth/hooks';
+// import { useAuthContext } from 'src/auth/hooks';
+import { register } from 'src/services/auth-service';
 import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
@@ -28,7 +29,7 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export default function JwtRegisterView() {
-  const { register } = useAuthContext();
+  // const { register } = useAuthContext();
 
   const router = useRouter();
 
@@ -40,16 +41,16 @@ export default function JwtRegisterView() {
 
   const password = useBoolean();
 
+  let userType = "";
+
   const RegisterSchema = Yup.object().shape({
-    firstName: Yup.string().required('First name required'),
-    lastName: Yup.string().required('Last name required'),
+    username: Yup.string().required('Username is required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     password: Yup.string().required('Password is required'),
   });
 
   const defaultValues = {
-    firstName: '',
-    lastName: '',
+    username: '',
     email: '',
     password: '',
   };
@@ -68,8 +69,7 @@ export default function JwtRegisterView() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       // await register?.(data.email, data.password, data.firstName, data.lastName);
-      await register(data.email, data.username, data.password);
-      localStorage.setItem('isAuthenticated', true);
+      await register(data.email, data.username, data.password, userType);
 
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
@@ -148,6 +148,10 @@ export default function JwtRegisterView() {
         type="submit"
         variant="contained"
         loading={isSubmitting}
+        onClick={() => {
+          userType = "Customer";
+          console.log(userType);
+        }}
       >
         Sign-up as Styler
       </LoadingButton>
@@ -159,6 +163,10 @@ export default function JwtRegisterView() {
         type="submit"
         variant="contained"
         loading={isSubmitting}
+        onClick={() => {
+          userType = "Designer";
+          console.log(userType);
+        }}
       >
         Sign-up as Stylist
       </LoadingButton>

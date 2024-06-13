@@ -1,24 +1,26 @@
 'use client';
 
-import { Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 
-import { AuthGuard } from 'src/auth/guard';
 import DashboardLayout from 'src/layouts/dashboard';
 
 import { useRouter } from 'src/routes/hooks';
+import { initUserData } from 'src/services/api';
 
 // ----------------------------------------------------------------------
 
 export default function Layout({ children }) {
   // const signedIn = localStorage.getItem('isAuthenticated');
-  const signedIn = true;
+  // const signedIn = true;
+  localStorage.clear();
+  const signedIn = localStorage.getItem('userId');
   if (signedIn) {
-  return (
-    // <AuthGuard>
-      <DashboardLayout>{children}</DashboardLayout>
-    // </AuthGuard>
-  );
+    initUserData();
+    return (
+      // <AuthGuard>
+        <DashboardLayout>{children}</DashboardLayout>
+      // </AuthGuard>
+    );
   } else {
     const router = useRouter();
     router.push('/auth/jwt/login');

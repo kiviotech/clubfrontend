@@ -27,6 +27,7 @@ import ProfileHomeDesigner from '../profile-home-designer';
 import ProfileHistory from '../profile-history';
 import ProfilePortfolio from '../profile-portfolio';
 import ProfileReviews from '../profile-reviews';
+import { getUserType } from 'src/services/api';
 
 // ----------------------------------------------------------------------
 
@@ -74,8 +75,7 @@ export default function UserProfileView() {
 
   const [currentTab, setCurrentTab] = useState('profile');
 
-  // Change this value to 'Designer' to see the designer profile
-  const userType = "Customer";
+  const userType = getUserType();
 
   const handleChangeTab = useCallback((event, newValue) => {
     setCurrentTab(newValue);
@@ -141,8 +141,9 @@ export default function UserProfileView() {
         </Tabs>
       </Card>
 
-      {currentTab === 'profile' && userType === "Customer" && <ProfileHomeUser info={_userAbout} posts={_userFeeds} />}
-      {currentTab === 'profile' && userType === "Designer" && <ProfileHomeDesigner info={_userAbout} posts={_userFeeds} />}
+      {/* {currentTab === 'profile' && userType === "Customer" && <ProfileHomeUser info={_userAbout} posts={_userFeeds} />}
+      {currentTab === 'profile' && userType === "Designer" && <ProfileHomeDesigner info={_userAbout} posts={_userFeeds} />} */}
+      {currentTab === 'profile' && <ProfileHomeDesigner info={_userAbout} posts={_userFeeds} />}
 
       {userType === "Customer" ? (
         (currentTab === 'followers' && <ProfileFollowers followers={_userFollowers} />) ||

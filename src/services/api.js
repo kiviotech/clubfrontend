@@ -2,11 +2,42 @@ import axios from "axios";
 
 const API_URL = 'http://localhost:1337';
 
-let token = '';
+let token = null;
+let userId = null;
+let userType = null;
+
+export const getToken = () => {
+    return token || localStorage.getItem('jwtToken');
+}
 
 export const setToken = (newToken) => {
     token = newToken;
+    localStorage.setItem('jwtToken', token);
 };
+
+export const getUserId = () => {
+    return userId || localStorage.getItem('userId');
+}
+
+export const setUserId = (newUserId) => {
+    userId = newUserId;
+    localStorage.setItem('userId', userId);
+}
+
+export const getUserType = () => {
+    return userType || localStorage.getItem('userType');
+}
+
+export const setUserType = (newUserType) => {
+    userType = newUserType;
+    localStorage.setItem('userType', userType);
+}
+
+export const initUserData = () => {
+    token = getToken();
+    userId = getUserId();
+    userType = getUserType();
+}
 
 const getAuthConfig = () => ({
     headers: {

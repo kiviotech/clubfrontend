@@ -19,7 +19,7 @@ import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { useAuthContext } from 'src/auth/hooks';
+// import { useAuthContext } from 'src/auth/hooks';
 import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
@@ -68,7 +68,6 @@ export default function JwtLoginView() {
       // call api here
       // await login?.(data.email, data.password);
       await login(data.email, data.password);
-      localStorage.setItem('isAuthenticated', true);
 
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
