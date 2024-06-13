@@ -27,7 +27,8 @@ import ProfileHomeDesigner from '../profile-home-designer';
 import ProfileHistory from '../profile-history';
 import ProfilePortfolio from '../profile-portfolio';
 import ProfileReviews from '../profile-reviews';
-import { getUserType } from 'src/services/api';
+import { getUserData } from 'src/services/api';
+import { useMyAuthContext } from 'src/services/my-auth-context';
 
 // ----------------------------------------------------------------------
 
@@ -75,7 +76,7 @@ export default function UserProfileView() {
 
   const [currentTab, setCurrentTab] = useState('profile');
 
-  const userType = getUserType();
+  const { userData } = useMyAuthContext();
 
   const handleChangeTab = useCallback((event, newValue) => {
     setCurrentTab(newValue);
@@ -106,11 +107,11 @@ export default function UserProfileView() {
         }}
       >
         <ProfileCover
-          role={_userAbout.role}
-          name={user?.displayName}
+          role={userData.position}
+          name={userData.displayName}
           avatarUrl={user?.photoURL}
           coverUrl={_userAbout.coverUrl}
-          commissions={9144}
+          commissions={userData.commissions}
         />
 
         <Tabs
@@ -135,7 +136,7 @@ export default function UserProfileView() {
           {/* {TABS.map((tab) => (
             <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
           ))} */}
-          {TABS.filter(tab => tab.for === 'both' || tab.for === userType).map((tab) => (
+          {TABS.filter(tab => tab.for === 'both' || tab.for === userData.roleType).map((tab) => (
             <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
           ))}
         </Tabs>
@@ -143,9 +144,23 @@ export default function UserProfileView() {
 
       {/* {currentTab === 'profile' && userType === "Customer" && <ProfileHomeUser info={_userAbout} posts={_userFeeds} />}
       {currentTab === 'profile' && userType === "Designer" && <ProfileHomeDesigner info={_userAbout} posts={_userFeeds} />} */}
-      {currentTab === 'profile' && <ProfileHomeDesigner info={_userAbout} posts={_userFeeds} />}
+      {currentTab === 'profile' && <ProfileHomeDesigner info={
+        {
+          quote: userData.quote,
+          country: userData.country,
+          email: userData.email,
+          role: userData.position,
+          company: userData.company,
+          school: userData.school,
+          facebook: userData.facebook,
+          instagram: userData.instagram,
+          linkedin: userData.linkedin,
+          twitter: userData.twitter,
+        }
+      }
+      posts={_userFeeds} />}
 
-      {userType === "Customer" ? (
+      {userData.roleType === "Customer" ? (
         (currentTab === 'followers' && <ProfileFollowers followers={_userFollowers} />) ||
         (currentTab === 'history' && <ProfileHistory />)
       ) : (

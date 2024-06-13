@@ -5,27 +5,31 @@ import PropTypes from 'prop-types';
 import DashboardLayout from 'src/layouts/dashboard';
 
 import { useRouter } from 'src/routes/hooks';
-import { initUserData } from 'src/services/api';
+
+import { useState, useEffect } from 'react';
+import { useMyAuthContext } from 'src/services/my-auth-context';
 
 // ----------------------------------------------------------------------
 
 export default function Layout({ children }) {
-  // const signedIn = localStorage.getItem('isAuthenticated');
-  // const signedIn = true;
-  localStorage.clear();
-  const signedIn = localStorage.getItem('userId');
-  if (signedIn) {
-    initUserData();
-    return (
+  const { token, loading } = useMyAuthContext();
+  const router = useRouter();
+  // const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!loading) {
+      if (token === null) {
+        router.push('/auth/jwt/login');
+      }
+    }
+  }, [token, loading, router]);
+
+  if (loading || !token) return null;
+  return (
       // <AuthGuard>
         <DashboardLayout>{children}</DashboardLayout>
       // </AuthGuard>
     );
-  } else {
-    const router = useRouter();
-    router.push('/auth/jwt/login');
-    return null;
-  }
 }
 
 Layout.propTypes = {

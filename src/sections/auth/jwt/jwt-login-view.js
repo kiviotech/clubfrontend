@@ -24,13 +24,12 @@ import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-
-import { login } from 'src/services/auth-service';
+import { useMyAuthContext } from 'src/services/my-auth-context';
 
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
-  // const { login } = useAuthContext();
+  const { login } = useMyAuthContext();
 
   const router = useRouter();
 

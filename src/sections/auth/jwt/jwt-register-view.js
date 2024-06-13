@@ -20,16 +20,17 @@ import { useRouter, useSearchParams } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 // import { useAuthContext } from 'src/auth/hooks';
-import { register } from 'src/services/auth-service';
 import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import { useMyAuthContext } from 'src/services/my-auth-context';
 
 // ----------------------------------------------------------------------
 
 export default function JwtRegisterView() {
   // const { register } = useAuthContext();
+  const { register } = useMyAuthContext();
 
   const router = useRouter();
 

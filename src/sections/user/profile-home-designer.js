@@ -161,10 +161,10 @@ export default function ProfileHomeDesigner({ info, posts }) {
               }}
             />
             <Link color="inherit">
-              {link.value === 'facebook' && info.socialLinks.facebook}
-              {link.value === 'instagram' && info.socialLinks.instagram}
-              {link.value === 'linkedin' && info.socialLinks.linkedin}
-              {link.value === 'twitter' && info.socialLinks.twitter}
+              {link.value === 'facebook' && info.facebook}
+              {link.value === 'instagram' && info.instagram}
+              {link.value === 'linkedin' && info.linkedin}
+              {link.value === 'twitter' && info.twitter}
             </Link>
           </Stack>
         ))}

@@ -2,62 +2,24 @@ import axios from "axios";
 
 const API_URL = 'http://localhost:1337';
 
-let token = null;
-let userId = null;
-let userType = null;
-
-export const getToken = () => {
-    return token || localStorage.getItem('jwtToken');
-}
-
-export const setToken = (newToken) => {
-    token = newToken;
-    localStorage.setItem('jwtToken', token);
-};
-
-export const getUserId = () => {
-    return userId || localStorage.getItem('userId');
-}
-
-export const setUserId = (newUserId) => {
-    userId = newUserId;
-    localStorage.setItem('userId', userId);
-}
-
-export const getUserType = () => {
-    return userType || localStorage.getItem('userType');
-}
-
-export const setUserType = (newUserType) => {
-    userType = newUserType;
-    localStorage.setItem('userType', userType);
-}
-
-export const initUserData = () => {
-    token = getToken();
-    userId = getUserId();
-    userType = getUserType();
-}
-
-const getAuthConfig = () => ({
+const getAuthConfig = (token) => ({
     headers: {
         Authorization: `Bearer ${token}`,
     },
 });
 
-export const fetchData = async (endpoint) => {
-    try {
-        const response = await axios.get(`${API_URL}/${endpoint}`, getAuthConfig());
-        return response.data;
-    } catch (error) {
-        console.error(error);
-        throw new Error(error);
-    }
+export const fetchData = (endpoint, token) => {
+    return axios.get(`${API_URL}/${endpoint}`, (token === null) ? {} : getAuthConfig(token))
+        .then(response => response.data)
+        .catch(error => {
+            console.error(error);
+            throw new Error(error);
+        });
 };
 
-export const postData = async (endpoint, data) => {
+export const postData = async (endpoint, data, token) => {
     try {
-        const response = await axios.post(`${API_URL}/${endpoint}`, data, getAuthConfig());
+        const response = await axios.post(`${API_URL}/${endpoint}`, data, (token === null) ? {} : getAuthConfig(token));
         return response.data;
     } catch (error) {
         console.error(error);
