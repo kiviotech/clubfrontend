@@ -17,9 +17,18 @@ export const fetchData = (endpoint, token) => {
         });
 };
 
-export const postData = async (endpoint, data, token) => {
+export const postData = (endpoint, data, token) => {
+    return axios.post(`${API_URL}/${endpoint}`, data, (token === null) ? {} : getAuthConfig(token))
+        .then(response => response.data)
+        .catch(error => {
+            console.error(error);
+            throw new Error(error);
+        });
+};
+
+export const putData = async (endpoint, data, token) => {
     try {
-        const response = await axios.post(`${API_URL}/${endpoint}`, data, (token === null) ? {} : getAuthConfig(token));
+        const response = await axios.put(`${API_URL}/${endpoint}`, data, (token === null) ? {} : getAuthConfig(token));
         return response.data;
     } catch (error) {
         console.error(error);

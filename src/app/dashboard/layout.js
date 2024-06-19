@@ -8,6 +8,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useState, useEffect } from 'react';
 import { useMyAuthContext } from 'src/services/my-auth-context';
+import Loading from '../loading';
 
 // ----------------------------------------------------------------------
 
@@ -24,7 +25,7 @@ export default function Layout({ children }) {
     }
   }, [token, loading, router]);
 
-  if (loading || !token) return null;
+  if (loading || !token) return Loading();
   return (
       // <AuthGuard>
         <DashboardLayout>{children}</DashboardLayout>

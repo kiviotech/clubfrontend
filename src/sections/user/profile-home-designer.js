@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import Fab from '@mui/material/Fab';
@@ -22,16 +22,39 @@ import { _socials } from 'src/_mock';
 import Iconify from 'src/components/iconify';
 
 import ProfilePostItem from './profile-post-item';
+import { postData, putData } from 'src/services/api';
+import { useMyAuthContext } from 'src/services/my-auth-context';
+import { fetchData } from '../../services/api';
 
 // ----------------------------------------------------------------------
 
-export default function ProfileHomeDesigner({ info, posts }) {
+export default function ProfileHomeDesigner({ info }) {
   const fileRef = useRef(null);
+
+  const [message, setMessage] = useState('');
+
+  const { token, userData, updateUserData } = useMyAuthContext();
+  const posts = userData.posts;
 
   const handleAttach = () => {
     if (fileRef.current) {
       fileRef.current.click();
     }
+  };
+
+  const handleChangeMessage = useCallback((event) => {
+    setMessage(event.target.value);
+  }, []);
+
+  const handlePost = async () => {
+    const response = await postData('api/posts', { data: {message, user: userData.id } }, token);
+    console.log(response);
+    setMessage('');
+    const response2 = await putData(`api/users/${userData.id}?populate=*`, {posts: { connect: [response.data.id] }}, token);
+    console.log(response2);
+    const updatedUserData = await fetchData('api/users/me?populate=*', token);
+    updatedUserData.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    updateUserData(updatedUserData);
   };
 
   // const renderFollows = (
@@ -111,6 +134,8 @@ export default function ProfileHomeDesigner({ info, posts }) {
         multiline
         fullWidth
         rows={4}
+        value={message}
+        onChange={handleChangeMessage}
         placeholder="Share what you are thinking here..."
         sx={{
           p: 2,
@@ -122,18 +147,18 @@ export default function ProfileHomeDesigner({ info, posts }) {
 
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Stack direction="row" spacing={1} alignItems="center" sx={{ color: 'text.secondary' }}>
-          <Fab size="small" color="inherit" variant="softExtended" onClick={handleAttach}>
+          {/* <Fab size="small" color="inherit" variant="softExtended" onClick={handleAttach}>
             <Iconify icon="solar:gallery-wide-bold" width={24} sx={{ color: 'success.main' }} />
             Image/Video
           </Fab>
 
-          {/* <Fab size="small" color="inherit" variant="softExtended">
+          <Fab size="small" color="inherit" variant="softExtended">
             <Iconify icon="solar:videocamera-record-bold" width={24} sx={{ color: 'error.main' }} />
             Streaming
           </Fab> */}
         </Stack>
 
-        <Button variant="contained">Post</Button>
+        <Button variant="contained" onClick={handlePost}>Post</Button>
       </Stack>
 
       <input ref={fileRef} type="file" style={{ display: 'none' }} />

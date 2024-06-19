@@ -158,7 +158,7 @@ export default function UserProfileView() {
           twitter: userData.twitter,
         }
       }
-      posts={_userFeeds} />}
+      /* posts={userData.posts} */ />}
 
       {userData.roleType === "Customer" ? (
         (currentTab === 'followers' && <ProfileFollowers followers={_userFollowers} />) ||

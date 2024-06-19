@@ -15,9 +15,10 @@ export const MyAuthProvider = ({ children }) => {
     const storedToken = localStorage.getItem('jwtToken');
     console.log('Stored token:', storedToken);
     if (storedToken) {
-        const promise = fetchData('api/users/me', storedToken);
+        const promise = fetchData('api/users/me?populate=posts', storedToken);
         console.log("Promise: ", promise);
         promise.then((data) => {
+            data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             setUserData(data);
             console.log('User data fetched:', data);
         }).finally(() => {
@@ -42,14 +43,28 @@ export const MyAuthProvider = ({ children }) => {
     try {
         console.log('email', email);
         console.log('password', password);
-        const response = await postData('api/auth/local', { identifier: email, password }, null);
-        console.log(response);
-        // setToken(response.jwt);
-        // setUserId(response.user.id);
-        // setUserData(response.user);
-        updateToken(response.jwt);
-        updateUserData(response.user);
-        return response;
+        // const response = await postData('api/auth/local', { identifier: email, password }, null);
+        setLoading(true);
+        const promise = postData('api/auth/local?populate=*', { identifier: email, password }, null);
+        console.log("Promise: ", promise);
+        promise.then(async (data) => {
+            console.log(data);
+            console.log('User data fetched:', data.user);
+            // data.user.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            updateToken(data.jwt);
+            const newUserData = await fetchData('api/users/me?populate=*', data.jwt);
+            newUserData.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            updateUserData(newUserData);
+
+        }).finally(() => {
+            setLoading(false);
+        }
+        )
+
+        // console.log(response);
+        // updateToken(response.jwt);
+        // updateUserData(response.user);
+        // return response;
     } catch (error) {
         throw new Error(error);
     }
@@ -57,20 +72,42 @@ export const MyAuthProvider = ({ children }) => {
 
 const register = async (email, username, password, role) => {
     try {
-        const response = await postData('api/auth/local/register', { email, username, password, roleType: role }, null);
+        // const response = await postData('api/auth/local/register', { email, username, password, roleType: role }, null);
+        setLoading(true);
+        const promise = postData('api/auth/local/register', { email, username, password, roleType: role }, null);
+        console.log("Promise: ", promise);
+        promise.then(async (data) => {
+            console.log(data);
+            console.log('User data fetched:', data.user);
+            // data.user.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            updateToken(data.jwt);
+            const newUserData = await fetchData('api/users/me?populate=*', data.jwt);
+            newUserData.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            updateUserData(newUserData);
+
+        }).finally(() => {
+            setLoading(false);
+        }
+        )
         // setToken(response.jwt);
         // setUserId(response.user.id);
         // setUserData(response.user);
-        updateToken(response.jwt);
-        updateUserData(response.user);
-        return response;
+        // updateToken(response.jwt);
+        // updateUserData(response.user);
+        // return response;
     } catch (error) {
         throw new Error(error);
     }
+};
+
+const logout = () => {
+    setToken(null);
+    setUserData(null);
+    localStorage.removeItem('jwtToken');
 }
 
   return (
-    <MyAuthContext.Provider value={{ token, userData, loading, updateToken, updateUserData, login, register }}>
+    <MyAuthContext.Provider value={{ token, userData, loading, updateToken, updateUserData, login, register, logout }}>
       {children}
     </MyAuthContext.Provider>
   );
