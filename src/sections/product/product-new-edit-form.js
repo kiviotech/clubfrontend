@@ -84,12 +84,20 @@ export default function DesignRequestForm({ currentRequest }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       // await new Promise((resolve) => setTimeout(resolve, 500));
+      console.log(data.images);
+      const formData = new FormData();
+      data.images.forEach((file) => {
+        formData.append('files', file);
+      });
+      const imageResponse = await postData("api/upload", formData, token);
+      console.log(imageResponse);
       const response = await postData('api/designs', {
         data: {
         nickName: data.title,
         description: data.description,
         category: data.category,
         budget: data.budget,
+        reference: imageResponse.map((image) => image.id),
       }
       }, token);
       console.log(response);

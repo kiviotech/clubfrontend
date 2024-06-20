@@ -4,11 +4,29 @@ import Box from '@mui/material/Box';
 
 import UserCard from './FashionDesignCard';
 
+import { useEffect, useState } from 'react';
+
+import { fetchData } from 'src/services/api';
+
+import { useMyAuthContext } from 'src/services/my-auth-context';
+
 // ----------------------------------------------------------------------
 
 
-export default function UserCardList({ users }) {
+export default function UserCardList() {
 
+const { token } = useMyAuthContext();
+
+const [designs, setDesigns] = useState([]);
+
+useEffect(() => {
+  // fetch users
+  const promise = fetchData('api/designs?populate=reference', token);
+  promise.then((data) => {
+    console.log(data);
+    setDesigns(data.data);
+  });
+}, []);
 
 const design = {
   title: 'Elegant Evening Gown',
@@ -29,8 +47,14 @@ const design = {
         md: 'repeat(3, 1fr)',
       }}
     >
-      {users.map((user) => (
-        <UserCard key={user.id} design = {design} />
+      {designs.map((design) => (
+        <UserCard key={design.id} design = {{
+          title: design.attributes.nickName,
+          category: design.attributes.category,
+          budget: design.attributes.budget,
+          description: design.attributes.description,
+          image: `http://localhost:1337${design.attributes.reference.data[0].attributes.url}`,
+        }} />
       ))}
     </Box>
   );

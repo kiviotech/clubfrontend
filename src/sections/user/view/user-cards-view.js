@@ -41,7 +41,7 @@ export default function UserCardsView() {
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <UserCardList users={_userCards} />
+      <UserCardList />
     </Container>
   );
 }

@@ -34,6 +34,8 @@ export default function ProfileHomeDesigner({ info }) {
 
   const [message, setMessage] = useState('');
 
+  const [isPosting, setIsPosting] = useState(false);
+
   const { token, userData, updateUserData } = useMyAuthContext();
   const posts = userData.posts;
 
@@ -48,14 +50,20 @@ export default function ProfileHomeDesigner({ info }) {
   }, []);
 
   const handlePost = async () => {
+    if (!message) {
+      return;
+    }
+
+    setIsPosting(true);
     const response = await postData('api/posts', { data: {message, user: userData.id } }, token);
     console.log(response);
-    setMessage('');
     const response2 = await putData(`api/users/${userData.id}?populate=*`, {posts: { connect: [response.data.id] }}, token);
     console.log(response2);
     const updatedUserData = await fetchData('api/users/me?populate=*', token);
     updatedUserData.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     updateUserData(updatedUserData);
+    setMessage('');
+    setIsPosting(false);
   };
 
   // const renderFollows = (
@@ -167,7 +175,7 @@ export default function ProfileHomeDesigner({ info }) {
           </Fab> */}
         </Stack>
 
-        <LoadingButton variant="contained" onClick={handlePost}>Post</LoadingButton>
+        <LoadingButton loading={isPosting} variant="contained" onClick={handlePost}>Post</LoadingButton>
       </Stack>
 
       <input ref={fileRef} type="file" style={{ display: 'none' }} />

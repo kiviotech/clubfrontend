@@ -24,11 +24,13 @@ import { fShortenNumber } from 'src/utils/format-number';
 
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
+import { useMyAuthContext } from 'src/services/my-auth-context';
 
 // ----------------------------------------------------------------------
 
 export default function ProfilePostItem({ post }) {
   const { user } = useMockedUser();
+  const { userData } = useMyAuthContext();
 
   const commentRef = useRef(null);
 
@@ -56,13 +58,13 @@ export default function ProfilePostItem({ post }) {
     <CardHeader
       disableTypography
       avatar={
-        <Avatar src={user?.photoURL} alt={user?.displayName}>
-          {user?.displayName?.charAt(0).toUpperCase()}
+        <Avatar src={user?.photoURL} alt={userData.displayName}>
+          {userData.displayName?.charAt(0).toUpperCase()}
         </Avatar>
       }
       title={
         <Link color="inherit" variant="subtitle1">
-          {user?.displayName}
+          {userData.displayName}
         </Link>
       }
       subheader={
