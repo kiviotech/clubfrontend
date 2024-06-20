@@ -9,6 +9,7 @@ export const MyAuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authDetails, setAuthDetails] = useState(null);
 
   useEffect(() => {
     // localStorage.clear();
@@ -18,9 +19,9 @@ export const MyAuthProvider = ({ children }) => {
         const promise = fetchData('api/users/me?populate=posts', storedToken);
         console.log("Promise: ", promise);
         promise.then((data) => {
+            console.log('User data fetched:', data);
             data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             setUserData(data);
-            console.log('User data fetched:', data);
         }).finally(() => {
             setLoading(false);
         })
@@ -70,11 +71,11 @@ export const MyAuthProvider = ({ children }) => {
     }
 };
 
-const register = async (email, username, password, role) => {
+const register = async (data, role) => {
     try {
         // const response = await postData('api/auth/local/register', { email, username, password, roleType: role }, null);
         setLoading(true);
-        const promise = postData('api/auth/local/register', { email, username, password, roleType: role }, null);
+        const promise = postData('api/auth/local/register', { ...authDetails, ...data, roleType: role }, null);
         console.log("Promise: ", promise);
         promise.then(async (data) => {
             console.log(data);
@@ -107,7 +108,7 @@ const logout = () => {
 }
 
   return (
-    <MyAuthContext.Provider value={{ token, userData, loading, updateToken, updateUserData, login, register, logout }}>
+    <MyAuthContext.Provider value={{ token, userData, loading, updateToken, updateUserData, login, register, logout, authDetails, setAuthDetails }}>
       {children}
     </MyAuthContext.Provider>
   );

@@ -25,12 +25,14 @@ import { PATH_AFTER_LOGIN } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import { useMyAuthContext } from 'src/services/my-auth-context';
+import { Button } from '@mui/material';
+import RegisterDetailsView from './register-details-view';
 
 // ----------------------------------------------------------------------
 
 export default function JwtRegisterView() {
   // const { register } = useAuthContext();
-  const { register } = useMyAuthContext();
+  const { register, authDetails, setAuthDetails } = useMyAuthContext();
 
   const router = useRouter();
 
@@ -51,9 +53,9 @@ export default function JwtRegisterView() {
   });
 
   const defaultValues = {
-    username: '',
-    email: '',
-    password: '',
+    username: (authDetails && authDetails.username) || '',
+    email: (authDetails && authDetails.email) || '',
+    password: (authDetails && authDetails.password) || '',
   };
 
   const methods = useForm({
@@ -70,9 +72,12 @@ export default function JwtRegisterView() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       // await register?.(data.email, data.password, data.firstName, data.lastName);
-      await register(data.email, data.username, data.password, userType);
+      // await register(data.email, data.username, data.password, userType);
 
-      router.push(returnTo || PATH_AFTER_LOGIN);
+      // router.push(returnTo || PATH_AFTER_LOGIN);
+      console.log(data);
+      await setAuthDetails(data);
+      router.push(paths.auth.jwt.registerDetails);
     } catch (error) {
       console.error(error);
       reset();
@@ -91,6 +96,20 @@ export default function JwtRegisterView() {
           Sign in
         </Link>
       </Stack>
+    </Stack>
+  );
+
+  const renderHeadDetails = (
+    <Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
+      <Typography variant="h4">Enter your details</Typography>
+
+      {/* <Stack direction="row" spacing={0.5}>
+        <Typography variant="body2"> Already have an account? </Typography>
+
+        <Link href={paths.auth.jwt.login} component={RouterLink} variant="subtitle2">
+          Sign in
+        </Link>
+      </Stack> */}
     </Stack>
   );
 
@@ -141,6 +160,81 @@ export default function JwtRegisterView() {
           ),
         }}
       />
+
+      <Button
+        fullWidth
+        color="inherit"
+        size="large"
+        type="submit"
+        variant="contained"
+      >
+        Next
+      </Button>
+
+      {/* <LoadingButton
+        fullWidth
+        color="inherit"
+        size="large"
+        type="submit"
+        variant="contained"
+        loading={isSubmitting}
+        onClick={() => {
+          userType = "Customer";
+          console.log(userType);
+        }}
+      >
+        Sign-up as Styler
+      </LoadingButton>
+
+      <LoadingButton
+        fullWidth
+        color="inherit"
+        size="large"
+        type="submit"
+        variant="contained"
+        loading={isSubmitting}
+        onClick={() => {
+          userType = "Designer";
+          console.log(userType);
+        }}
+      >
+        Sign-up as Stylist
+      </LoadingButton> */}
+    </Stack>
+  );
+
+  const renderFormDetails = (
+    <Stack spacing={2.5} pb={10}>
+      {/* <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+        <RHFTextField name="firstName" label="First name" />
+        <RHFTextField name="lastName" label="Last name" />
+      </Stack> */}
+
+      <RHFTextField name="displayName" label="Display name" />
+
+      <RHFTextField name="position" label="Position" />
+
+      <RHFTextField name="quote" label="Quote" />
+      <RHFTextField name="country" label="Country" />
+      <RHFTextField name="company" label="Company" />
+      <RHFTextField name="school" label="School" />
+      <RHFTextField name="facebook" label="Facebook" />
+      <RHFTextField name="instagram" label="Instagram" />
+      <RHFTextField name="linkedin" label="Linkedin" />
+      <RHFTextField name="twitter" label="Twitter" />
+
+      <Button
+        fullWidth
+        color="inherit"
+        size="large"
+        variant="contained"
+        onClick={() => {
+          setPage('register');
+        }
+        }
+      >
+        Back
+      </Button>
 
       <LoadingButton
         fullWidth

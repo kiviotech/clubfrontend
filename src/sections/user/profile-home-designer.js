@@ -25,6 +25,7 @@ import ProfilePostItem from './profile-post-item';
 import { postData, putData } from 'src/services/api';
 import { useMyAuthContext } from 'src/services/my-auth-context';
 import { fetchData } from '../../services/api';
+import { LoadingButton } from '@mui/lab';
 
 // ----------------------------------------------------------------------
 
@@ -85,8 +86,10 @@ export default function ProfileHomeDesigner({ info }) {
       <CardHeader title="About" />
 
       <Stack spacing={2} sx={{ p: 3 }}>
-        <Box sx={{ typography: 'body2' }}>{info.quote}</Box>
+        {info.quote &&
+          <Box sx={{ typography: 'body2' }}>{info.quote}</Box>}
 
+        {info.country &&
         <Stack direction="row" spacing={2}>
           <Iconify icon="mingcute:location-fill" width={24} />
 
@@ -96,25 +99,31 @@ export default function ProfileHomeDesigner({ info }) {
               {info.country}
             </Link>
           </Box>
-        </Stack>
+        </Stack>}
 
+        {info.email &&
         <Stack direction="row" sx={{ typography: 'body2' }}>
           <Iconify icon="fluent:mail-24-filled" width={24} sx={{ mr: 2 }} />
           {info.email}
-        </Stack>
+        </Stack>}
 
+        {info.role &&
         <Stack direction="row" spacing={2}>
           <Iconify icon="ic:round-business-center" width={24} />
 
           <Box sx={{ typography: 'body2' }}>
-            {info.role} {`at `}
+            {info.role} 
+            {info.company && (
+              <>
+              {` at `}
             <Link variant="subtitle2" color="inherit">
               {info.company}
             </Link>
+            </>)}
           </Box>
-        </Stack>
+        </Stack>}
 
-        <Stack direction="row" spacing={2}>
+        {info.school && <Stack direction="row" spacing={2}>
           <Iconify icon="ic:round-business-center" width={24} />
 
           <Box sx={{ typography: 'body2' }}>
@@ -123,7 +132,7 @@ export default function ProfileHomeDesigner({ info }) {
               {info.school}
             </Link>
           </Box>
-        </Stack>
+        </Stack>}
       </Stack>
     </Card>
   );
@@ -158,7 +167,7 @@ export default function ProfileHomeDesigner({ info }) {
           </Fab> */}
         </Stack>
 
-        <Button variant="contained" onClick={handlePost}>Post</Button>
+        <LoadingButton variant="contained" onClick={handlePost}>Post</LoadingButton>
       </Stack>
 
       <input ref={fileRef} type="file" style={{ display: 'none' }} />
@@ -186,10 +195,10 @@ export default function ProfileHomeDesigner({ info }) {
               }}
             />
             <Link color="inherit">
-              {link.value === 'facebook' && info.facebook}
-              {link.value === 'instagram' && info.instagram}
-              {link.value === 'linkedin' && info.linkedin}
-              {link.value === 'twitter' && info.twitter}
+              {info.facebook && link.value === 'facebook' && info.facebook}
+              {info.instagram && link.value === 'instagram' && info.instagram}
+              {info.linkedin && link.value === 'linkedin' && info.linkedin}
+              {info.twitter && link.value === 'twitter' && info.twitter}
             </Link>
           </Stack>
         ))}

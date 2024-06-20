@@ -27,10 +27,15 @@ import FormProvider, {
   RHFTextField,
 } from 'src/components/hook-form';
 
+import { useMyAuthContext } from 'src/services/my-auth-context';
+import { postData, putData } from 'src/services/api';
+
 // ----------------------------------------------------------------------
 
 export default function DesignRequestForm({ currentRequest }) {
   const router = useRouter();
+
+  const { token, userData } = useMyAuthContext();
 
   const mdUp = useResponsive('up', 'md');
 
@@ -78,7 +83,23 @@ export default function DesignRequestForm({ currentRequest }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      const response = await postData('api/designs', {
+        data: {
+        nickName: data.title,
+        description: data.description,
+        category: data.category,
+        budget: data.budget,
+      }
+      }, token);
+      console.log(response);
+      await putData(`api/designs/${response.data.id}`, {
+        data: {'user': {
+          connect: [
+            {id: userData.id}
+          ]
+        }}
+      }, token);
       reset();
       enqueueSnackbar(currentRequest ? 'Update success!' : 'Create success!');
       router.push('/dashboard/product/new/'); // Adjust the redirect path as needed
