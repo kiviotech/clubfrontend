@@ -27,12 +27,14 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import { useMyAuthContext } from 'src/services/my-auth-context';
 import { Button } from '@mui/material';
 import RegisterDetailsView from './register-details-view';
+import { enqueueSnackbar } from 'notistack';
+import { fetchData, postData } from 'src/services/api';
 
 // ----------------------------------------------------------------------
 
 export default function JwtRegisterView() {
   // const { register } = useAuthContext();
-  const { register, authDetails, setAuthDetails } = useMyAuthContext();
+  const { register, updateToken, authDetails, setAuthDetails } = useMyAuthContext();
 
   const router = useRouter();
 
@@ -72,12 +74,16 @@ export default function JwtRegisterView() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       // await register?.(data.email, data.password, data.firstName, data.lastName);
-      // await register(data.email, data.username, data.password, userType);
-
-      // router.push(returnTo || PATH_AFTER_LOGIN);
-      console.log(data);
-      await setAuthDetails(data);
+      // await register({email: data.email, username: data.username, password: data.password});
+      const response = await postData('api/auth/local/register', data, null);
+      console.log(response);
+      updateToken(response.jwt);
+      await postData('api/user-details', { data: { user: response.user.id } }, response.jwt);
+      enqueueSnackbar('Account created successfully', { variant: 'success' });
       router.push(paths.auth.jwt.registerDetails);
+      // router.push(returnTo || PATH_AFTER_LOGIN);
+      // console.log(data);
+      // await setAuthDetails(data);
     } catch (error) {
       console.error(error);
       reset();
@@ -97,42 +103,6 @@ export default function JwtRegisterView() {
         </Link>
       </Stack>
     </Stack>
-  );
-
-  const renderHeadDetails = (
-    <Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
-      <Typography variant="h4">Enter your details</Typography>
-
-      {/* <Stack direction="row" spacing={0.5}>
-        <Typography variant="body2"> Already have an account? </Typography>
-
-        <Link href={paths.auth.jwt.login} component={RouterLink} variant="subtitle2">
-          Sign in
-        </Link>
-      </Stack> */}
-    </Stack>
-  );
-
-  const renderTerms = (
-    <Typography
-      component="div"
-      sx={{
-        mt: 2.5,
-        textAlign: 'center',
-        typography: 'caption',
-        color: 'text.secondary',
-      }}
-    >
-      {'By signing up, I agree to '}
-      <Link underline="always" color="text.primary">
-        Terms of Service
-      </Link>
-      {' and '}
-      <Link underline="always" color="text.primary">
-        Privacy Policy
-      </Link>
-      .
-    </Typography>
   );
 
   const renderForm = (
@@ -161,31 +131,6 @@ export default function JwtRegisterView() {
         }}
       />
 
-      <Button
-        fullWidth
-        color="inherit"
-        size="large"
-        type="submit"
-        variant="contained"
-      >
-        Next
-      </Button>
-
-      {/* <LoadingButton
-        fullWidth
-        color="inherit"
-        size="large"
-        type="submit"
-        variant="contained"
-        loading={isSubmitting}
-        onClick={() => {
-          userType = "Customer";
-          console.log(userType);
-        }}
-      >
-        Sign-up as Styler
-      </LoadingButton>
-
       <LoadingButton
         fullWidth
         color="inherit"
@@ -193,77 +138,8 @@ export default function JwtRegisterView() {
         type="submit"
         variant="contained"
         loading={isSubmitting}
-        onClick={() => {
-          userType = "Designer";
-          console.log(userType);
-        }}
       >
-        Sign-up as Stylist
-      </LoadingButton> */}
-    </Stack>
-  );
-
-  const renderFormDetails = (
-    <Stack spacing={2.5} pb={10}>
-      {/* <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-        <RHFTextField name="firstName" label="First name" />
-        <RHFTextField name="lastName" label="Last name" />
-      </Stack> */}
-
-      <RHFTextField name="displayName" label="Display name" />
-
-      <RHFTextField name="position" label="Position" />
-
-      <RHFTextField name="quote" label="Quote" />
-      <RHFTextField name="country" label="Country" />
-      <RHFTextField name="company" label="Company" />
-      <RHFTextField name="school" label="School" />
-      <RHFTextField name="facebook" label="Facebook" />
-      <RHFTextField name="instagram" label="Instagram" />
-      <RHFTextField name="linkedin" label="Linkedin" />
-      <RHFTextField name="twitter" label="Twitter" />
-
-      <Button
-        fullWidth
-        color="inherit"
-        size="large"
-        variant="contained"
-        onClick={() => {
-          setPage('register');
-        }
-        }
-      >
-        Back
-      </Button>
-
-      <LoadingButton
-        fullWidth
-        color="inherit"
-        size="large"
-        type="submit"
-        variant="contained"
-        loading={isSubmitting}
-        onClick={() => {
-          userType = "Customer";
-          console.log(userType);
-        }}
-      >
-        Sign-up as Styler
-      </LoadingButton>
-
-      <LoadingButton
-        fullWidth
-        color="inherit"
-        size="large"
-        type="submit"
-        variant="contained"
-        loading={isSubmitting}
-        onClick={() => {
-          userType = "Designer";
-          console.log(userType);
-        }}
-      >
-        Sign-up as Stylist
+        Sign up
       </LoadingButton>
     </Stack>
   );
@@ -281,8 +157,6 @@ export default function JwtRegisterView() {
       <FormProvider methods={methods} onSubmit={onSubmit}>
         {renderForm}
       </FormProvider>
-
-      {/* {renderTerms} */}
     </>
   );
 }
