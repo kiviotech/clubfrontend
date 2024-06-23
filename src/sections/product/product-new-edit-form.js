@@ -82,11 +82,8 @@ export default function DesignRequestForm({ currentRequest }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      console.log('Design Request Form Data:', data);   jaskldfjads     
-      ..33669*/820 14\
-                       jf      aksjdf;lksdf  saldkfj  ksadjf skdfj                sdfjksdjfkjsd;flksfj  skdfj ksdfjdsfjk            sdjfksdf skadfjjsaldkfj lsdkfj lskdfjlkjsdf ksfjl sldkfjlks;dfj lksdfj sdlkfj    lk;sdfj        -  - ++ 
-         
-      const formData = new FormData();  ,mm``               jklasdfj  jsadf jlkadsf    jsdf   asdjf jakdfs [lksfj lksadfj l;ksfj  skfj  kjfs                 jfklsdfjasdk ljsdkfj                       ,]       
+      console.log('Design Request Form Data:', data);
+      const formData = new FormData();
       data.images.forEach((file) => {
         formData.append('files', file);
       });
