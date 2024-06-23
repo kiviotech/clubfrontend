@@ -43,25 +43,25 @@ const TABS = [
     value: 'followers',
     label: 'Followers',
     icon: <Iconify icon="solar:heart-bold" width={24} />,
-    for: 'Customer',
+    for: 'customer',
   },
   {
     value: 'history',
     label: 'History',
     icon: <Iconify icon="solar:history-bold" width={24} />,
-    for: 'Customer',
+    for: 'customer',
   },
   {
     value: 'portfolio',
     label: 'Portfolio',
     icon: <Iconify icon="solar:user-bold" width={24} />,
-    for: 'Designer',
+    for: 'designer',
   },
   {
     value: 'reviews',
     label: 'Reviews',
     icon: <Iconify icon="solar:star-bold" width={24} />,
-    for: 'Designer',
+    for: 'designer',
   },
 ];
 
@@ -88,18 +88,6 @@ export default function UserProfileView() {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      {/* <CustomBreadcrumbs
-        heading="Profile"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'User', href: paths.dashboard.user.root },
-          { name: user?.displayName },
-        ]}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-      /> */}
-
       <Card
         sx={{
           mb: 3,
@@ -108,7 +96,7 @@ export default function UserProfileView() {
       >
         <ProfileCover
           role={userData.position}
-          name={userData.displayName}
+          name={userData.displayname}
           avatarUrl={user?.photoURL}
           coverUrl={_userAbout.coverUrl}
           commissions={userData.commissions}
@@ -133,34 +121,29 @@ export default function UserProfileView() {
             },
           }}
         >
-          {/* {TABS.map((tab) => (
-            <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
-          ))} */}
-          {TABS.filter(tab => tab.for === 'both' || tab.for === userData.roleType).map((tab) => (
+          {TABS.filter(tab => tab.for === 'both' || tab.for === userData.role).map((tab) => (
             <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
           ))}
         </Tabs>
       </Card>
 
-      {/* {currentTab === 'profile' && userType === "Customer" && <ProfileHomeUser info={_userAbout} posts={_userFeeds} />}
-      {currentTab === 'profile' && userType === "Designer" && <ProfileHomeDesigner info={_userAbout} posts={_userFeeds} />} */}
       {currentTab === 'profile' && <ProfileHomeDesigner info={
         {
-          quote: userData.quote,
+          about: userData.about,
+          city: userData.city,
           country: userData.country,
           email: userData.email,
           role: userData.position,
           company: userData.company,
-          school: userData.school,
-          facebook: userData.facebook,
-          instagram: userData.instagram,
-          linkedin: userData.linkedin,
-          twitter: userData.twitter,
+          // facebook: userData.facebook,
+          // instagram: userData.instagram,
+          // linkedin: userData.linkedin,
+          // twitter: userData.twitter,
         }
       }
-      /* posts={userData.posts} */ />}
+     />}
 
-      {userData.roleType === "Customer" ? (
+      {userData.role === "customer" ? (
         (currentTab === 'followers' && <ProfileFollowers followers={_userFollowers} />) ||
         (currentTab === 'history' && <ProfileHistory />)
       ) : (

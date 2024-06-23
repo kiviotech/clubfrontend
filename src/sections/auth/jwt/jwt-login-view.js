@@ -25,11 +25,12 @@ import { PATH_AFTER_LOGIN } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import { useMyAuthContext } from 'src/services/my-auth-context';
+import { fetchData, postData } from 'src/services/api';
 
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
-  const { login } = useMyAuthContext();
+  const { updateToken, updateUserData } = useMyAuthContext();
 
   const router = useRouter();
 
@@ -64,9 +65,14 @@ export default function JwtLoginView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // call api here
-      // await login?.(data.email, data.password);
-      await login(data.email, data.password);
+      console.log('Login form data', data);
+      const loginResponse = await postData('api/auth/local', { identifier: data.email, password: data.password }, null);
+      console.log(loginResponse);
+      updateToken(loginResponse.jwt);
+
+      const user = await fetchData('api/users/me?populate=user_detail', loginResponse.jwt);
+      console.log('User data fetched:', user);
+      updateUserData(user.user_detail);
 
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
@@ -130,10 +136,6 @@ export default function JwtLoginView() {
   return (
     <>
       {renderHead}
-
-      {/* <Alert severity="info" sx={{ mb: 3 }}>
-        Use email : <strong>demo@minimals.cc</strong> / password :<strong> demo1234</strong>
-      </Alert> */}
 
       {!!errorMsg && (
         <Alert severity="error" sx={{ mb: 3 }}>

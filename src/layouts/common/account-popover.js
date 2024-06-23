@@ -45,7 +45,6 @@ export default function AccountPopover() {
 
   const { user } = useMockedUser();
 
-  // const { logout } = useAuthContext();
   const { userData, logout } = useMyAuthContext();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -88,25 +87,25 @@ export default function AccountPopover() {
       >
         <Avatar
           src={user?.photoURL}
-          alt={userData.displayName}
+          alt={userData.displayname}
           sx={{
             width: 36,
             height: 36,
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {userData.displayName?.charAt(0).toUpperCase()}
+          {userData.displayname?.charAt(0).toUpperCase()}
         </Avatar>
       </IconButton>
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 200, p: 0 }}>
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {userData.displayName}
+            {userData.displayname}
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {userData.email}
+            {userData.username}
           </Typography>
         </Box>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import * as Yup from 'yup';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -25,12 +25,12 @@ import { PATH_AFTER_LOGIN } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField, RHFSelect, RHFMultiSelect, RHFUpload } from 'src/components/hook-form';
 import { useMyAuthContext } from 'src/services/my-auth-context';
-import { fetchData, postData } from 'src/services/api';
+import { fetchData, postData, putData } from 'src/services/api';
 
 // ----------------------------------------------------------------------
 
 export default function DesignerRegisterView() {
-  const { token, register, authDetails } = useMyAuthContext();
+  const { token, userData, updateUserData } = useMyAuthContext();
 
   const router = useRouter();
 
@@ -40,19 +40,21 @@ export default function DesignerRegisterView() {
 
   const returnTo = searchParams.get('returnTo');
 
-  const NewProductSchema = Yup.object().shape({
-    category: Yup.string().required('Category is required')
+  const DesignerDetailsSchema = Yup.object().shape({
+    category: Yup.array().min(1, 'Category is required'),
+    images: Yup.array().min(1, 'Images is required'),
   });
 
-  const defaultValues = useMemo(
-    () => ({
-      category: '',
-    }),
-    []
-  );
+  const defaultValues = {
+    yearsofexp: 0,
+    category: [],
+    images: []
+  };
 
   const methods = useForm({
-    defaultValues});
+    resolver: yupResolver(DesignerDetailsSchema),
+    defaultValues
+  });
 
   const {
     handleSubmit,
@@ -65,23 +67,26 @@ export default function DesignerRegisterView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-        const response = await fetchData('api/users/me?populate=*', token);
-        console.log(response);
-        const userDetailId = response.data.user_detail.id;
-        const formData = new FormData();
-        data.images.forEach((file) => {
-            formData.append('files', file);
-        });
-        const imageResponse = await postData('api/upload', formData, token);
-        console.log(imageResponse);
-        const response3 = await putData(`api/user_details/${userDetailId}`, { 
+      console.log('Register designer view form data', data);
+      const formData = new FormData();
+      data.images.forEach((file) => {
+          formData.append('files', file);
+      });
+      const imageResponse = await postData('api/upload', formData, token);
+      console.log('Image upload response', imageResponse);
+
+      const updateDetailsResponse = await putData(`api/user-details/${userData.id}`, 
+        {
+          data: { 
             yearsofexp: data.yearsofexp,
-            role: roleType, 
             bestdesigns: imageResponse.map((image) => image.id),
-            speciality: data.category.map((category) => category.value)
-        }, token);
-        console.log(response3);
-        router.push(returnTo || PATH_AFTER_LOGIN);
+            speciality: data.category
+          }
+      }, token);
+      console.log('Update details response', updateDetailsResponse);
+      updateUserData(updateDetailsResponse.data);
+
+      router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
       console.error(error);
       setErrorMsg(typeof error === 'string' ? error : error.message);
@@ -115,13 +120,13 @@ export default function DesignerRegisterView() {
     setValue('images', []);
   }, [setValue]);
 
-  const renderDesignerHead = (
+  const renderHead = (
     <Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
       <Typography variant="h4">Register as designer</Typography>
     </Stack>
   );
 
-  const renderDesignerForm = (
+  const renderForm = (
     <Stack spacing={2.5} pb={10}>
       <RHFTextField name="yearsofexp" label="Years of experience" type="number" />
       <RHFMultiSelect checkbox name="category" label="Category"
@@ -178,7 +183,7 @@ export default function DesignerRegisterView() {
 
   return (
     <>
-      {renderDesignerHead}
+      {renderHead}
 
       {!!errorMsg && (
         <Alert severity="error" sx={{ m: 3 }}>
@@ -187,7 +192,7 @@ export default function DesignerRegisterView() {
       )}
 
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        {renderDesignerForm}
+        {renderForm}
       </FormProvider>
     </>
   );

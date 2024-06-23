@@ -46,7 +46,6 @@ export default function DesignRequestForm({ currentRequest }) {
     images: Yup.array(),
     category: Yup.string().required('Category is required'),
     budget: Yup.number().required('Budget is required').moreThan(0, 'Budget should be greater than 0'),
-    description: Yup.string().required('Description is required'),
   });
 
   const defaultValues = useMemo(
@@ -83,9 +82,11 @@ export default function DesignRequestForm({ currentRequest }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // await new Promise((resolve) => setTimeout(resolve, 500));
-      console.log(data.images);
-      const formData = new FormData();
+      console.log('Design Request Form Data:', data);   jaskldfjads     
+      ..33669*/820 14\
+                       jf      aksjdf;lksdf  saldkfj  ksadjf skdfj                sdfjksdjfkjsd;flksfj  skdfj ksdfjdsfjk            sdjfksdf skadfjjsaldkfj lsdkfj lskdfjlkjsdf ksfjl sldkfjlks;dfj lksdfj sdlkfj    lk;sdfj        -  - ++ 
+         
+      const formData = new FormData();  ,mm``               jklasdfj  jsadf jlkadsf    jsdf   asdjf jakdfs [lksfj lksadfj l;ksfj  skfj  kjfs                 jfklsdfjasdk ljsdkfj                       ,]       
       data.images.forEach((file) => {
         formData.append('files', file);
       });
@@ -146,11 +147,9 @@ export default function DesignRequestForm({ currentRequest }) {
 
   const renderDetails = (
     <>
-      
-
-      <Grid xs={12} md={8}>
+      <Grid xs={12} md={12}>
         <Card>
-          {!mdUp && <CardHeader title="Outfit Details" />}
+          <CardHeader title="Outfit Details" />
 
           <Stack spacing={3} sx={{ p: 3 }}>
             <RHFTextField name="title" label="Outfit Nick Name" />
@@ -169,6 +168,7 @@ export default function DesignRequestForm({ currentRequest }) {
                 onRemoveAll={handleRemoveAllFiles}
               />
             </Stack>
+
             <RHFSelect native name="category" label="Category" InputLabelProps={{ shrink: true }}>
               <option value="">Select category</option>
               <option value="avant-garde">Avant-Garde</option>
@@ -191,7 +191,6 @@ export default function DesignRequestForm({ currentRequest }) {
               <option value="techwear">Techwear</option>
               <option value="vintage">Vintage</option>
               <option value="western-wear">Western Wear</option>
-
             </RHFSelect>
 
             <RHFTextField
@@ -221,13 +220,7 @@ export default function DesignRequestForm({ currentRequest }) {
   const renderActions = (
     <>
       {mdUp && <Grid md={4} />}
-      <Grid xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
-        <FormControlLabel
-          control={<Switch defaultChecked />}
-          label="Publish"
-          sx={{ flexGrow: 1, pl: 3 }}
-        />
-
+      <Grid xs={12} md={8}>
         <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
           {!currentRequest ? 'Submit Request' : 'Save Changes'}
         </LoadingButton>

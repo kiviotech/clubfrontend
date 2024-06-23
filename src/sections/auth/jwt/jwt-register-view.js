@@ -1,7 +1,7 @@
 'use client';
 
 import * as Yup from 'yup';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -33,20 +33,15 @@ import { fetchData, postData } from 'src/services/api';
 // ----------------------------------------------------------------------
 
 export default function JwtRegisterView() {
-  // const { register } = useAuthContext();
-  const { register, updateToken, authDetails, setAuthDetails } = useMyAuthContext();
+  const { updateToken, updateUserData } = useMyAuthContext();
 
   const router = useRouter();
 
   const [errorMsg, setErrorMsg] = useState('');
 
-  const searchParams = useSearchParams();
-
-  const returnTo = searchParams.get('returnTo');
-
   const password = useBoolean();
 
-  let userType = "";
+  const [submit, setSubmit] = useState('');
 
   const RegisterSchema = Yup.object().shape({
     username: Yup.string().required('Username is required'),
@@ -55,9 +50,9 @@ export default function JwtRegisterView() {
   });
 
   const defaultValues = {
-    username: (authDetails && authDetails.username) || '',
-    email: (authDetails && authDetails.email) || '',
-    password: (authDetails && authDetails.password) || '',
+    username: '',
+    email: '',
+    password: '',
   };
 
   const methods = useForm({
@@ -73,17 +68,16 @@ export default function JwtRegisterView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // await register?.(data.email, data.password, data.firstName, data.lastName);
-      // await register({email: data.email, username: data.username, password: data.password});
-      const response = await postData('api/auth/local/register', data, null);
-      console.log(response);
-      updateToken(response.jwt);
-      await postData('api/user-details', { data: { user: response.user.id } }, response.jwt);
-      enqueueSnackbar('Account created successfully', { variant: 'success' });
+      console.log('Register view form data', data);
+      const registerResponse = await postData('api/auth/local/register', data, null);
+      console.log('Register response', registerResponse);
+      updateToken(registerResponse.jwt);
+
+      const userDetailResponse = await postData('api/user-details', { data: { user: registerResponse.user.id } }, registerResponse.jwt);
+      console.log('User detail create response', userDetailResponse);
+      updateUserData(userDetailResponse.data);
       router.push(paths.auth.jwt.registerDetails);
-      // router.push(returnTo || PATH_AFTER_LOGIN);
-      // console.log(data);
-      // await setAuthDetails(data);
+      enqueueSnackbar('Account created successfully', { variant: 'success' });
     } catch (error) {
       console.error(error);
       reset();
@@ -107,11 +101,6 @@ export default function JwtRegisterView() {
 
   const renderForm = (
     <Stack spacing={2.5}>
-      {/* <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-        <RHFTextField name="firstName" label="First name" />
-        <RHFTextField name="lastName" label="Last name" />
-      </Stack> */}
-
       <RHFTextField name="username" label="Username" />
 
       <RHFTextField name="email" label="Email address" />

@@ -6,7 +6,7 @@ import UserCard from './FashionDesignCard';
 
 import { useEffect, useState } from 'react';
 
-import { fetchData } from 'src/services/api';
+import { API_URL, fetchData } from 'src/services/api';
 
 import { useMyAuthContext } from 'src/services/my-auth-context';
 
@@ -28,13 +28,13 @@ useEffect(() => {
   });
 }, []);
 
-const design = {
-  title: 'Elegant Evening Gown',
-  image: '/assets/tempDesgins/designtemp.jpg',
-  category: 'Evening Wear',
-  budget: 500,
-  description: 'An elegant evening gown perfect for formal occasions.',
-  };
+// const design = {
+//   title: 'Elegant Evening Gown',
+//   image: '/assets/tempDesgins/designtemp.jpg',
+//   category: 'Evening Wear',
+//   budget: 500,
+//   description: 'An elegant evening gown perfect for formal occasions.',
+//   };
 
 
   return (
@@ -53,7 +53,7 @@ const design = {
           category: design.attributes.category,
           budget: design.attributes.budget,
           description: design.attributes.description,
-          image: `http://localhost:1337${design.attributes.reference.data[0].attributes.url}`,
+          image: `${API_URL}${design.attributes.reference.data[0].attributes.url}`,
         }} />
       ))}
     </Box>

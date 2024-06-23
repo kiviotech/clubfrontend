@@ -37,7 +37,7 @@ export default function ProfileHomeDesigner({ info }) {
   const [isPosting, setIsPosting] = useState(false);
 
   const { token, userData, updateUserData } = useMyAuthContext();
-  const posts = userData.posts;
+  // const posts = userData.posts;
 
   const handleAttach = () => {
     if (fileRef.current) {
@@ -94,15 +94,13 @@ export default function ProfileHomeDesigner({ info }) {
       <CardHeader title="About" />
 
       <Stack spacing={2} sx={{ p: 3 }}>
-        {info.quote &&
-          <Box sx={{ typography: 'body2' }}>{info.quote}</Box>}
+        {info.about && <Box sx={{ typography: 'body2' }}>{info.about}</Box>}
 
         {info.country &&
         <Stack direction="row" spacing={2}>
           <Iconify icon="mingcute:location-fill" width={24} />
 
           <Box sx={{ typography: 'body2' }}>
-            {`Live at `}
             <Link variant="subtitle2" color="inherit">
               {info.country}
             </Link>
@@ -113,33 +111,6 @@ export default function ProfileHomeDesigner({ info }) {
         <Stack direction="row" sx={{ typography: 'body2' }}>
           <Iconify icon="fluent:mail-24-filled" width={24} sx={{ mr: 2 }} />
           {info.email}
-        </Stack>}
-
-        {info.role &&
-        <Stack direction="row" spacing={2}>
-          <Iconify icon="ic:round-business-center" width={24} />
-
-          <Box sx={{ typography: 'body2' }}>
-            {info.role} 
-            {info.company && (
-              <>
-              {` at `}
-            <Link variant="subtitle2" color="inherit">
-              {info.company}
-            </Link>
-            </>)}
-          </Box>
-        </Stack>}
-
-        {info.school && <Stack direction="row" spacing={2}>
-          <Iconify icon="ic:round-business-center" width={24} />
-
-          <Box sx={{ typography: 'body2' }}>
-            {`Studied at `}
-            <Link variant="subtitle2" color="inherit">
-              {info.school}
-            </Link>
-          </Box>
         </Stack>}
       </Stack>
     </Card>
@@ -167,11 +138,6 @@ export default function ProfileHomeDesigner({ info }) {
           {/* <Fab size="small" color="inherit" variant="softExtended" onClick={handleAttach}>
             <Iconify icon="solar:gallery-wide-bold" width={24} sx={{ color: 'success.main' }} />
             Image/Video
-          </Fab>
-
-          <Fab size="small" color="inherit" variant="softExtended">
-            <Iconify icon="solar:videocamera-record-bold" width={24} sx={{ color: 'error.main' }} />
-            Streaming
           </Fab> */}
         </Stack>
 
@@ -239,9 +205,9 @@ export default function ProfileHomeDesigner({ info }) {
         <Stack spacing={3}>
           {renderPostInput}
 
-          {posts.map((post) => (
+          {/* {posts.map((post) => (
             <ProfilePostItem key={post.id} post={post} />
-          ))}
+          ))} */}
         </Stack>
       </Grid>
     </Box>
