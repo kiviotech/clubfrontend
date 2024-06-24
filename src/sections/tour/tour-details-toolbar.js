@@ -38,7 +38,7 @@ export default function TourDetailsToolbar({
         }}
         {...other}
       >
-        <Button
+        {/* <Button
           component={RouterLink}
           href={backLink}
           startIcon={<Iconify icon="eva:arrow-ios-back-fill" width={16} />}
@@ -54,15 +54,15 @@ export default function TourDetailsToolbar({
               <Iconify icon="eva:external-link-fill" />
             </IconButton>
           </Tooltip>
-        )}
+        )} */}
 
-        <Tooltip title="Edit">
+        {/* <Tooltip title="Edit">
           <IconButton component={RouterLink} href={editLink}>
             <Iconify icon="solar:pen-bold" />
           </IconButton>
-        </Tooltip>
+        </Tooltip> */}
 
-        <LoadingButton
+        {/* <LoadingButton
           color="inherit"
           variant="contained"
           loading={!publish}
@@ -72,10 +72,10 @@ export default function TourDetailsToolbar({
           sx={{ textTransform: 'capitalize' }}
         >
           {publish}
-        </LoadingButton>
+        </LoadingButton> */}
       </Stack>
 
-      <CustomPopover
+      {/* <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
         arrow="top-right"
@@ -95,7 +95,7 @@ export default function TourDetailsToolbar({
             {option.label}
           </MenuItem>
         ))}
-      </CustomPopover>
+      </CustomPopover> */}
     </>
   );
 }

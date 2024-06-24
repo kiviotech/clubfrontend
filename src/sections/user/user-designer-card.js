@@ -17,6 +17,7 @@ import { AvatarShape } from 'src/assets/illustrations';
 
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
+import { API_URL } from 'src/services/api';
 
 // ----------------------------------------------------------------------
 
@@ -57,7 +58,7 @@ export default function UserDesignerCard({ designer }) {
         />
 
         <Image
-          src={coverUrl}
+          src={`${API_URL}${designer.bestdesigns.data[0].attributes.url}`}
           alt={coverUrl}
           ratio="16/9"
           overlay={alpha(theme.palette.grey[900], 0.48)}

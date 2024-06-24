@@ -39,6 +39,7 @@ export default function UserCardList() {
     >
       {designs.map((design) => (
         <UserCard key={design.id} design={{
+          id: design.id,
           title: design.attributes.nickname,
           category: design.attributes.category,
           budget: design.attributes.budget,

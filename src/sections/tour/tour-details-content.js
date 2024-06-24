@@ -19,25 +19,16 @@ import Iconify from 'src/components/iconify';
 import Markdown from 'src/components/markdown';
 import { varTranHover } from 'src/components/animate';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
+import { API_URL } from 'src/services/api';
 
 // ----------------------------------------------------------------------
 
-export default function TourDetailsContent({ tour }) {
-  const {
-    name,
-    images,
-    content,
-    services,
-    tourGuides,
-    available,
-    durations,
-    destination,
-    ratingNumber,
-  } = tour;
+export default function TourDetailsContent({ design }) {
+  const { nickname, description, category, budget, references } = design.attributes;  
 
-  const slides = images.map((slide) => ({
-    src: slide,
-  }));
+  const slides = (references.data === null ? null : references.data.map((slide) => ({
+    src: `${API_URL}${slide.attributes.url}`,
+  })));
 
   const {
     selected: selectedImage,
@@ -47,6 +38,7 @@ export default function TourDetailsContent({ tour }) {
   } = useLightBox(slides);
 
   const renderGallery = (
+    slides === null ? <></> :
     <>
       <Box
         gap={1}
@@ -111,22 +103,22 @@ export default function TourDetailsContent({ tour }) {
     <>
       <Stack direction="row" sx={{ mb: 3 }}>
         <Typography variant="h4" sx={{ flexGrow: 1 }}>
-          {name}
+          {nickname}
         </Typography>
 
-        <IconButton>
+        {/* <IconButton>
           <Iconify icon="solar:share-bold" />
-        </IconButton>
+        </IconButton> */}
 
-        <Checkbox
+        {/* <Checkbox
           defaultChecked
           color="error"
           icon={<Iconify icon="solar:heart-outline" />}
           checkedIcon={<Iconify icon="solar:heart-bold" />}
-        />
+        /> */}
       </Stack>
 
-      <Stack spacing={3} direction="row" flexWrap="wrap" alignItems="center">
+      {/* <Stack spacing={3} direction="row" flexWrap="wrap" alignItems="center">
         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ typography: 'body2' }}>
           <Iconify icon="eva:star-fill" sx={{ color: 'warning.main' }} />
           <Box component="span" sx={{ typography: 'subtitle2' }}>
@@ -147,7 +139,7 @@ export default function TourDetailsContent({ tour }) {
           </Box>
           {tourGuides.map((tourGuide) => tourGuide.name).join(', ')}
         </Stack>
-      </Stack>
+      </Stack> */}
     </>
   );
 
@@ -160,7 +152,7 @@ export default function TourDetailsContent({ tour }) {
         md: 'repeat(2, 1fr)',
       }}
     >
-      {[
+      {/* [
         {
           label: 'Available',
           value: `${fDate(available.startDate)} - ${fDate(available.endDate)}`,
@@ -180,6 +172,18 @@ export default function TourDetailsContent({ tour }) {
           label: 'Contact phone',
           value: tourGuides.map((tourGuide) => tourGuide.name).join(', '),
           icon: <Iconify icon="solar:phone-bold" />,
+        },
+      ] */
+      [
+        {
+          label: 'Category',
+          value: category,
+          icon: <Iconify icon="solar:tag-bold" />,
+        },
+        {
+          label: 'Budget',
+          value: budget,
+          icon: <Iconify icon="solar:dollar-bold" />,
         },
       ].map((item) => (
         <Stack key={item.label} spacing={1.5} direction="row">
@@ -205,9 +209,11 @@ export default function TourDetailsContent({ tour }) {
 
   const renderContent = (
     <>
-      <Markdown children={content} />
+      {/* <Markdown children={content} /> */}
+      <Typography variant="h6">Description</Typography>
+      <Typography variant="body1">{description}</Typography>
 
-      <Stack spacing={2}>
+      {/* <Stack spacing={2}>
         <Typography variant="h6"> Services</Typography>
 
         <Box
@@ -243,13 +249,13 @@ export default function TourDetailsContent({ tour }) {
             </Stack>
           ))}
         </Box>
-      </Stack>
+      </Stack> */}
     </>
   );
 
   return (
     <>
-      {renderGallery}
+      {slides !== null && renderGallery}
 
       <Stack sx={{ maxWidth: 720, mx: 'auto' }}>
         {renderHead}

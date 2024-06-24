@@ -137,19 +137,25 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import { alpha, useTheme } from '@mui/material/styles';
-
+import { useRouter } from 'src/routes/hooks';
 
 import Image from 'src/components/image';
 import { Button } from '@mui/material';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
-
-
 export default function UserCard({ design }) {
+  const router = useRouter();
+
   const theme = useTheme();
 
-  const { title, image, category, budget, description } = design;
+  const { id, title, image, category, budget, description } = design;
+
+  const handleInterest = () => {
+    console.log("Interested");
+    router.push(`${paths.dashboard.tour.root}/${id}`);
+  }
 
   return (
     <Card sx={{ textAlign: 'center' }}>
@@ -180,7 +186,7 @@ export default function UserCard({ design }) {
         <Typography variant="body2" component="div">
           {description}
         </Typography>
-        <Button variant="contained" color="primary">Interested</Button>
+        <Button variant="contained" color="primary" onClick={handleInterest}>Interested</Button>
       </Stack>
     </Card>
   );

@@ -31,7 +31,7 @@ export default function UserDesignersView() {
   useEffect(() => {
     const getDesigners = async () => {
       try {
-        const response = await fetchData('api/user-details?filters[role][$eq]=designer', token);
+        const response = await fetchData('api/user-details?filters[role][$eq]=designer&populate=bestdesigns', token);
         console.log('Designers data', response.data);
         setDesigners(response.data);
       } catch (error) {

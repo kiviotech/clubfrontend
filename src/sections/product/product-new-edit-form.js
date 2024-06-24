@@ -74,14 +74,16 @@ export default function DesignRequestForm() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       console.log('Design Request Form Data:', data);
+      let imageResponse = [];
       if (data.images.length !== 0) {
         const formData = new FormData();
         data.images.forEach((file) => {
           formData.append('files', file);
         });
-        const imageResponse = await postData("api/upload", formData, token);
+        imageResponse = await postData("api/upload", formData, token);
         console.log(imageResponse);
       }
+
       const response = await postData('api/design-requests', {
         data: {
           nickname: data.title,

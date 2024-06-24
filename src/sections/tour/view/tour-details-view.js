@@ -1,7 +1,7 @@
 'use client';
 
 import PropTypes from 'prop-types';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -17,15 +17,40 @@ import { useSettingsContext } from 'src/components/settings';
 import TourDetailsToolbar from '../tour-details-toolbar';
 import TourDetailsContent from '../tour-details-content';
 import TourDetailsBookers from '../tour-details-bookers';
+import { useMyAuthContext } from 'src/services/my-auth-context';
+import { fetchData } from 'src/services/api';
+import Loading from 'src/app/loading';
 
 // ----------------------------------------------------------------------
 
 export default function TourDetailsView({ id }) {
   const settings = useSettingsContext();
 
-  const currentTour = _tours.filter((tour) => tour.id === id)[0];
+  const { token } = useMyAuthContext();
 
-  const [publish, setPublish] = useState(currentTour?.publish);
+  const [loading, setLoading] = useState(true);
+
+  const [design, setDesign] = useState(null);
+
+  useEffect(() => {
+    const getDesign = async () => {
+      try {
+        const response = await fetchData(`api/design-requests/${id}?populate=references`, token);
+        console.log('Design data', response.data);
+        setDesign(response.data);
+      } catch (error) {
+        console.error('Failed to fetch tour:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getDesign();
+  }, []);
+
+  // const currentTour = _tours.filter((tour) => tour.id === id)[0];
+
+  // const [publish, setPublish] = useState(currentTour?.publish);
 
   const [currentTab, setCurrentTab] = useState('content');
 
@@ -33,9 +58,9 @@ export default function TourDetailsView({ id }) {
     setCurrentTab(newValue);
   }, []);
 
-  const handleChangePublish = useCallback((newValue) => {
-    setPublish(newValue);
-  }, []);
+  // const handleChangePublish = useCallback((newValue) => {
+  //   setPublish(newValue);
+  // }, []);
 
   const renderTabs = (
     <Tabs
@@ -53,7 +78,8 @@ export default function TourDetailsView({ id }) {
           label={tab.label}
           icon={
             tab.value === 'bookers' ? (
-              <Label variant="filled">{currentTour?.bookers.length}</Label>
+              // <Label variant="filled">{currentTour?.bookers.length}</Label>
+              <Label variant="filled">12</Label>
             ) : (
               ''
             )
@@ -63,19 +89,14 @@ export default function TourDetailsView({ id }) {
     </Tabs>
   );
 
+  if (loading) return <Loading />;
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      <TourDetailsToolbar
-        backLink={paths.dashboard.tour.root}
-        editLink={paths.dashboard.tour.edit(`${currentTour?.id}`)}
-        liveLink="#"
-        publish={publish || ''}
-        onChangePublish={handleChangePublish}
-        publishOptions={TOUR_PUBLISH_OPTIONS}
-      />
       {renderTabs}
 
-      {currentTab === 'content' && <TourDetailsContent tour={currentTour} />}
+      {/* {currentTab === 'content' && <TourDetailsContent tour={currentTour} />} */}
+      {currentTab === 'content' && <TourDetailsContent design={design}/>}
 
       {currentTab === 'bookers' && <TourDetailsBookers bookers={currentTour?.bookers} />}
     </Container>
