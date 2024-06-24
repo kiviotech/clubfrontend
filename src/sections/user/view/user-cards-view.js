@@ -13,6 +13,7 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import UserCardList from '../user-card-list';
+import { CardHeader, Typography } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -21,25 +22,9 @@ export default function UserCardsView() {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      <CustomBreadcrumbs
-        heading="Bid on Designs"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'User', href: paths.dashboard.user.root },
-          { name: 'Designs' },
-        ]}
-        action={
-          <Button
-            component={RouterLink}
-            href={paths.dashboard.user.new}
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-          >
-
-          </Button>
-        }
-        sx={{ mb: { xs: 3, md: 5 } }}
-      />
+      <Typography variant="h4" sx={{ mb: 5 }}>
+        Bid on designs
+      </Typography>
 
       <UserCardList />
     </Container>

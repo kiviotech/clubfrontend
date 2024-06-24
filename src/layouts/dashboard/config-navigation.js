@@ -129,7 +129,7 @@ export function useNavData() {
           },
 
           {
-            title: t('Veiw Requests'),
+            title: t('View Requests'),
             path: paths.dashboard.user.cards,
             icon: ICONS.ecommerce,
             // children: [
@@ -141,6 +141,12 @@ export function useNavData() {
               // { title: t('account'), path: paths.dashboard.user.account },
             // ],
           },
+
+          {
+            title: t('View Designers'),
+            path: paths.dashboard.user.designers,
+            icon: ICONS.user
+          }
 
           // // ORDER
           // {

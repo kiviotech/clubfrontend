@@ -32,7 +32,7 @@ import { postData, putData } from 'src/services/api';
 
 // ----------------------------------------------------------------------
 
-export default function DesignRequestForm({ currentRequest }) {
+export default function DesignRequestForm() {
   const router = useRouter();
 
   const { token, userData } = useMyAuthContext();
@@ -48,16 +48,13 @@ export default function DesignRequestForm({ currentRequest }) {
     budget: Yup.number().required('Budget is required').moreThan(0, 'Budget should be greater than 0'),
   });
 
-  const defaultValues = useMemo(
-    () => ({
-      title: currentRequest?.title || '',
-      description: currentRequest?.description || '',
-      images: currentRequest?.images || [],
-      category: currentRequest?.category || '',
-      budget: currentRequest?.budget || 0,
-    }),
-    [currentRequest]
-  );
+  const defaultValues = {
+      title: '',
+      description: '',
+      images: [],
+      category: '',
+      budget: 0,
+  };
 
   const methods = useForm({
     resolver: yupResolver(DesignRequestSchema),
@@ -74,42 +71,31 @@ export default function DesignRequestForm({ currentRequest }) {
 
   const values = watch();
 
-  useEffect(() => {
-    if (currentRequest) {
-      reset(defaultValues);
-    }
-  }, [currentRequest, defaultValues, reset]);
-
   const onSubmit = handleSubmit(async (data) => {
     try {
       console.log('Design Request Form Data:', data);
-      const formData = new FormData();
-      data.images.forEach((file) => {
-        formData.append('files', file);
-      });
-      const imageResponse = await postData("api/upload", formData, token);
-      console.log(imageResponse);
-      const response = await postData('api/designs', {
-        data: {
-        nickName: data.title,
-        description: data.description,
-        category: data.category,
-        budget: data.budget,
-        reference: imageResponse.map((image) => image.id),
+      if (data.images.length !== 0) {
+        const formData = new FormData();
+        data.images.forEach((file) => {
+          formData.append('files', file);
+        });
+        const imageResponse = await postData("api/upload", formData, token);
+        console.log(imageResponse);
       }
+      const response = await postData('api/design-requests', {
+        data: {
+          nickname: data.title,
+          description: data.description,
+          category: data.category,
+          budget: data.budget,
+          references: (data.images.length === 0 ? null : imageResponse.map((image) => image.id)),
+          user_detail: userData.id
+        }
       }, token);
       console.log(response);
-      await putData(`api/designs/${response.data.id}`, {
-        data: {'user': {
-          connect: [
-            {id: userData.id}
-          ]
-        }}
-      }, token);
       reset();
-      enqueueSnackbar(currentRequest ? 'Update success!' : 'Create success!');
+      enqueueSnackbar('Request added', { variant: 'success' });
       router.push('/dashboard/product/new/'); // Adjust the redirect path as needed
-      console.info('DATA', data);
     } catch (error) {
       console.error(error);
     }
@@ -168,26 +154,26 @@ export default function DesignRequestForm({ currentRequest }) {
 
             <RHFSelect native name="category" label="Category" InputLabelProps={{ shrink: true }}>
               <option value="">Select category</option>
-              <option value="avant-garde">Avant-Garde</option>
-              <option value="bohemian">Bohemian</option>
-              <option value="business-formal-wear">Business/Formal Wear</option>
-              <option value="ethnical-traditional-wear">Ethnical/Traditional Wear</option>
-              <option value="gender-neutral-androgynous-fashion">Gender-Neutral/Androgynous Fashion</option>
-              <option value="gothic">Gothic</option>
-              <option value="haute-couture">Haute Couture</option>
-              <option value="leather">Leather</option>
-              <option value="lingerie-intimate-apparel">Lingerie/Intimate Apparel</option>
-              <option value="minimalist">Minimalist</option>
-              <option value="punk">Punk</option>
-              <option value="retro-vintage-inspired">Retro/Vintage-Inspired</option>
-              <option value="romantic">Romantic</option>
-              <option value="sportswear-activewear">Sportswear/Activewear</option>
-              <option value="streetwear">Streetwear</option>
-              <option value="sustainable-fashion">Sustainable Fashion</option>
-              <option value="swimwear">Swimwear</option>
-              <option value="techwear">Techwear</option>
-              <option value="vintage">Vintage</option>
-              <option value="western-wear">Western Wear</option>
+              <option value="Avant-Garde">Avant-Garde</option>
+              <option value="Bohemian">Bohemian</option>
+              <option value="Business/Formal Wear">Business/Formal Wear</option>
+              <option value="Ethnical/Traditional Wear">Ethnical/Traditional Wear</option>
+              <option value="Gender-Neutral/Androgynous Fashion">Gender-Neutral/Androgynous Fashion</option>
+              <option value="Gothic">Gothic</option>
+              <option value="Haute Couture">Haute Couture</option>
+              <option value="Leather">Leather</option>
+              <option value="Lingerie/Intimate Apparel">Lingerie/Intimate Apparel</option>
+              <option value="Minimalist">Minimalist</option>
+              <option value="Punk">Punk</option>
+              <option value="Retro/Vintage-Inspired">Retro/Vintage-Inspired</option>
+              <option value="Romantic">Romantic</option>
+              <option value="Sportswear/Activewear">Sportswear/Activewear</option>
+              <option value="Streetwear">Streetwear</option>
+              <option value="Sustainable Fashion">Sustainable Fashion</option>
+              <option value="Swimwear">Swimwear</option>
+              <option value="Techwear">Techwear</option>
+              <option value="Vintage">Vintage</option>
+              <option value="Western Wear">Western Wear</option>
             </RHFSelect>
 
             <RHFTextField
@@ -212,14 +198,18 @@ export default function DesignRequestForm({ currentRequest }) {
     </>
   );
 
-  
-
   const renderActions = (
     <>
-      {mdUp && <Grid md={4} />}
-      <Grid xs={12} md={8}>
+      {/* {mdUp && <Grid md={4} />} */}
+      <Grid>
+      {/* <FormControlLabel
+          control={<Switch defaultChecked />}
+          label="Publish"
+          sx={{ flexGrow: 1, pl: 3 }}
+        /> */}
+        {/* <Box sx={{ flexGrow: 1, pl: 3 }} /> */}
         <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-          {!currentRequest ? 'Submit Request' : 'Save Changes'}
+          {'Submit Request'}
         </LoadingButton>
       </Grid>
     </>
@@ -227,7 +217,7 @@ export default function DesignRequestForm({ currentRequest }) {
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} sx={{ display: 'flex', justifyContent: 'center' }}>
         {renderDetails}
 
         {renderActions}
@@ -235,7 +225,3 @@ export default function DesignRequestForm({ currentRequest }) {
     </FormProvider>
   );
 }
-
-DesignRequestForm.propTypes = {
-  currentRequest: PropTypes.object,
-};
