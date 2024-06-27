@@ -21,15 +21,13 @@ import { varTranHover } from 'src/components/animate';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
 import { API_URL } from 'src/services/api';
 import { Button } from '@mui/material';
-import BidCreateDialog from './bid-create-dialog';
-import { useBoolean } from 'src/hooks/use-boolean';
 
 // ----------------------------------------------------------------------
 
-export default function TourDetailsContent({ design }) {
-  const { nickname, description, category, budget, references } = design.attributes;  
+export default function DesignerProfileContent({ designer }) {
+  const { displayname, position, city, country, yearsofexp, bestdesigns, speciality, about } = designer.attributes;  
 
-  const slides = (references.data === null ? null : references.data.map((slide) => ({
+  const slides = (bestdesigns.data === null ? null : bestdesigns.data.map((slide) => ({
     src: `${API_URL}${slide.attributes.url}`,
   })));
 
@@ -39,8 +37,6 @@ export default function TourDetailsContent({ design }) {
     onOpen: handleOpenLightbox,
     onClose: handleCloseLightbox,
   } = useLightBox(slides);
-
-  const bidDialog = useBoolean();
 
   const renderGallery = (
     slides === null ? <></> :
@@ -114,7 +110,7 @@ export default function TourDetailsContent({ design }) {
             // justifyContent: "center"
           }}
         >
-          {nickname}
+          {displayname}
         </Typography>
 
         {/* <IconButton>
@@ -163,38 +159,16 @@ export default function TourDetailsContent({ design }) {
         md: 'repeat(2, 1fr)',
       }}
     >
-      {/* [
+      {[
         {
-          label: 'Available',
-          value: `${fDate(available.startDate)} - ${fDate(available.endDate)}`,
-          icon: <Iconify icon="solar:calendar-date-bold" />,
+          label: 'Role',
+          value: position,
+          icon: <Iconify icon="solar:briefcase-bold" />,
         },
         {
-          label: 'Contact name',
-          value: tourGuides.map((tourGuide) => tourGuide.phoneNumber).join(', '),
-          icon: <Iconify icon="solar:user-rounded-bold" />,
-        },
-        {
-          label: 'Durations',
-          value: durations,
-          icon: <Iconify icon="solar:clock-circle-bold" />,
-        },
-        {
-          label: 'Contact phone',
-          value: tourGuides.map((tourGuide) => tourGuide.name).join(', '),
-          icon: <Iconify icon="solar:phone-bold" />,
-        },
-      ] */
-      [
-        {
-          label: 'Category',
-          value: category,
-          icon: <Iconify icon="solar:tag-bold" />,
-        },
-        {
-          label: 'Budget',
-          value: budget,
-          icon: <Iconify icon="solar:dollar-bold" />,
+          label: 'Years of experience',
+          value: yearsofexp,
+          icon: <Iconify icon="solar:clock-bold" />,
         },
       ].map((item) => (
         <Stack key={item.label} spacing={1.5} direction="row">
@@ -220,9 +194,8 @@ export default function TourDetailsContent({ design }) {
 
   const renderContent = (
     <>
-      {/* <Markdown children={content} /> */}
-      <Typography variant="h6">Description</Typography>
-      <Typography variant="body1">{description}</Typography>
+      <Typography variant="h5" mb={5}>About</Typography>
+      <Typography variant="body1">{about}</Typography>
 
       {/* <Stack spacing={2}>
         <Typography variant="h6"> Services</Typography>
@@ -281,20 +254,12 @@ export default function TourDetailsContent({ design }) {
 
         <Divider sx={{ borderStyle: 'dashed', my: 5 }} />
 
-        <Button variant="contained" color="primary" onClick={bidDialog.onTrue}>Bid</Button>
-
+        <Button variant="contained" color="primary" href="/designs">Request design</Button>
       </Stack>
-
-      <BidCreateDialog
-        title="Bid"
-        open={bidDialog.value}
-        onClose={bidDialog.onFalse}
-        design={design}
-      />
     </>
   );
 }
 
-TourDetailsContent.propTypes = {
+DesignerProfileContent.propTypes = {
   tour: PropTypes.object,
 };

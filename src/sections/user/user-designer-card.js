@@ -18,18 +18,36 @@ import { AvatarShape } from 'src/assets/illustrations';
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import { API_URL } from 'src/services/api';
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
-export default function UserDesignerCard({ designer }) {
+export default function UserDesignerCard({ id, designer }) {
   const theme = useTheme();
+
+  const router = useRouter();
 
   const user = _userCards[1];
 
   const { name, coverUrl, role, totalFollowers, totalPosts, avatarUrl, totalFollowing } = user;
 
+  const handleCardClick = () => {
+    console.log(id);
+    router.push(`${paths.dashboard.user.designers}/${id}`);
+  }
+
   return (
-    <Card sx={{ textAlign: 'center' }}>
+    <Card
+      onClick={handleCardClick}
+      sx={{
+        textAlign: 'center',
+        cursor: 'pointer',
+        '&:hover': {
+          boxShadow: (theme) => theme.customShadows.z20,
+        },
+      }}
+    >
       <Box sx={{ position: 'relative' }}>
         <AvatarShape
           sx={{

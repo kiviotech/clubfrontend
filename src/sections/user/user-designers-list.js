@@ -20,7 +20,7 @@ export default function UserDesignersList({ designers }) {
       }}
     >
       {designers.map((designer) => (
-        <UserDesignerCard key={designer.id} designer={designer.attributes} />
+        <UserDesignerCard key={designer.id} id={designer.id} designer={designer.attributes} />
       ))}
     </Box>
   );
