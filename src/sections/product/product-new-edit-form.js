@@ -110,7 +110,7 @@ export default function DesignRequestForm({ currentRequest }) {
       }, token);
       reset();
       enqueueSnackbar(currentRequest ? 'Update success!' : 'Create success!');
-      router.push('/dashboard/product/new/'); // Adjust the redirect path as needed
+      router.push('/user/product/new/'); // Adjust the redirect path as needed
       console.info('DATA', data);
     } catch (error) {
       console.error(error);

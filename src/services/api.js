@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = 'http://localhost:1337';
+const API_URL = 'https://app.club-unplugged.com/dash';
 
 const getAuthConfig = (token) => ({
     headers: {

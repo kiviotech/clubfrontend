@@ -27,7 +27,7 @@ import ProfileHomeDesigner from '../profile-home-designer';
 import ProfileHistory from '../profile-history';
 import ProfilePortfolio from '../profile-portfolio';
 import ProfileReviews from '../profile-reviews';
-import { getUserData } from 'src/services/api';
+import { getuserData } from 'src/services/api';
 import { useMyAuthContext } from 'src/services/my-auth-context';
 
 // ----------------------------------------------------------------------
@@ -39,30 +39,30 @@ const TABS = [
     icon: <Iconify icon="solar:user-id-bold" width={24} />,
     for: 'both',
   },
-  {
-    value: 'followers',
-    label: 'Followers',
-    icon: <Iconify icon="solar:heart-bold" width={24} />,
-    for: 'Customer',
-  },
-  {
-    value: 'history',
-    label: 'History',
-    icon: <Iconify icon="solar:history-bold" width={24} />,
-    for: 'Customer',
-  },
-  {
-    value: 'portfolio',
-    label: 'Portfolio',
-    icon: <Iconify icon="solar:user-bold" width={24} />,
-    for: 'Designer',
-  },
-  {
-    value: 'reviews',
-    label: 'Reviews',
-    icon: <Iconify icon="solar:star-bold" width={24} />,
-    for: 'Designer',
-  },
+  // {
+  //   value: 'followers',
+  //   label: 'Followers',
+  //   icon: <Iconify icon="solar:heart-bold" width={24} />,
+  //   for: 'Customer',
+  // },
+  // {
+  //   value: 'history',
+  //   label: 'History',
+  //   icon: <Iconify icon="solar:history-bold" width={24} />,
+  //   for: 'Customer',
+  // },
+  // {
+  //   value: 'portfolio',
+  //   label: 'Portfolio',
+  //   icon: <Iconify icon="solar:user-bold" width={24} />,
+  //   for: 'Designer',
+  // },
+  // {
+  //   value: 'reviews',
+  //   label: 'Reviews',
+  //   icon: <Iconify icon="solar:star-bold" width={24} />,
+  //   for: 'Designer',
+  // },
 ];
 
 // ----------------------------------------------------------------------
@@ -76,7 +76,7 @@ export default function UserProfileView() {
 
   const [currentTab, setCurrentTab] = useState('profile');
 
-  const { userData } = useMyAuthContext();
+  const { userData} = useMyAuthContext();
 
   const handleChangeTab = useCallback((event, newValue) => {
     setCurrentTab(newValue);
@@ -107,11 +107,11 @@ export default function UserProfileView() {
         }}
       >
         <ProfileCover
-          role={userData.position}
-          name={userData.displayName}
+          role={userData?.position}
+          name={userData?.displayName}
           avatarUrl={user?.photoURL}
-          coverUrl={_userAbout.coverUrl}
-          commissions={userData.commissions}
+          coverUrl={_userAbout?.coverUrl}
+          commissions={userData?.commissions}
         />
 
         <Tabs
@@ -136,7 +136,7 @@ export default function UserProfileView() {
           {/* {TABS.map((tab) => (
             <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
           ))} */}
-          {TABS.filter(tab => tab.for === 'both' || tab.for === userData.roleType).map((tab) => (
+          {TABS.filter(tab => tab.for === 'both' || tab.for === userData?.roleType).map((tab) => (
             <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
           ))}
         </Tabs>
@@ -146,27 +146,27 @@ export default function UserProfileView() {
       {currentTab === 'profile' && userType === "Designer" && <ProfileHomeDesigner info={_userAbout} posts={_userFeeds} />} */}
       {currentTab === 'profile' && <ProfileHomeDesigner info={
         {
-          quote: userData.quote,
-          country: userData.country,
-          email: userData.email,
-          role: userData.position,
-          company: userData.company,
-          school: userData.school,
-          facebook: userData.facebook,
-          instagram: userData.instagram,
-          linkedin: userData.linkedin,
-          twitter: userData.twitter,
+          quote: userData?.quote,
+          country: userData?.country,
+          email: userData?.email,
+          role: userData?.position,
+          company: userData?.company,
+          school: userData?.school,
+          facebook: userData?.facebook,
+          instagram: userData?.instagram,
+          linkedin: userData?.linkedin,
+          twitter: userData?.twitter,
         }
       }
-      /* posts={userData.posts} */ />}
-
-      {userData.roleType === "Customer" ? (
+      /* posts={userData?.posts} */ />}
+{/* 
+      {userData?.roleType === "Customer" ? (
         (currentTab === 'followers' && <ProfileFollowers followers={_userFollowers} />) ||
         (currentTab === 'history' && <ProfileHistory />)
       ) : (
         (currentTab === 'portfolio' && <ProfilePortfolio />)
         || (currentTab === 'reviews' && <ProfileReviews />)
-      )}
+      )} */}
 
       {/* {currentTab === 'friends' && (
         <ProfileFriends

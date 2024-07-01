@@ -53,7 +53,7 @@ const design = {
           category: design.attributes.category,
           budget: design.attributes.budget,
           description: design.attributes.description,
-          image: `http://localhost:1337${design.attributes.reference.data[0].attributes.url}`,
+          image: `https://app.club-unplugged.com/dash/${design.attributes.reference.data[0].attributes.url}`,
         }} />
       ))}
     </Box>

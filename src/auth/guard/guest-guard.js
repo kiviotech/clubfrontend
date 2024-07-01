@@ -27,7 +27,7 @@ function Container({ children }) {
 
   const searchParams = useSearchParams();
 
-  const returnTo = searchParams.get('returnTo') || paths.dashboard.root;
+  const returnTo = searchParams.get('returnTo') || paths.home.root;
 
   const { authenticated } = useAuthContext();
 

@@ -29,7 +29,10 @@ import { LoadingButton } from '@mui/lab';
 
 // ----------------------------------------------------------------------
 
-export default function ProfileHomeDesigner({ info }) {
+export default function 
+
+
+ProfileHomeDesigner({ info }) {
   const fileRef = useRef(null);
 
   const [message, setMessage] = useState('');
@@ -37,7 +40,7 @@ export default function ProfileHomeDesigner({ info }) {
   const [isPosting, setIsPosting] = useState(false);
 
   const { token, userData, updateUserData } = useMyAuthContext();
-  const posts = userData.posts;
+  const posts = userData?.posts;
 
   const handleAttach = () => {
     if (fileRef.current) {
@@ -55,9 +58,9 @@ export default function ProfileHomeDesigner({ info }) {
     }
 
     setIsPosting(true);
-    const response = await postData('api/posts', { data: {message, user: userData.id } }, token);
+    const response = await postData('api/posts', { data: {message, user: userData?.id } }, token);
     console.log(response);
-    const response2 = await putData(`api/users/${userData.id}?populate=*`, {posts: { connect: [response.data.id] }}, token);
+    const response2 = await putData(`api/users/${userData?.id}?populate=*`, {posts: { connect: [response.data.id] }}, token);
     console.log(response2);
     const updatedUserData = await fetchData('api/users/me?populate=*', token);
     updatedUserData.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -239,7 +242,7 @@ export default function ProfileHomeDesigner({ info }) {
         <Stack spacing={3}>
           {renderPostInput}
 
-          {posts.map((post) => (
+          {posts?.map((post) => (
             <ProfilePostItem key={post.id} post={post} />
           ))}
         </Stack>

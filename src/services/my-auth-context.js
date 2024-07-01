@@ -20,7 +20,10 @@ export const MyAuthProvider = ({ children }) => {
         console.log("Promise: ", promise);
         promise.then((data) => {
             console.log('User data fetched:', data);
-            data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            if(data.posts != undefined){
+                data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            }
+            
             setUserData(data);
         }).finally(() => {
             setLoading(false);

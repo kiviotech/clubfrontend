@@ -24,14 +24,14 @@ export default function UserCardsView() {
       <CustomBreadcrumbs
         heading="Bid on Designs"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'User', href: paths.dashboard.user.root },
+          { name: 'Dashboard', href: paths.home.root },
+          { name: 'User', href: paths.home.user.root },
           { name: 'Designs' },
         ]}
         action={
           <Button
             component={RouterLink}
-            href={paths.dashboard.user.new}
+            href={paths.home.user.new}
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >

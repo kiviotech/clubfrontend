@@ -70,15 +70,15 @@ export default function RegisterDetailsView() {
   const renderForm = (
     <Stack spacing={2.5} pb={10}>
       <RHFTextField name="displayName" label="Display name" />
-      <RHFTextField name="quote" label="Quote" />
+      <RHFTextField name="quote" label="Bio" />
       <RHFTextField name="country" label="Country" />
       <RHFTextField name="company" label="Company" />
-      <RHFTextField name="position" label="Position" />
-      <RHFTextField name="school" label="School" />
-      <RHFTextField name="facebook" label="Facebook" />
+      {/* <RHFTextField name="position" label="Position" /> */}
+      {/* <RHFTextField name="school" label="School" />
+      <RHFTextField name="facebook" label="Facebook" /> */}
       <RHFTextField name="instagram" label="Instagram" />
-      <RHFTextField name="linkedin" label="Linkedin" />
-      <RHFTextField name="twitter" label="Twitter" />
+      {/* <RHFTextField name="linkedin" label="Linkedin" />
+      <RHFTextField name="twitter" label="Twitter" /> */}
 
       <LoadingButton
         fullWidth
@@ -105,7 +105,7 @@ export default function RegisterDetailsView() {
           console.log(roleType);
         }}
       >
-        Sign-up as Styler
+        Sign-up as Customer
       </LoadingButton>
 
       <LoadingButton
@@ -120,7 +120,7 @@ export default function RegisterDetailsView() {
           console.log(roleType);
         }}
       >
-        Sign-up as Stylist
+        Sign-up as Designer
       </LoadingButton>
     </Stack>
   );
