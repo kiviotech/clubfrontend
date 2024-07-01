@@ -98,7 +98,7 @@ export default function TourDetailsView({ id }) {
       {/* {currentTab === 'content' && <TourDetailsContent tour={currentTour} />} */}
       {currentTab === 'content' && <TourDetailsContent design={design}/>}
 
-      {currentTab === 'bookers' && <TourDetailsBookers bookers={currentTour?.bookers} />}
+      {currentTab === 'bookers' && <TourDetailsBookers />}
     </Container>
   );
 }
