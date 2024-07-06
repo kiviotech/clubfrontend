@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useRouter } from 'src/routes/hooks';
 
 import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
@@ -27,8 +28,10 @@ import ProfileHomeDesigner from '../profile-home-designer';
 import ProfileHistory from '../profile-history';
 import ProfilePortfolio from '../profile-portfolio';
 import ProfileReviews from '../profile-reviews';
-import { getUserData } from 'src/services/api';
 import { useMyAuthContext } from 'src/services/my-auth-context';
+import { PATH_AFTER_LOGIN_CUSTOMER, PATH_AFTER_LOGIN_DESIGNER } from 'src/config-global';
+import { LoadingScreen } from 'src/components/loading-screen';
+import Loading from 'src/app/loading';
 
 // ----------------------------------------------------------------------
 
@@ -70,6 +73,8 @@ const TABS = [
 export default function UserProfileView() {
   const settings = useSettingsContext();
 
+  const router = useRouter();
+
   const { user } = useMockedUser();
 
   const [searchFriends, setSearchFriends] = useState('');
@@ -86,81 +91,92 @@ export default function UserProfileView() {
     setSearchFriends(event.target.value);
   }, []);
 
-  return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      <Card
-        sx={{
-          mb: 3,
-          height: 290,
-        }}
-      >
-        <ProfileCover
-          role={userData.position}
-          name={userData.displayname}
-          avatarUrl={user?.photoURL}
-          coverUrl={_userAbout.coverUrl}
-          commissions={userData.commissions}
-        />
+  useEffect(() => {
+    console.log("here", userData.role);
+    if (userData.role === "customer") {
+      router.push(PATH_AFTER_LOGIN_CUSTOMER);
+    } else {
+      router.push(PATH_AFTER_LOGIN_DESIGNER);
+    }
+  }, []);
 
-        <Tabs
-          value={currentTab}
-          onChange={handleChangeTab}
-          sx={{
-            width: 1,
-            bottom: 0,
-            zIndex: 9,
-            position: 'absolute',
-            bgcolor: 'background.paper',
-            [`& .${tabsClasses.flexContainer}`]: {
-              pr: { md: 3 },
-              justifyContent: {
-                xs: 'center',
-                sm: 'center',
-                md: 'flex-end',
-              },
-            },
-          }}
-        >
-          {TABS.filter(tab => tab.for === 'both' || tab.for === userData.role).map((tab) => (
-            <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
-          ))}
-        </Tabs>
-      </Card>
+  // return (
+  //   <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+  //     <Card
+  //       sx={{
+  //         mb: 3,
+  //         height: 290,
+  //       }}
+  //     >
+  //       <ProfileCover
+  //         role={userData.position}
+  //         name={userData.displayname}
+  //         avatarUrl={user?.photoURL}
+  //         coverUrl={_userAbout.coverUrl}
+  //         commissions={userData.commissions}
+  //       />
 
-      {currentTab === 'profile' && <ProfileHomeDesigner info={
-        {
-          about: userData.about,
-          city: userData.city,
-          country: userData.country,
-          email: userData.email,
-          role: userData.position,
-          company: userData.company,
-          // facebook: userData.facebook,
-          // instagram: userData.instagram,
-          // linkedin: userData.linkedin,
-          // twitter: userData.twitter,
-        }
-      }
-     />}
+  //       <Tabs
+  //         value={currentTab}
+  //         onChange={handleChangeTab}
+  //         sx={{
+  //           width: 1,
+  //           bottom: 0,
+  //           zIndex: 9,
+  //           position: 'absolute',
+  //           bgcolor: 'background.paper',
+  //           [`& .${tabsClasses.flexContainer}`]: {
+  //             pr: { md: 3 },
+  //             justifyContent: {
+  //               xs: 'center',
+  //               sm: 'center',
+  //               md: 'flex-end',
+  //             },
+  //           },
+  //         }}
+  //       >
+  //         {TABS.filter(tab => tab.for === 'both' || tab.for === userData.role).map((tab) => (
+  //           <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
+  //         ))}
+  //       </Tabs>
+  //     </Card>
 
-      {userData.role === "customer" ? (
-        (currentTab === 'followers' && <ProfileFollowers followers={_userFollowers} />) ||
-        (currentTab === 'history' && <ProfileHistory />)
-      ) : (
-        (currentTab === 'portfolio' && <ProfilePortfolio />)
-        || (currentTab === 'reviews' && <ProfileReviews />)
-      )}
+  //     {currentTab === 'profile' && <ProfileHomeDesigner info={
+  //       {
+  //         about: userData.about,
+  //         city: userData.city,
+  //         country: userData.country,
+  //         email: userData.email,
+  //         role: userData.position,
+  //         company: userData.company,
+  //         // facebook: userData.facebook,
+  //         // instagram: userData.instagram,
+  //         // linkedin: userData.linkedin,
+  //         // twitter: userData.twitter,
+  //       }
+  //     }
+  //    />}
 
-      {/* {currentTab === 'friends' && (
-        <ProfileFriends
-          friends={_userFriends}
-          searchFriends={searchFriends}
-          onSearchFriends={handleSearchFriends}
-        />
-      )}
+  //     {userData.role === "customer" ? (
+  //       (currentTab === 'followers' && <ProfileFollowers followers={_userFollowers} />) ||
+  //       (currentTab === 'history' && <ProfileHistory />)
+  //     ) : (
+  //       (currentTab === 'portfolio' && <ProfilePortfolio />)
+  //       || (currentTab === 'reviews' && <ProfileReviews />)
+  //     )}
 
-      {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />} */}
+  //     {/* {currentTab === 'friends' && (
+  //       <ProfileFriends
+  //         friends={_userFriends}
+  //         searchFriends={searchFriends}
+  //         onSearchFriends={handleSearchFriends}
+  //       />
+  //     )}
 
-    </Container>
-  );
+  //     {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />} */}
+
+  //   </Container>
+  // );
+
+  return Loading();
 }
