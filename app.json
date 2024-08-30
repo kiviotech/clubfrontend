@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "app-frontend-clubunplugged-react-native",
-    "slug": "app-frontend-clubunplugged-react-native",
+    "name": "clubunplugged",
+    "slug": "clubunplugged",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -22,6 +22,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": ["expo-router"],
+    "scheme": "clubunplugged"
   }
 }
