@@ -1,23 +1,37 @@
-import React from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  Linking,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../../assets/logo.png";
 import svgs from "../../constants/svgs";
 import DesignerCard from "../../components/DesignerCard";
-import ImageCarousel from "../../components/ImageCarousel";
 import { useRouter } from "expo-router";
-
+import { AntDesign } from "@expo/vector-icons";
 const Home = () => {
+   
   const router = useRouter();
+  const openVideoLink = (videoUrl) => {
+    Linking.openURL(videoUrl);
+  };
 
   // Function to handle navigation for design request
   const handleRequest = () => {
     router.push("/pages/request-design"); // Update the path if necessary
   };
 
+  const handleNotify = () => {
+    router.push("/pages/notification"); // Update the path if necessary
+  };
+
   const handleProfileNavigation = (designer) => {
     router.push({
-      pathname: "/profile",
+      pathname: "/pages/view-profile",
       params: {
         name: designer.name,
         image: designer.image,
@@ -96,6 +110,39 @@ const Home = () => {
         },
       ],
     },
+    {
+      image:
+        "https://www.corporatephotographerslondon.com/wp-content/uploads/2022/02/FRA-1699dark-sq.jpg",
+      name: "Ortan",
+      rating: "4.9",
+      location: "New York, NY",
+      company: "Vivaz Style.co",
+      skills: [
+        "Fashion design",
+        "Illustration",
+        "Pattern making",
+        "Sewing",
+        "Tech packs",
+      ],
+      experience: {
+        years: 15,
+        roles: [
+          { title: "Designer", period: "2006 - 2010", company: "Marc Jacobs" },
+          {
+            title: "Senior Designer",
+            period: "2010 - Present",
+            company: "Chloe Design",
+          },
+        ],
+      },
+      education: [
+        {
+          degree: "BFA Fashion Design",
+          period: "2002 - 2006",
+          school: "Parsons School of Design",
+        },
+      ],
+    },
   ];
 
   const imageUrls = [
@@ -103,13 +150,38 @@ const Home = () => {
     "https://marketplace.canva.com/EAFtdg3_p9I/1/0/1600w/canva-white-modern-daily-vlog-youtube-thumbnail-kuNaXX3Hu7c.jpg",
     "https://marketplace.canva.com/EAFu-uqk4SA/1/0/1600w/canva-beige-and-brown-minimalist-photo-frame-fashion-youtube-thumbnail-aayHWdjXq30.jpg",
   ];
+
+   const videos = [
+     {
+       id: 1,
+       thumbnail:
+         "https://i.pinimg.com/736x/51/c5/be/51c5be7a6f8dd89340a7009012bc7355.jpg",
+       videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4", // Example video URL
+     },
+     {
+       id: 2,
+       thumbnail:
+         "https://marketplace.canva.com/EAFtdg3_p9I/1/0/1600w/canva-white-modern-daily-vlog-youtube-thumbnail-kuNaXX3Hu7c.jpg",
+       videoUrl: "https://www.w3schools.com/html/movie.mp4", // Example video URL
+     },
+     {
+       id: 3,
+       thumbnail:
+         "https://marketplace.canva.com/EAFu-uqk4SA/1/0/1600w/canva-beige-and-brown-minimalist-photo-frame-fashion-youtube-thumbnail-aayHWdjXq30.jpg",
+       videoUrl: "https://www.w3schools.com/html/movie.mp4", // Example video URL
+     },
+   ];
+  
+
   const Nicon = svgs.nbell;
 
   return (
     <SafeAreaView className="h-full px-3 bg-black">
       <View className="flex flex-row justify-between h-12 w-full p-2">
         <Image source={logo} />
-        <Nicon />
+        <TouchableOpacity onPress={handleNotify}>
+          <Nicon />
+        </TouchableOpacity>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View className="mb-5 rounded-2xl bg-[#181818] px-5 py-8 mt-3">
@@ -175,9 +247,22 @@ const Home = () => {
           <Text className="text-white font-pbold text-2xl mb-6">
             What's new ?
           </Text>
-          <View>
-            <ImageCarousel images={imageUrls} />
-          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {videos.map((video) => (
+              <View key={video.id} className="relative">
+                <TouchableOpacity onPress={() => openVideoLink(video.videoUrl)}>
+                  <Image
+                    source={{ uri: video.thumbnail }}
+                    className="w-[280px] h-[180px] rounded-lg mr-4"
+                  />
+                  {/* Play Icon */}
+                  <View className="absolute inset-0 flex items-center justify-center w-full h-full">
+                    <AntDesign name="playcircleo" size={50} color="white" />
+                  </View>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
         </View>
 
         <View className="items-center my-5">
