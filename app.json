@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "clubunplugged",
+    "slug": "clubunplugged",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "permissions": [
+        "INTERNET"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "head":[
+        {
+          "tag":"script",
+          "src":"https://checkout.razorpay.com/v1/checkout.js"
+        }
+      ]
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "clubunplugged"
+  }
+}
