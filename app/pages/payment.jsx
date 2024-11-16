@@ -53,36 +53,90 @@ export default function Payment() {
 
   console.log("Order Item:", orderItem);
 
-  const goToPaymentPage = async () => {
-    try {
+  const handlepayment = () => {
+    // const options = {
+    //   description: "sample payment",
+    //   image: "https://urturms.com/cdn/shop/files/02_4395d9f8-c97b-461f-b029-c648fcb4e4b4.jpg?v=1722596311&width=2000",
+    //   currency: "INR",
+    //   key: "rzp_test_X9YfY2bGPwua8A",
+    //   amount: "10000",
+    //   name: "clubUnPlugged",
+    //   prefill: {
+    //     email: "lizum@kivio.in",
+    //     contact: "1234567890",
+    //     name: "lizum",
+    //   },
+    //   theme: { color: "#F37254" },
+    // };
+    // RazorpayCheckout?.open(options)
+    //   .then((data) => {
+    //     Alert.alert(`Success: ${data.razorpay_payment_id}`);
+    //   })
+    //   .catch((error) => {
+    //     Alert.alert(`Error: ${error?.description || 'Unknown error'}`);
+    //   });
 
-      const orderData = {
-        data: {
-          level: "approved",
-          total: totalAmount,
-          razorpayOrderId: "string", // Replace with actual Razorpay order ID
-          razorpayPaymentId: "string", // Replace with actual Razorpay payment ID
-          razorpaySignature: "string", // Replace with actual Razorpay signature
-          order_items: [orderItem],
+    router.push({
+      pathname: "/checkoutScreen/MobilePaymentRazorPay",
+      params: { orderId: 448 },
+    });
+  }
 
-          user: 23, // Replace with actual user ID
-          shipping_info: shippingInfo.id,
-          locale: "en",
-        },
-      };
+  // const goToPaymentPage = async () => {
+  //   try {
 
-      const createdOrder = await createOrder(orderData); // Call createOrder service method
-      console.log("Created Order:", totalAmount);
-      router.push({
-        pathname: "/checkoutScreen/WebPaymentRazorPay",
-        params: { orderId: createdOrder.id, totalAmount: totalAmount }, 
-      });
-      // console.log("hello",orderId)
-    } catch (error) {
-      console.error("Error in order creation or payment process:", error);
-      Alert.alert(`Error: ${ "Something went wrong"}`);
-    }
-  };
+  //     const orderData = {
+  //       data: {
+  //         level: "approved",
+  //         total: totalAmount,
+  //         razorpayOrderId: "string", // Replace with actual Razorpay order ID
+  //         razorpayPaymentId: "string", // Replace with actual Razorpay payment ID
+  //         razorpaySignature: "string", // Replace with actual Razorpay signature
+  //         order_items: [orderItem],
+
+  //         user: 23, // Replace with actual user ID
+  //         shipping_info: shippingInfo.id,
+  //         locale: "en",
+  //       },
+
+
+
+  //     };
+
+  //     const createdOrder = await createOrder(orderData); // Call createOrder service method
+  //     console.log("Created Order:", createdOrder);
+
+  //     // console.log("Order Data Payload:", orderData);
+
+  //     // Alert.alert(orderData?.data?.orderData)
+
+  //     // const response = await axios.post(
+  //     //   // "http://localhost:1337/api/orders",
+  //     //   "http://192.168.0.23:1337/api/orders",
+  //     //   orderData,
+  //     //   {
+  //     //     headers: {
+  //     //       "Content-Type": "application/json",
+  //     //     },
+  //     //   }
+  //     // );
+
+  //     if (Platform.OS === 'web') {
+  //       router.push({
+  //         pathname: "/checkoutScreen/WebPaymentRazorPay",
+  //         params: { orderId: response.data.data.id },
+  //       });
+  //     } else if (Platform.OS === 'android') {
+  //       router.push({
+  //         pathname: "/checkoutScreen/MobilePaymentRazorPay",
+  //         params: { orderId: response.data.data.id },
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error in order creation or payment process:", error);
+  //     Alert.alert(`Error: ${ "Something went wrong"}`);
+  //   }
+  // };
 
   const handleDeleteAddress = () => {
     deleteShippingInfo();
@@ -209,7 +263,7 @@ export default function Payment() {
             <Text style={styles.totalText}>Total</Text>
             <Text style={styles.totalText}>₹{totalAmount}</Text>
           </View>
-          <TouchableOpacity style={styles.button} onPress={goToPaymentPage}>
+          <TouchableOpacity style={styles.button} onPress={handlepayment}>
             <Text style={styles.buttonText}>Pay ₹{totalAmount}</Text>
           </TouchableOpacity>
         </View>
@@ -324,60 +378,3 @@ const styles = StyleSheet.create({
     fontSize: 25,
   },
 });
-
-
-// console.log("Order Data Payload:", orderData);
-
-      // Alert.alert(orderData?.data?.orderData)
-
-      // const response = await axios.post(
-      //   // "http://localhost:1337/api/orders",
-      //   "http://192.168.0.23:1337/api/orders",
-      //   orderData,
-      //   {
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //   }
-      // );
-
-      // if (Platform.OS === 'web') {
-        // router.push({
-        //   pathname: "/checkoutScreen/WebPaymentRazorPay",
-        //   params: { orderId: response.data.data.id },
-        // });
-      // } else if (Platform.OS === 'android') {
-        // router.push({
-        //   pathname: "/checkoutScreen/MobilePaymentRazorPay",
-        //   params: { orderId: response.data.data.id },
-        // });
-      // }
-
-  // const handlepayment = () => {
-  //   // const options = {
-  //   //   description: "sample payment",
-  //   //   image: "https://urturms.com/cdn/shop/files/02_4395d9f8-c97b-461f-b029-c648fcb4e4b4.jpg?v=1722596311&width=2000",
-  //   //   currency: "INR",
-  //   //   key: "rzp_test_X9YfY2bGPwua8A",
-  //   //   amount: "10000",
-  //   //   name: "clubUnPlugged",
-  //   //   prefill: {
-  //   //     email: "lizum@kivio.in",
-  //   //     contact: "1234567890",
-  //   //     name: "lizum",
-  //   //   },
-  //   //   theme: { color: "#F37254" },
-  //   // };
-  //   // RazorpayCheckout?.open(options)
-  //   //   .then((data) => {
-  //   //     Alert.alert(`Success: ${data.razorpay_payment_id}`);
-  //   //   })
-  //   //   .catch((error) => {
-  //   //     Alert.alert(`Error: ${error?.description || 'Unknown error'}`);
-  //   //   });
-
-  //   router.push({
-  //     pathname: "/checkoutScreen/MobilePaymentRazorPay",
-  //     params: { orderId: 448 },
-  //   });
-  // }

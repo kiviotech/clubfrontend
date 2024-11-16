@@ -21,6 +21,14 @@ export default function Layout() {
       <Stack.Screen name="brand" options={{ headerShown: false }} />
       <Stack.Screen name="brand_info" options={{ headerShown: false }} />
       <Stack.Screen name="brand_page" options={{ headerShown: false }} />
+      <Stack.Screen name="profileScreen" options={{ headerShown: false }} />
+      <Stack.Screen name="changePasswordScreen" options={{ headerShown: false }} />
+      <Stack.Screen name="otpPage" options={{ headerShown: false }} />
+      <Stack.Screen name="ResetPasswordScreen" options={{ headerShown: false }} />
+      <Stack.Screen name="changeAddress" options={{ headerShown: false }} />
+      <Stack.Screen name="orderPage" options={{ headerShown: false }} />
+      <Stack.Screen name="TrackOrderScreen" options={{ headerShown: false }} />
+      <Stack.Screen name="LanguageSelector" options={{ headerShown: false }} />
       {/* <Stack.Screen name="viewProduct" options={{ headerShown: false }} /> */}
     </Stack>
   );

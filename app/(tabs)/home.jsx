@@ -22,8 +22,12 @@ import Sale from "../pages/sale"
 import NewArrival from "../../components/productList/NewArrival"
 import Shop_Brands from "../pages/shop_Brands"
 import Brand_page from "../pages/brand_page";
+import useStore from "../../src/store/useStore";
 
 const Home = () => {
+
+  const { user } = useStore(state => state.user);
+
 
   const router = useRouter();
   const openVideoLink = (videoUrl) => {

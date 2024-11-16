@@ -203,11 +203,13 @@ const styles = StyleSheet.create({
       flexDirection: "row",
       flexWrap: "wrap",
       justifyContent: "space-between",
-      marginVertical: 16,
-      paddingHorizontal: 8, // Padding for spacing
+      minWidth: '100%',
+      maxWidth: '100%',
+      // marginVertical: 16,
+      // paddingHorizontal: 8, // Padding for spacing
     },
     productCard: {
-      minWidth: "48%", 
+      width: "48%", 
       marginBottom: 16,
       backgroundColor: "#1F2937",
       borderRadius: 10,

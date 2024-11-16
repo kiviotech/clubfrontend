@@ -83,17 +83,19 @@ const SignIn = () => {
     } else {
       try {
         // Make the login API call
-        // const response = await login(formValues.username, formValues.password);
+        const response = await login(formValues.username, formValues.password);
 
-        // // Assuming the API returns a token or other information
-        // const { token, userId } = response.user;
+       // Assuming the API returns a token or other information
+       const { token, userId } = response.user;
+       console.log("signin",response.user.id); // Log the user ID
 
-        // // Store token and userId based on the platform
-        // await saveData("token", token);  // Save token
-        // await saveData("userId", userId);  // Save userId
-        // setUser(formValues.username, token, userId);
+       // Store token and userId using AsyncStorage (or localStorage for web) 
+       await saveData("token", token);  // Save token
+       await saveData("userId", userId);  // Save userId
 
-        // // If successful, navigate to the home screen
+       // Update the Zustand store with the user info
+       setUser(formValues.username, token, userId);
+        // If successful, navigate to the home screen
         router.push("/home");
       } catch (error) {
         // Handle API errors
@@ -105,6 +107,7 @@ const SignIn = () => {
       }
     }
   };
+
 
   return (
     <SafeAreaView style={styles.safeAreaView}>

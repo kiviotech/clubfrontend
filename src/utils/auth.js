@@ -1,7 +1,30 @@
 import apiClient from "../api/apiClient";
 import { deleteToken, saveToken, saveUserId } from "./storage";
+import useStore from "../store/useStore";
 
 // Login function
+// export const login = async (email, password) => {
+//   try {
+//     const response = await apiClient.post("/auth/local", {
+//       identifier: email,
+//       password: password,
+//     });
+
+//     // Extract JWT and user data from the response
+//     const { jwt, user } = response.data;
+
+//     // console.log("auth.js", jwt, response.data);
+
+//     // Save the JWT and user ID to secure storage
+//     saveToken(jwt);
+//     saveUserId(user.id);
+
+//     return response.data;
+//   } catch (error) {
+//     console.error("Login error:", error);
+//     throw error;
+//   }
+// };
 export const login = async (email, password) => {
   try {
     const response = await apiClient.post("/auth/local", {
@@ -12,12 +35,14 @@ export const login = async (email, password) => {
     // Extract JWT and user data from the response
     const { jwt, user } = response.data;
 
-    // console.log("auth.js", jwt, response.data);
-
     // Save the JWT and user ID to secure storage
     saveToken(jwt);
     saveUserId(user.id);
 
+    // Update Zustand store with user data
+    const { setUser } = useStore.getState();
+    setUser(user.username, jwt, user.id);
+// console.log("hello",user)
     return response.data;
   } catch (error) {
     console.error("Login error:", error);

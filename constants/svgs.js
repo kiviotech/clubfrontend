@@ -25,7 +25,10 @@ import pic2 from "../assets/Picture2.png"
 import pic3 from "../assets/Picture3.png"
 import pic4 from "../assets/Picture4.png"
 import slider1 from "../assets/slider1.png"
+import profile from "../assets/icons/profile.svg"
+// import Forgot from "../assets/icons/Forgot_password.svg"
 // import slider2 from "../assets/slidet2.png"
+import forgot from "../assets/icons/Forgot _password.svg"
 export default {
   gicon,
   ficon,
@@ -55,4 +58,6 @@ export default {
   pic4,
   slider1,
   // slider2,
+  profile,
+  forgot,
 };

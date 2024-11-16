@@ -5,6 +5,8 @@ export const getUsers = () => apiClient.get(userEndpoints.getUsers);
 
 export const getUserById = (id) => apiClient.get(userEndpoints.getUserById(id));
 
+export const getUserProfile = (id) => apiClient.get(userEndpoints.getUserProfileById(id));
+
 export const createUser = (data) =>
   apiClient.post(userEndpoints.createUser, data);
 
