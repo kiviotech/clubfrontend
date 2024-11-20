@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -36,13 +35,6 @@ const NewArrival = ({ limit }) => {
   const { wishlist, removeFromWishlist } = useWishlistStore();
   const [popupMessage, setPopupMessage] = useState("");
 
-
-  const handleProduct = () => {
-    router.push("/ProductList");
-  };
-
-
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -58,13 +50,9 @@ const NewArrival = ({ limit }) => {
     fetchProducts();
   }, [selectedBrand]);
 
-  // const filteredProducts = selectedBrand
-  //   ? products.filter((product) => product.brand.brand_name === selectedBrand)
-  //   : products;
-  // const displayedProducts = limit ? filteredProducts.slice(0, limit) : filteredProducts;
-
   const displayedProducts = limit ? products.slice(0, limit) : products;
 
+  // Function to handle product details click
   const handleProductDetails = (product) => {
     setProductDetails({
       id: product.id,
@@ -74,6 +62,7 @@ const NewArrival = ({ limit }) => {
       products,
     });
 
+    // Navigate to the product details page
     router.push("../../pages/productDetails");
   };
 
@@ -84,7 +73,6 @@ const NewArrival = ({ limit }) => {
   if (error) {
     return <Text>{error}</Text>;
   }
-
 
   const handleWishlistAdd = (product) => {
     const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
@@ -109,6 +97,10 @@ const NewArrival = ({ limit }) => {
     }, 2000);
   };
 
+  const handleNotify = () => {
+    router.push("/pages/viewProduct"); 
+  };
+
 
   return (
     <View style={styles.container}>
@@ -121,45 +113,59 @@ const NewArrival = ({ limit }) => {
         data={displayedProducts}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <TouchableOpacity
-              style={styles.favoriteIcon}
-              onPress={() => handleWishlistAdd(item)}
+            {/* Wrap the entire card in a TouchableOpacity to call handleProductDetails on press */}
+            <View
+              // onPress={() => handleProductDetails(item)} // Call handleProductDetails with product data
+              style={styles.cardContent}
             >
-              <MaterialIcons
-                name={wishlist.some((wishItem) => wishItem.id === item.id) ? "favorite" : "favorite-border"}
-                size={24}
-                color={wishlist.some((wishItem) => wishItem.id === item.id) ? "red" : "#fff"}
+              <TouchableOpacity
+                onPress={() => handleWishlistAdd(item)} // Call handleWishlistAdd on click
+                style={styles.favoriteIcon} // Keep the icon styled here
+              >
+                <MaterialIcons
+                  name={wishlist.some((wishItem) => wishItem.id === item.id) ? "favorite" : "favorite-border"}
+                  size={18}  // Adjust the size as per the design
+                  color={wishlist.some((wishItem) => wishItem.id === item.id) ? "red" : "#fff"}
+                />
+              </TouchableOpacity>
+              <Image
+                source={{ uri: `${MEDIA_BASE_URL}${item.product_image.url}` }}
+                style={styles.productImage}
+                resizeMode="contain"
               />
-            </TouchableOpacity>
-            <Image
-              source={{ uri: `${MEDIA_BASE_URL}${item.product_image.url}` }}
-              style={styles.productImage}
-              resizeMode="contain"
-            />
-            <Text style={styles.productName}>{item.name}</Text>
-            <Text style={styles.productBrand}>{item.brand.brand_name}</Text>
-            <View style={styles.ratingContainer}>
-              <Icon name="star" size={18} color="#FFD700" />
-              <Icon name="star" size={18} color="#FFD700" />
-              <Icon name="star" size={18} color="#FFD700" />
-              <Icon name="star" size={18} color="#FFD700" />
-              <Icon name="star-half" size={18} color="#FFD700" />
-              <Text style={styles.reviewsText}>({item.reviews} Ratings)</Text>
+              <TouchableOpacity
+                onPress={() => handleProductDetails(item)} // Call handleProductDetails on clicking the details
+                style={styles.cardDetails}
+              >
+                <Text style={styles.productName}>{item.name}</Text>
+                <Text style={styles.productBrand}>{item.brand.brand_name}</Text>
+                <View style={styles.ratingContainer}>
+                  <Icon name="star" size={18} color="#FFD700" />
+                  <Icon name="star" size={18} color="#FFD700" />
+                  <Icon name="star" size={18} color="#FFD700" />
+                  <Icon name="star" size={18} color="#FFD700" />
+                  <Icon name="star-half" size={18} color="#FFD700" />
+                  <Text style={styles.reviewsText}>({item.reviews} Ratings)</Text>
+                </View>
+                <Text style={styles.productPrice}>${item.price}</Text>
+              </TouchableOpacity>
             </View>
-            <Text style={styles.productPrice}>${item.price}</Text>
-            <TouchableOpacity onPress={handleProduct}>
+
+            {/* Add to cart button */}
+            <TouchableOpacity onPress={handleNotify}>
               <View style={styles.addToCartButton}>
                 <Icon name="add" size={18} color="#fff" />
               </View>
             </TouchableOpacity>
           </View>
-        )}
+        )
+        }
         keyExtractor={(item) => item.id}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.listContainer}
       />
-    </View>
+    </View >
   );
 };
 
@@ -172,13 +178,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   card: {
-    width: width * 0.45,
+    width: width * 0.50,  // Keep the width the same
+    height: 250,  // Reduced height for the card
     backgroundColor: '#333',
     borderRadius: 10,
     marginHorizontal: 10,
     padding: 10,
-    // alignItems: 'center',
     position: 'relative',
+  },
+  cardContent: {
+    flex: 1, // ensures TouchableOpacity covers the whole card area
   },
   favoriteIcon: {
     position: 'absolute',
@@ -190,26 +199,26 @@ const styles = StyleSheet.create({
   },
   productImage: {
     width: '100%',
-    height: 120,
+    height: 150,  // Reduced height for the image
     resizeMode: 'contain',
-    marginBottom: 10,
+    // marginBottom: 5,
   },
   productName: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,  // Font size remains the same
     fontWeight: 'bold',
-    marginBottom: 5,
+    // marginBottom: 2,
   },
   productBrand: {
     color: '#9CA3AF',
-    fontSize: 12,
-    marginBottom: 5,
+    fontSize: 10,  // Font size remains the same
+    // marginBottom: 2,
   },
   productPrice: {
     color: '#fff',
-    fontSize: 22,
+    fontSize: 16,  // Font size remains the same
     fontWeight: 'bold',
-    marginBottom: 10,
+    // marginBottom: 5,
   },
   popup: {
     position: 'absolute',
@@ -240,24 +249,29 @@ const styles = StyleSheet.create({
   },
   reviewsText: {
     color: '#999',
-    fontSize: 14,
+    fontSize: 12,  // Font size remains the same
     marginLeft: 5,
-  },
-  priceText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
   },
   addToCartButton: {
     position: 'absolute',
-    bottom: 5,
+    bottom: 0,
     right: 10,
     backgroundColor: '#666',
-    padding: 8,
+    padding: 6,
     borderRadius: 20,
+
   },
+  favoriteIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: '#444',
+    padding: 3,  // Reduced padding for smaller icon
+    borderRadius: 15,  // Smaller circular background
+  },
+
 });
 
-export default NewArrival;
 
+
+export default NewArrival;

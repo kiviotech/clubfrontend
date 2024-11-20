@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -27,7 +27,7 @@ const Checkout = () => {
   const router = useRouter();
   const { shippingInfo, setShippingInfo, setShippingId } = useStore();
   const [addresses, setAddresses] = useState([]);
-  const [selectedAddress, setSelectedAddress] = useState(null); // Store selected address
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const [fullName, setFullName] = useState("");
   const [address, setAddress] = useState("");
   const [state, setState] = useState("");
@@ -36,7 +36,7 @@ const Checkout = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [orderItems, setOrderItems] = useState([]);
   const params = useLocalSearchParams();
-  const [orderItemCreated, setOrderItemCreated] = useState(0);
+  const [createdOrderItems, setCreatedOrderItems] = useState([]);
   const [shippingInfos, setShippingInfos] = useState([]);
   const cartItems = useCartStore((state) => state.items);
 
@@ -44,19 +44,19 @@ const Checkout = () => {
     router.back();
   };
 
-  const userId = 23
+  const userId = 23;
   useEffect(() => {
     const fetchShippingInfos = async () => {
-        try {
-            const response = await getShippingInfoByUserId(userId); // Call your repository function
-            setShippingInfos(response.data.data); // Assuming the data is in 'data'
-        } catch (error) {
-            console.error("Error fetching shipping info", error);
-        }
+      try {
+        const response = await getShippingInfoByUserId(userId);
+        setShippingInfos(response.data.data);
+      } catch (error) {
+        console.error("Error fetching shipping info", error);
+      }
     };
 
     fetchShippingInfos();
-}, [userId]);
+  }, [userId]);
 
   const handlePayment = async () => {
     if (!cartItems || cartItems.length === 0) {
@@ -66,7 +66,8 @@ const Checkout = () => {
 
     try {
       const orderId = 1;
-      // Using Promise.all to wait for all the createOrder calls to complete
+      const createdItems = [];
+
       const promises = cartItems.map(async (item) => {
         const orderItemData = {
           data: {
@@ -80,34 +81,34 @@ const Checkout = () => {
         };
 
         const response = await createOrder(orderItemData);
-        //setOrderItemCreated(prevState => [...prevState, response.data.id]);
-
-        setOrderItemCreated(response.data.id);
-        // console.log('abc', orderItemCreated);
+        createdItems.push(response.data.id);
       });
 
-      // Wait for all promises to resolve
       await Promise.all(promises);
-      // alert("All items have been successfully added to the order.");
+      setCreatedOrderItems(createdItems);
     } catch (error) {
       console.error("Error creating order items:", error);
       alert("Failed to create order items.");
     }
   };
-  
 
   const handlepay = () => {
     if (selectedAddress) {
-      console.log("Order page id:", orderItemCreated);
+      console.log("Selected Address:", selectedAddress);
+      console.log("Created Order Items:", createdOrderItems);
 
-      if (orderItemCreated) {
-        const encodedOrderItem = encodeURIComponent(
-          JSON.stringify(orderItemCreated)
+      if (createdOrderItems.length > 0) {
+        const encodedOrderItems = encodeURIComponent(
+          JSON.stringify(createdOrderItems)
         );
-        router.push(`/pages/payment?orderItemCreated=${encodedOrderItem}`);
-        console.log("Navigating with Order Item:", orderItemCreated);
-      } else {
-        // console.error("Order item is not defined.");
+        router.push({
+          pathname: "/pages/payment",
+          params: {
+            orderItemCreated: encodedOrderItems,
+            selectedAddress: JSON.stringify(selectedAddress),
+          },
+        });
+        console.log("Navigating with Order Items:", createdOrderItems);
       }
     } else {
       alert("Please select an address!");
@@ -125,18 +126,21 @@ const Checkout = () => {
     };
 
     try {
-      // Assuming createShippingInfo returns the created shipping information including the ID
       const response = await createShippingInfo({ data });
-
-      // Extracting the shipping ID from the response and storing it
-      const shippingId = response.data.data.id; // Adjust according to your actual response format
-      // console.log(shippingId)
-      // Store the full shipping info and shipping ID in Zustand
+      const shippingId = response.data.data.id;
       setShippingInfo(data);
       setShippingId(shippingId);
 
-      setAddresses([...addresses, data]);
+      // Update shippingInfos instead of addresses
+      setShippingInfos([...shippingInfos, { ...data, id: shippingId }]);
       setModalVisible(false);
+
+      // Clear form fields
+      setFullName("");
+      setAddress("");
+      setState("");
+      setPincode("");
+      setPhoneNo("");
     } catch (error) {
       console.error("Error submitting shipping info:", error);
       alert("Failed to submit shipping information.");
@@ -148,7 +152,10 @@ const Checkout = () => {
     handlePayment();
   };
 
-  
+  const handleSelectAddress = (info) => {
+    setSelectedAddress(info);
+    console.log("Selected Address ID:", info.id);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -168,102 +175,49 @@ const Checkout = () => {
           <Text style={styles.sectionText}>Shipping Information</Text>
 
           <ScrollView style={styles.savedAddress}>
-                {shippingInfos.length > 0 ? (
-                    shippingInfos.map((info, index) => (
-
-                        <View key={index} style={styles.savedTextContainer}>
-                            <View style={styles.savedTextbox}>
-                                <View style={styles.TextContainer}>
-                                <Text style={styles.savedText}>Full Name: {info.Fullname}</Text>
-                                <Text style={styles.savedText}>Address: {info.Address}</Text>
-                                <Text style={styles.savedText}>State: {info.state}</Text>
-                                <Text style={styles.savedText}>Pincode: {info.pincode}</Text>
-                                <Text style={styles.savedText}>Phone No.: {info.phone_no}</Text>
-                                </View>
-                            </View>
-
-                            <TouchableOpacity
-                    style={styles.selectButton}
-                    onPress={() => {
-                      // Toggle the selection of the address
-                      if (selectedAddress === address) {
-                        setSelectedAddress(null); // Deselect if it's already selected
-                      } else {
-                        setSelectedAddress(address); // Select the clicked address
-                      }
-                      if (address.id) {
-                        console.log("Selected Address ID:", address.id);
-                      }
-                    }}
-                  >
-                    <Ionicons
-                      name={
-                        selectedAddress === address
-                          ? "checkmark-circle"
-                          : "radio-button-off"
-                      }
-                      size={30}
-                      color={selectedAddress === address ? "#8FFA09" : "#fff"} // Green for selected, white for unselected
-                    />
-                  </TouchableOpacity>
-
-                        </View>
-                    ))
-                ) : (
-                    <Text style={styles.savedText}>No shipping information available</Text>
-                )}
-
-            </ScrollView>
-           
-
-          {addresses.length > 0 && (
-            <View style={styles.savedAddress}>
-               {/* <Text style={styles.sectionText}>New Shipping Information</Text> */}
-              {addresses.map((address, index) => (
+            {shippingInfos.length > 0 ? (
+              shippingInfos.map((info, index) => (
                 <View key={index} style={styles.savedTextContainer}>
-                  <View key={index} style={styles.savedContainer}>
-                    <Text style={styles.savedText}>
-                      Full Name: {address.Fullname}
-                    </Text>
-                    <Text style={styles.savedText}>
-                      Address: {address.Address}
-                    </Text>
-                    <Text style={styles.savedText}>State: {address.state}</Text>
-                    <Text style={styles.savedText}>
-                      Pincode: {address.pincode}
-                    </Text>
-                    <Text style={styles.savedText}>
-                      Phone No.: {address.phone_no}
-                    </Text>
+                  <View style={styles.savedTextbox}>
+                    <View style={styles.TextContainer}>
+                      <Text style={styles.savedText}>
+                        Full Name: {info.Fullname}
+                      </Text>
+                      <Text style={styles.savedText}>
+                        Address: {info.Address}
+                      </Text>
+                      <Text style={styles.savedText}>State: {info.state}</Text>
+                      <Text style={styles.savedText}>
+                        Pincode: {info.pincode}
+                      </Text>
+                      <Text style={styles.savedText}>
+                        Phone No.: {info.phone_no}
+                      </Text>
+                    </View>
                   </View>
+
                   <TouchableOpacity
                     style={styles.selectButton}
-                    onPress={() => {
-                      // Toggle the selection of the address
-                      if (selectedAddress === address) {
-                        setSelectedAddress(null); // Deselect if it's already selected
-                      } else {
-                        setSelectedAddress(address); // Select the clicked address
-                      }
-                      if (address.id) {
-                        console.log("Selected Address ID:", address.id);
-                      }
-                    }}
+                    onPress={() => handleSelectAddress(info)}
                   >
                     <Ionicons
                       name={
-                        selectedAddress === address
+                        selectedAddress === info
                           ? "checkmark-circle"
                           : "radio-button-off"
                       }
                       size={30}
-                      color={selectedAddress === address ? "#8FFA09" : "#fff"} // Green for selected, white for unselected
+                      color={selectedAddress === info ? "#8FFA09" : "#fff"}
                     />
                   </TouchableOpacity>
                 </View>
-              ))}
-            </View>
-          )}
+              ))
+            ) : (
+              <Text style={styles.savedText}>
+                No shipping information available
+              </Text>
+            )}
+          </ScrollView>
 
           <TouchableOpacity
             style={styles.addButton}
@@ -272,28 +226,26 @@ const Checkout = () => {
             <Text style={styles.addButtonText}>+ Add Address</Text>
           </TouchableOpacity>
 
-          {/* {addresses.length > 0 && ( */}
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handleContinueToPayment}
-            >
-              <Text style={styles.buttonText}>Continue to Payment</Text>
-            </TouchableOpacity>
-          {/* )} */}
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleContinueToPayment}
+          >
+            <Text style={styles.buttonText}>Continue to Payment</Text>
+          </TouchableOpacity>
 
           <Modal
             animationType="slide"
             transparent={true}
             visible={modalVisible}
-            onRequestClose={() => setModalVisible(false)} // Ensure this works on Android back button
+            onRequestClose={() => setModalVisible(false)}
           >
             <View style={styles.modalContainer}>
               <View style={styles.modalContent}>
                 <TouchableOpacity
                   style={styles.closeButton}
                   onPress={() => {
-                    console.log("Close button pressed"); // Check if this fires
-                    setModalVisible(false); // Close the modal
+                    console.log("Close button pressed");
+                    setModalVisible(false);
                   }}
                 >
                   <Ionicons name="close-circle" size={30} color="#fff" />
@@ -393,7 +345,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   addButton: {
-    // backgroundColor: "#8FFA09",
     borderRadius: 10,
     padding: 10,
     alignSelf: "center",
@@ -405,7 +356,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     color: "#8FFA09",
-    marginTop:20,
+    marginTop: 20,
   },
   modalContainer: {
     flex: 1,
@@ -462,11 +413,9 @@ const styles = StyleSheet.create({
   },
   savedAddress: {
     padding: 10,
-    // marginVertical: 10,
-    // backgroundColor: "#8FFA09",
     borderRadius: 10,
     marginHorizontal: 20,
-    marginBottom:-45
+    marginBottom: -45,
   },
   savedTextContainer: {
     padding: 15,
@@ -487,14 +436,11 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   selectButton: {
-    // backgroundColor: "#FF4500",
     borderRadius: 25,
     paddingVertical: 10,
     paddingHorizontal: 20,
     marginTop: 10,
     alignSelf: "center",
-    // borderWidth: 2,
-    // borderColor: "#fff",
   },
   selectButtonText: {
     fontSize: 16,

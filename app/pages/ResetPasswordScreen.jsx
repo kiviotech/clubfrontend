@@ -3,24 +3,45 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingVi
 import { useNavigation } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { changePassword } from '../../src/api/repositories/userRepository';
+import { getToken } from '../../src/utils/storage';
+import { Alert } from 'react-native';
 
 const ResetPasswordScreen = () => {
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigation = useNavigation();
 
-  const handleResetPassword = () => {
+  const apihandleResetPassword = async () => {
+    console.log("hrrlo")
     if (newPassword === confirmPassword && newPassword.length >= 8) {
-      console.log('Password reset successfully');
-      // Add your password reset API call or logic here
+      try {
+       
+        const data = {
+          currentPassword,
+          password: newPassword, // API expects "password" for the new password
+          passwordConfirmation: confirmPassword, // Confirm the new password
+        };
+
+        await changePassword(data);
+        Alert.alert('Success', 'Password changed successfully', [
+          { text: 'OK', onPress: () => navigation.goBack() },
+        ]);
+      } catch (error) {
+        console.error('Password reset error:', error);
+        Alert.alert('Error', error.response?.data?.message || 'Failed to reset password');
+      }
+    } else if (newPassword !== confirmPassword) {
+      Alert.alert('Error', 'New passwords do not match');
     } else {
-      console.log('Passwords do not match or are too short');
+      Alert.alert('Error', 'New password is too short (minimum 8 characters)');
     }
   };
 
+
   return (
     <SafeAreaView style={styles.viewContainer}>
-      {/* Back Button */}
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
         <Ionicons name="arrow-back" color="white" size={30} />
       </TouchableOpacity>
@@ -29,40 +50,46 @@ const ResetPasswordScreen = () => {
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        {/* Title */}
-        <Text style={styles.title}>Set New Password</Text>
+        <Text style={styles.title}>Reset Password</Text>
         <Text style={styles.subtitle}>
-          New password should not be the same as the last three passwords
+          Make sure your new password is secure and not the same as previous passwords.
         </Text>
 
-        {/* New Password Input */}
         <TextInput
           style={styles.input}
-          placeholder="Type new password"
+          placeholder="Current password"
+          placeholderTextColor="#888"
+          secureTextEntry
+          value={currentPassword}
+          onChangeText={setCurrentPassword}
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="New password"
           placeholderTextColor="#888"
           secureTextEntry
           value={newPassword}
           onChangeText={setNewPassword}
         />
 
-        {/* Confirm Password Input */}
         <TextInput
           style={styles.input}
-          placeholder="Retype new password"
+          placeholder="Confirm new password"
           placeholderTextColor="#888"
           secureTextEntry
           value={confirmPassword}
           onChangeText={setConfirmPassword}
         />
 
-        {/* Reset Password Button */}
-        <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
+        <TouchableOpacity style={styles.button} onPress={apihandleResetPassword}>
           <Text style={styles.buttonText}>Reset Password</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
+
 
 const styles = StyleSheet.create({
   viewContainer: {

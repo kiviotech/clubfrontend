@@ -4,6 +4,13 @@ import { persist } from "zustand/middleware";
 const useStore = create(
   persist(
     (set) => ({
+      user: {
+        id: "",
+        documentId: "",
+        username: "",
+        email: "",
+        // Add any other user-related fields here
+      },
       shippingInfo: {
         id: "",
         fullName: "",
@@ -24,6 +31,11 @@ const useStore = create(
             ...state.shippingInfo,
             id,
           },
+        })),
+      // Setter for user data
+      setUser: (userData) =>
+        set(() => ({
+          user: userData,
         })),
     }),
     {

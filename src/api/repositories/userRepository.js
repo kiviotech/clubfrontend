@@ -15,3 +15,7 @@ export const updateUser = (id, data) =>
 
 export const deleteUser = (id) =>
   apiClient.delete(userEndpoints.deleteUser(id));
+
+export const changePassword = (data) =>
+  apiClient.post(userEndpoints.changePassword, data, {
+  });

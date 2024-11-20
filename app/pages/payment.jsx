@@ -9,137 +9,77 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { MaterialIcons } from "@expo/vector-icons";
 import CheckoutStep from "./checkoutstep";
 import Totalamount from "./totalamount";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import Svgs from "../../constants/svgs";
 import useStore from "../../src/store/useStore";
-import RazorpayCheckout from 'react-native-razorpay';
-import MobilePaymentRazorPay from "../checkoutScreen/MobilePaymentRazorPay";
-import WebPaymentRazorPay from "../checkoutScreen/WebPaymentRazorPay.jsx";
-import createNewOrder from "../../src/api/services/orderServices.js";
-import { Route } from "expo-router/build/Route";
-import { useLocalSearchParams } from "expo-router";
-import useOrderItemStore from "../../src/store/useOrderItemStore.js";
-import axios from "axios";
-import { createOrder } from "../../src/api/paymentApi.js";
+import useCartStore from "../../src/store/useCartStore";
+import { createOrderDetailService } from "../../src/api/services/orderDetailService";
 
 export default function Payment() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [selectedMethod, setSelectedMethod] = useState("CreditCard");
   const router = useRouter();
-  const { shippingInfo, deleteShippingInfo } = useStore();
-  const [productId, setProductId] = useState(""); // Example initial value
-  const [totalItemQuintity, setTotalItemQuintity] = useState(0); // Define the total quantity
   const searchParams = useLocalSearchParams();
   const [orderItem, setOrderItem] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const cartItems = useCartStore((state) => state.items);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (searchParams.orderItemCreated) {
-      console.log("Payment page id:", searchParams.orderItemCreated);
+    if (!searchParams) return;
 
-      try {
-        const parsedOrderItem = JSON.parse(
-          decodeURIComponent(searchParams.orderItemCreated)
-        );
+    try {
+      const orderItemParam = searchParams.orderItemCreated;
+      const addressParam = searchParams.selectedAddress;
+
+      if (orderItemParam && !orderItem) {
+        const parsedOrderItem = JSON.parse(decodeURIComponent(orderItemParam));
         setOrderItem(parsedOrderItem);
-        console.log("Parsed Order Item:", parsedOrderItem);
-      } catch (error) {
-        console.error("Failed to parse order item:", error);
       }
+
+      if (addressParam && !selectedAddress) {
+        const parsedAddress = JSON.parse(decodeURIComponent(addressParam));
+        setSelectedAddress(parsedAddress);
+      }
+    } catch (err) {
+      console.error("Error parsing data:", err);
+      setError("Error parsing data. Please try again.");
     }
-  }, [searchParams]);
+  }, [searchParams]); // Only depend on searchParams
 
-  console.log("Order Item:", orderItem);
+  const handlePayment = async () => {
+    if (!cartItems || cartItems.length === 0) {
+      Alert.alert("Error", "Your cart is empty");
+      return;
+    }
 
-  const handlepayment = () => {
-    // const options = {
-    //   description: "sample payment",
-    //   image: "https://urturms.com/cdn/shop/files/02_4395d9f8-c97b-461f-b029-c648fcb4e4b4.jpg?v=1722596311&width=2000",
-    //   currency: "INR",
-    //   key: "rzp_test_X9YfY2bGPwua8A",
-    //   amount: "10000",
-    //   name: "clubUnPlugged",
-    //   prefill: {
-    //     email: "lizum@kivio.in",
-    //     contact: "1234567890",
-    //     name: "lizum",
-    //   },
-    //   theme: { color: "#F37254" },
-    // };
-    // RazorpayCheckout?.open(options)
-    //   .then((data) => {
-    //     Alert.alert(`Success: ${data.razorpay_payment_id}`);
-    //   })
-    //   .catch((error) => {
-    //     Alert.alert(`Error: ${error?.description || 'Unknown error'}`);
-    //   });
+    try {
+      // Create order detail first
+      const orderDetailData = {
+        data: {
+          orderItems: [orderItem], // Assuming orderItem is the ID
+          total: totalAmount,
+          level: "pending",
+          shipping_info: selectedAddress?.id, // Assuming selectedAddress has an id
+          user: "23", // Hardcoded user ID for now
+          locale: "en",
+        },
+      };
 
-    router.push({
-      pathname: "/checkoutScreen/MobilePaymentRazorPay",
-      params: { orderId: 448 },
-    });
-  }
+      await createOrderDetailService(orderDetailData);
 
-  // const goToPaymentPage = async () => {
-  //   try {
-
-  //     const orderData = {
-  //       data: {
-  //         level: "approved",
-  //         total: totalAmount,
-  //         razorpayOrderId: "string", // Replace with actual Razorpay order ID
-  //         razorpayPaymentId: "string", // Replace with actual Razorpay payment ID
-  //         razorpaySignature: "string", // Replace with actual Razorpay signature
-  //         order_items: [orderItem],
-
-  //         user: 23, // Replace with actual user ID
-  //         shipping_info: shippingInfo.id,
-  //         locale: "en",
-  //       },
-
-
-
-  //     };
-
-  //     const createdOrder = await createOrder(orderData); // Call createOrder service method
-  //     console.log("Created Order:", createdOrder);
-
-  //     // console.log("Order Data Payload:", orderData);
-
-  //     // Alert.alert(orderData?.data?.orderData)
-
-  //     // const response = await axios.post(
-  //     //   // "http://localhost:1337/api/orders",
-  //     //   "http://192.168.0.23:1337/api/orders",
-  //     //   orderData,
-  //     //   {
-  //     //     headers: {
-  //     //       "Content-Type": "application/json",
-  //     //     },
-  //     //   }
-  //     // );
-
-  //     if (Platform.OS === 'web') {
-  //       router.push({
-  //         pathname: "/checkoutScreen/WebPaymentRazorPay",
-  //         params: { orderId: response.data.data.id },
-  //       });
-  //     } else if (Platform.OS === 'android') {
-  //       router.push({
-  //         pathname: "/checkoutScreen/MobilePaymentRazorPay",
-  //         params: { orderId: response.data.data.id },
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Error in order creation or payment process:", error);
-  //     Alert.alert(`Error: ${ "Something went wrong"}`);
-  //   }
-  // };
-
-  const handleDeleteAddress = () => {
-    deleteShippingInfo();
+      router.push({
+        pathname: "/checkoutScreen/MobilePaymentRazorPay",
+        params: { orderId: orderItem },
+      });
+    } catch (err) {
+      console.error("Payment error:", err);
+      setError("Error processing payment");
+      Alert.alert("Error", "Failed to process payment");
+    }
   };
 
   const handleSelect = (method) => {
@@ -150,7 +90,18 @@ export default function Payment() {
     router.back();
   };
 
-  console.log("Address ID:", shippingInfo.id);
+  if (error) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+            <Text style={styles.buttonText}>Go Back</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -239,31 +190,33 @@ export default function Payment() {
               Edit
             </Text>
           </View>
-          <View>
-            <View style={styles.addressContainer}>
-              <Text style={styles.address}>
-                {shippingInfo
-                  ? `${shippingInfo.Fullname}\n${shippingInfo.Address}, ${shippingInfo.state}, ${shippingInfo.pincode}`
-                  : "no address"}
+
+          <View style={styles.addressContainer}>
+            <View style={styles.addressDetails}>
+              <Text style={styles.addressText}>
+                Full Name: {selectedAddress?.Fullname}
               </Text>
-              <TouchableOpacity onPress={handleDeleteAddress}>
-                <Ionicons
-                  name="trash-outline"
-                  size={24}
-                  color="white"
-                  style={styles.trash}
-                />
-              </TouchableOpacity>
+              <Text style={styles.addressText}>
+                Address: {selectedAddress?.Address}
+              </Text>
+              <Text style={styles.addressText}>
+                State: {selectedAddress?.state}
+              </Text>
+              <Text style={styles.addressText}>
+                Pincode: {selectedAddress?.pincode}
+              </Text>
+              <Text style={styles.addressText}>
+                Phone No: {selectedAddress?.phone_no}
+              </Text>
             </View>
-            <Text style={styles.text}>
-              {shippingInfo ? shippingInfo.phone_no : "no address"}
-            </Text>
           </View>
+
           <View style={styles.info}>
             <Text style={styles.totalText}>Total</Text>
             <Text style={styles.totalText}>₹{totalAmount}</Text>
           </View>
-          <TouchableOpacity style={styles.button} onPress={handlepayment}>
+
+          <TouchableOpacity style={styles.button} onPress={handlePayment}>
             <Text style={styles.buttonText}>Pay ₹{totalAmount}</Text>
           </TouchableOpacity>
         </View>
@@ -277,6 +230,18 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 12,
     backgroundColor: "black",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 20,
   },
   header: {
     flexDirection: "row",
@@ -317,7 +282,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 15,
     borderRadius: 10,
-    backgroundColor: "#333", // Set background color for options
+    backgroundColor: "#333",
   },
   iconLabel: {
     flexDirection: "row",
@@ -343,16 +308,21 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#8FFA09",
   },
-  address: {
-    color: "#bbb",
-    fontSize: 20,
-    lineHeight: 35,
-    marginVertical: 14,
-  },
   addressContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    backgroundColor: "#333",
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: "#8FFA09",
+  },
+  addressDetails: {
+    marginBottom: 10,
+  },
+  addressText: {
+    color: "#fff",
+    fontSize: 14,
+    marginBottom: 5,
   },
   totalText: {
     color: "#fff",

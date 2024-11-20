@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -6,7 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Linking,
-  StyleSheet
+  StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../../assets/logo.png";
@@ -15,34 +15,30 @@ import DesignerCard from "../../components/DesignerCard";
 import { useRouter } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import fonts from "../../constants/fonts";
-import Slider from "../pages/slider"
+import Slider from "../pages/slider";
 import BrandIcons from "../../components/BrandIcons";
 import ProductList from "../../components/productList";
-import Sale from "../pages/sale"
-import NewArrival from "../../components/productList/NewArrival"
-import Shop_Brands from "../pages/shop_Brands"
+import Sale from "../pages/sale";
+import NewArrival from "../../components/productList/NewArrival";
+import Shop_Brands from "../pages/shop_Brands";
 import Brand_page from "../pages/brand_page";
 import useStore from "../../src/store/useStore";
 
 const Home = () => {
-
-  const { user } = useStore(state => state.user);
-
-
+  const user = useStore((state) => state.user);
   const router = useRouter();
+
   const openVideoLink = (videoUrl) => {
     Linking.openURL(videoUrl);
   };
 
- 
   const handleRequest = () => {
-    router.push("/pages/request-design"); 
+    router.push("/pages/request-design");
   };
 
   const handleNotify = () => {
-    router.push("/pages/notification"); 
+    router.push("/pages/notification");
   };
- 
 
   const handleProfileNavigation = (designer) => {
     router.push({
@@ -59,7 +55,6 @@ const Home = () => {
       },
     });
   };
-
 
   const Nicon = svgs.nbell;
 
@@ -78,7 +73,6 @@ const Home = () => {
           <Text style={styles.explore}>Explore Brands</Text>
           <Slider />
         </View>
-       
 
         <View style={styles.mostRatedDesigners}>
           <Text style={styles.sectionTitle}>Most Rated Designers</Text>
@@ -88,40 +82,40 @@ const Home = () => {
         </View>
 
         <View style={styles.collaboration}>
-        <Text style={styles.explore}>Brand Collaborations</Text>
-        <Slider/>
+          <Text style={styles.explore}>Brand Collaborations</Text>
+          <Slider />
         </View>
 
         <View style={styles.popularProductsHeader}>
-              <Text style={styles.popularProductsTitle}>Popular Products</Text>
-              <TouchableOpacity>
-                <Text style={styles.viewAll}>View All</Text>
-              </TouchableOpacity>
-            </View>
+          <Text style={styles.popularProductsTitle}>Popular Products</Text>
+          <TouchableOpacity>
+            <Text style={styles.viewAll}>View All</Text>
+          </TouchableOpacity>
+        </View>
         <View>
-          <ProductList limit={4}/>
+          <ProductList limit={4} />
         </View>
 
         <View>
-          <Sale/>
+          <Sale />
         </View>
 
         <View>
-        <Text style={styles.popularProductsTitle}>New Arrival</Text>
-        <NewArrival/>  
+          <Text style={styles.popularProductsTitle}>New Arrival</Text>
+          <NewArrival />
         </View>
 
         <View>
-        <Text style={styles.popularProductsTitle}>Shop by Brands</Text>
-        <Shop_Brands/>
+          <Text style={styles.popularProductsTitle}>Shop by Brands</Text>
+          <Shop_Brands />
         </View>
 
         <View>
-        <Text style={styles.popularProductsTitle}>Just For You</Text>
-          <ProductList/>
+          <Text style={styles.popularProductsTitle}>Just For You</Text>
+          <ProductList />
         </View>
-<View>
-        <Brand_page/>
+        <View>
+          <Brand_page />
         </View>
 
         <View style={styles.footer}>
@@ -148,39 +142,35 @@ const styles = StyleSheet.create({
   welcomeBox: {
     marginBottom: 20,
     borderRadius: 20,
-    // backgroundColor: "#181818",
-    // padding: 10,
     marginTop: 12,
   },
   welcomeText: {
     color: "white",
     fontSize: 24,
     marginBottom: 8,
-    fontFamily: fonts["Poppins-SemiBold"]
+    fontFamily: fonts["Poppins-SemiBold"],
   },
   userName: {
     color: "white",
     fontSize: 24,
     fontWeight: "bold",
-    // marginBottom: 16,
-    fontFamily: fonts["Poppins-Bold"]
+    fontFamily: fonts["Poppins-Bold"],
   },
-  collaboration:{
-    marginBottom:26,
-
+  collaboration: {
+    marginBottom: 26,
   },
   explore: {
     color: "white",
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 16,
-    fontFamily: fonts["Poppins-Bold"]
+    fontFamily: fonts["Poppins-Bold"],
   },
   description: {
     color: "#A0A0A0",
     fontSize: 16,
     marginBottom: 16,
-    fontFamily: fonts["Poppins-Regular"]
+    fontFamily: fonts["Poppins-Regular"],
   },
   requestButton: {
     paddingVertical: 12,
@@ -192,7 +182,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "600",
     fontSize: 16,
-    fontFamily: fonts["Poppins-SemiBold"]
+    fontFamily: fonts["Poppins-SemiBold"],
   },
   mostRatedDesigners: {
     marginBottom: 16,
@@ -202,7 +192,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 16,
-    fontFamily: fonts["Poppins-Bold"]
+    fontFamily: fonts["Poppins-Bold"],
   },
   exploreSection: {
     borderRadius: 10,
@@ -221,7 +211,7 @@ const styles = StyleSheet.create({
     color: "#8FFA09",
     fontSize: 24,
     fontWeight: "bold",
-    fontFamily: fonts["Poppins-Bold"]
+    fontFamily: fonts["Poppins-Bold"],
   },
   exploreText2: {
     position: "absolute",
@@ -230,7 +220,7 @@ const styles = StyleSheet.create({
     color: "#8FFA09",
     fontSize: 24,
     fontWeight: "bold",
-    fontFamily: fonts["Poppins-Bold"]
+    fontFamily: fonts["Poppins-Bold"],
   },
   exploreText3: {
     position: "absolute",
@@ -239,7 +229,7 @@ const styles = StyleSheet.create({
     color: "#8FFA09",
     fontSize: 24,
     fontWeight: "bold",
-    fontFamily: fonts["Poppins-Bold"]
+    fontFamily: fonts["Poppins-Bold"],
   },
   whatsNewSection: {
     marginVertical: 20,
@@ -271,21 +261,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   popularProductsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   popularProductsTitle: {
     fontSize: 24,
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     marginVertical: 8,
-    paddingLeft:10,
+    paddingLeft: 10,
   },
   viewAll: {
     fontSize: 14,
-    color: 'white',
-    fontWeight: '500',
+    color: "white",
+    fontWeight: "500",
     marginVertical: 12,
   },
 });

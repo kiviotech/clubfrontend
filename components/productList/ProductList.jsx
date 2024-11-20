@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   productCard: {
     width: "48%", // Adjusted width for card size
     marginBottom: 16,
-    backgroundColor: "#1F2937",
+    backgroundColor: "#1D2221",
     borderRadius: 10,
     overflow: "hidden",
     elevation: 5,
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   },
   productimage: {
     width: "100%", // Make image responsive
-    height: 150, // Increase image height for a larger appearance
+    height: 130, // Increase image height for a larger appearance
     // borderTopLeftRadius: 10,
     // borderTopRightRadius: 10,
   },
@@ -258,11 +258,12 @@ const styles = StyleSheet.create({
   },
   addToCartButton: {
     backgroundColor: "#8FFA09",
-    paddingVertical: 6, // Padding for button
+    paddingVertical: 4, // Padding for button
     borderRadius: 8,
     alignItems: "center",
     marginHorizontal: 16,
     marginTop: 4, // Reduced margin for less height
+    marginBottom:9,
   },
   cartText: {
     color: "#ffffff",
