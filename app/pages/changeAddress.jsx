@@ -1,22 +1,152 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons";
+import { getShippingInfoByUserId ,createShippingInfo, deleteShippingInfo,updateShippingInfo } from '../../src/api/repositories/shippingInfoRepository';
+import useStore from '../../src/store/useStore';
 
 const ChangeAddress = () => {
-    const [name, setName] = useState('');
-    const [address, setAddress] = useState('');
-    const [state, setState] = useState('');
-    const [pincode, setPincode] = useState('');
-    const [phone, setPhone] = useState('');
-    const navigation = useNavigation();
 
-    const handleSaveAddress = () => {
-        console.log("Address Saved:", { name, address, state, pincode, phone });
+    const [fullName, setFullName] = useState("");
+    const [address, setAddress] = useState("");
+    const [state, setState] = useState("");
+    const [pincode, setPincode] = useState("");
+    const [phoneNo, setPhoneNo] = useState("");
+    const [modalVisible, setModalVisible] = useState(false);
+    const navigation = useNavigation();
+    const [shippingInfos, setShippingInfos] = useState([]);
+    const [selectedAddress, setSelectedAddress] = useState(null);
+    const { shippingInfo, setShippingInfo, setShippingId } = useStore();
+    const [addresses, setAddresses] = useState([]);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingAddressId, setEditingAddressId] = useState(null);
+    const userId = 23
+
+    useEffect(() => {
+        const fetchShippingInfos = async () => {
+            try {
+                const response = await getShippingInfoByUserId(userId);
+                setShippingInfos(response.data.data); 
+            } catch (error) {
+                console.error("Error fetching shipping info", error);
+            }
+        };
+
+        fetchShippingInfos();
+    }, [userId]); 
+
+
+
+    // const handleAddAddress = async () => {
+    //     const data = {
+    //         Fullname: fullName,
+    //         Address: address,
+    //         state: state,
+    //         pincode: parseInt(pincode),
+    //         phone_no: phoneNo,
+    //         user: userId,
+    //     };
+
+    //     try {
+        
+    //         const response = await createShippingInfo({ data });
+
+       
+    //         const shippingId = response.data.data.id; 
+    //         setShippingInfo(data);
+    //         setShippingId(shippingId);
+    //         setShippingInfos((prevShippingInfos) => [...prevShippingInfos, response.data.data]);
+
+           
+    //         setAddresses([...addresses, data]);
+    //         setFullName("");
+    //         setAddress("");
+    //         setState("");
+    //         setPincode("");
+    //         setPhoneNo("");
+
+    //         setModalVisible(false);
+    //     } catch (error) {
+    //         console.error("Error submitting shipping info:", error);
+    //         alert("Failed to submit shipping information.");
+    //     }
+    // };
+
+    const handleAddOrUpdateAddress = async () => {
+        const data = {
+            Fullname: fullName,
+            Address: address,
+            state: state,
+            pincode: parseInt(pincode),
+            phone_no: phoneNo,
+            user: userId,
+        };
+    
+        try {
+            if (isEditing) {
+                // Update existing address
+                await updateShippingInfo(editingAddressId, { data });
+                alert("Address updated successfully!");
+            } else {
+                // Create a new address
+                const response = await createShippingInfo({ data });
+                const shippingId = response.data.data.id;
+                setShippingInfo(data);
+                setShippingId(shippingId);
+                alert("Address added successfully!");
+            }
+    
+            // Refetch the updated shipping info
+            const updatedShippingInfos = await getShippingInfoByUserId(userId);
+            setShippingInfos(updatedShippingInfos.data.data);
+    
+            // Reset form and state
+            resetForm();
+        } catch (error) {
+            console.error("Error submitting shipping info:", error);
+            alert("Failed to submit shipping information.");
+        }
+    };
+    
+
+      const handleEditShippingInfo = (info) => {
+        setIsEditing(true);
+        setEditingAddressId(info.documentId); // Set the ID of the address being edited
+        setFullName(info.Fullname);
+        setAddress(info.Address);
+        setState(info.state);
+        setPincode(info.pincode.toString());
+        setPhoneNo(info.phone_no);
+      };
+
+      const resetForm = () => {
+        setFullName("");
+        setAddress("");
+        setState("");
+        setPincode("");
+        setPhoneNo("");
+        setIsEditing(false);
+        setEditingAddressId(null);
+      };
+    
+    const handleDeleteShippingInfo = async (documentId) => {
+        try {
+            await deleteShippingInfo(documentId);
+            setShippingInfos((prevShippingInfos) =>
+                prevShippingInfos.filter((info) => info.documentId !== documentId)
+            );
+            alert("Shipping info deleted successfully!");
+        } catch (error) {
+            console.error("Error deleting shipping info:", error);
+            alert("Failed to delete shipping info.");
+        }
     };
 
+
+
+
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                 <Ionicons name="arrow-back" color="white" size={30} />
             </TouchableOpacity>
@@ -28,8 +158,8 @@ const ChangeAddress = () => {
                 style={styles.input}
                 placeholder="Enter your name"
                 placeholderTextColor="#AAAAAA"
-                value={name}
-                onChangeText={setName}
+                value={fullName}
+                onChangeText={setFullName}
             />
 
             {/* Address */}
@@ -73,15 +203,70 @@ const ChangeAddress = () => {
                 style={styles.input}
                 placeholder="Enter phone number"
                 placeholderTextColor="#AAAAAA"
-                value={phone}
-                onChangeText={setPhone}
+                value={phoneNo}
+                onChangeText={setPhoneNo}
                 keyboardType="phone-pad"
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleSaveAddress}>
-                <Text style={styles.buttonText}>Save Address</Text>
-            </TouchableOpacity>
-        </View>
+<TouchableOpacity style={styles.button} onPress={handleAddOrUpdateAddress}>
+        <Text style={styles.buttonText}>{isEditing ? "Update Address" : "Save Address"}</Text>
+      </TouchableOpacity>
+
+            <ScrollView style={styles.savedAddress}>
+                {shippingInfos.length > 0 ? (
+                    shippingInfos.map((info, index) => (
+
+                        <View key={index} style={styles.savedTextContainer}>
+                            <View style={styles.savedTextbox}>
+                                <View style={styles.TextContainer}>
+                                    <Text style={styles.savedText}>Full Name: {info.Fullname}</Text>
+                                    <Text style={styles.savedText}>Address: {info.Address}</Text>
+                                    <Text style={styles.savedText}>State: {info.state}</Text>
+                                    <Text style={styles.savedText}>Pincode: {info.pincode}</Text>
+                                    <Text style={styles.savedText}>Phone No.: {info.phone_no}</Text>
+                                </View>
+                                <TouchableOpacity
+                                    style={styles.selectButton}
+                                    onPress={() => {
+                                        if (selectedAddress === info) {
+                                            setSelectedAddress(null); // Deselect if it's already selected
+                                        } else {
+                                            setSelectedAddress(info); // Select the clicked address
+                                        }
+                                        if (info.id) {
+                                            console.log("Selected Address ID:", info.id);
+                                        }
+                                    }}
+                                >
+                                    <Ionicons
+                                        name={selectedAddress === info ? "checkmark-circle" : "radio-button-off"}
+                                        size={30}
+                                        color={selectedAddress === info ? "#8FFA09" : "#fff"} // Green for selected, white for unselected
+                                    />
+                                </TouchableOpacity>
+                            </View>
+
+                            <View style={styles.buttonsContainer}>
+                            <TouchableOpacity style={styles.editButton} onPress={() => handleEditShippingInfo(info)}>
+                  <Ionicons name="create" size={30} color="#8FFA09" />
+                </TouchableOpacity>
+                             
+
+                                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteShippingInfo(info.documentId)}>
+                                    <Ionicons name="trash" size={30} color="#FF3B30" />
+                                </TouchableOpacity>
+                            </View>
+
+                        </View>
+                    ))
+                ) : (
+                    <Text style={styles.savedText}>No shipping information available</Text>
+                )}
+
+            </ScrollView>
+
+
+        </ScrollView>
     );
 };
 
@@ -104,7 +289,7 @@ const styles = StyleSheet.create({
     label: {
         color: '#FFFFFF',
         fontSize: 16,
-        marginBottom: 5, // Space between label and input
+        marginBottom: 5,
     },
     input: {
         backgroundColor: '#333333',
@@ -118,7 +303,7 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop: 10, // Add margin for rows
+        marginTop: 10,
     },
     button: {
         backgroundColor: '#8FFA09',
@@ -131,6 +316,62 @@ const styles = StyleSheet.create({
         color: '#000000',
         fontSize: 18,
         fontWeight: 'bold',
+    },
+    savedTextbox: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    savedAddress: {
+        padding: 10,
+        marginVertical: 10,
+        borderRadius: 10,
+        marginHorizontal: 20,
+        flexDirection: "column"
+    },
+    savedTextContainer: {
+        padding: 15,
+        marginBottom: 10,
+        backgroundColor: "#333",
+        borderRadius: 10,
+        marginBottom: 15,
+        borderWidth: 1,
+        borderColor: "#555",
+        borderWidth: 2,
+        borderColor: "#8FFA09",
+        flexDirection: "column",
+        justifyContent: "space-between",
+    },
+    TextContainer: {
+        justifyContent: "space-evenly",
+        flexDirection: "column",
+    },
+    savedText: {
+        color: "#fff",
+        fontSize: 14,
+        marginBottom: 5,
+    },
+    selectButton: {
+        marginLeft: 10,
+        borderRadius: 25,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        marginTop: 10,
+        alignSelf: "center",
+    },
+    buttonsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+    },
+    editButton: {
+        marginRight: 10,
+        paddingVertical: 10,
+        // paddingHorizontal: 20,
+    },
+    deleteButton: {
+        paddingVertical: 10,
+        // paddingHorizontal: 20,
     },
 });
 

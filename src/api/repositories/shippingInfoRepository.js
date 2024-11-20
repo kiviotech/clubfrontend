@@ -2,10 +2,10 @@ import apiClient from "../apiClient";
 import shippingInfoEndpoints from "../endpoints/shippingInfoEndpoints";
 
 export const getAllShippingInfos = () => 
-    apiClient.get(shippingInfoEndpoints.getAllShippingInfos);
+    apiClient.get(shippingInfoEndpoints.getAllShippingInfos());
 
-export const getShippingInfoById = (id) =>
-  apiClient.get(shippingInfoEndpoints.getShippingInfoById(id));
+export const getShippingInfoByUserId = (userId) =>
+  apiClient.get(shippingInfoEndpoints.getShippingInfoByUserId(userId));
 
 export const createShippingInfo = (data) =>
   apiClient.post(shippingInfoEndpoints.createShippingInfo, data);

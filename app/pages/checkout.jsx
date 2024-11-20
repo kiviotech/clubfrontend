@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   View,
   Text,
@@ -21,6 +21,7 @@ import {
   createOrderItem,
 } from "../../src/api/services/orderItemService";
 import useCartStore from "../../src/store/useCartStore";
+import { getShippingInfoByUserId } from "../../src/api/repositories/shippingInfoRepository";
 
 const Checkout = () => {
   const router = useRouter();
@@ -36,15 +37,26 @@ const Checkout = () => {
   const [orderItems, setOrderItems] = useState([]);
   const params = useLocalSearchParams();
   const [orderItemCreated, setOrderItemCreated] = useState(0);
-
-  const { id } = params;
-  let Order_item_created = [];
-
+  const [shippingInfos, setShippingInfos] = useState([]);
   const cartItems = useCartStore((state) => state.items);
 
   const handlePress = () => {
     router.back();
   };
+
+  const userId = 23
+  useEffect(() => {
+    const fetchShippingInfos = async () => {
+        try {
+            const response = await getShippingInfoByUserId(userId); // Call your repository function
+            setShippingInfos(response.data.data); // Assuming the data is in 'data'
+        } catch (error) {
+            console.error("Error fetching shipping info", error);
+        }
+    };
+
+    fetchShippingInfos();
+}, [userId]);
 
   const handlePayment = async () => {
     if (!cartItems || cartItems.length === 0) {
@@ -82,24 +94,7 @@ const Checkout = () => {
       alert("Failed to create order items.");
     }
   };
-
-  // console.log("object", orderItemCreated);
-
-  // const handlepay = () => {
-  //   if (selectedAddress) {
-  //     // Pass selected address to the Payment page
-  //     const encodedOrderItem = encodeURIComponent(
-  //       JSON.stringify(orderItemCreated)
-  //     );
-  //     router.push(`/pages/payment?orderItemCreated=${encodedOrderItem}`);
-  //     // router.push({
-  //     //   pathname: "/pages/payment",
-  //     // });
-  //     console.log("huu", orderItemCreated);
-  //   } else {
-  //     alert("Please select an address!");
-  //   }
-  // };
+  
 
   const handlepay = () => {
     if (selectedAddress) {
@@ -119,27 +114,6 @@ const Checkout = () => {
     }
   };
 
-  // const handleAddAddress = async () => {
-  //   const data = {
-
-  //     Fullname: fullName,
-  //     Address: address,
-  //     state: state,
-  //     pincode: parseInt(pincode),
-  //     phone_no: phoneNo,
-  //   };
-
-  //   try {
-  //     await createShippingInfo({ data });
-  //     setShippingInfo(data);
-  //     setAddresses([...addresses, data]);
-  //     setModalVisible(false);
-  //   } catch (error) {
-  //     console.error("Error submitting shipping info:", error);
-  //     alert("Failed to submit shipping information.");
-  //   }
-  // };
-
   const handleAddAddress = async () => {
     const data = {
       Fullname: fullName,
@@ -147,6 +121,7 @@ const Checkout = () => {
       state: state,
       pincode: parseInt(pincode),
       phone_no: phoneNo,
+      user: userId,
     };
 
     try {
@@ -173,6 +148,8 @@ const Checkout = () => {
     handlePayment();
   };
 
+  
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
@@ -190,8 +167,58 @@ const Checkout = () => {
 
           <Text style={styles.sectionText}>Shipping Information</Text>
 
+          <ScrollView style={styles.savedAddress}>
+                {shippingInfos.length > 0 ? (
+                    shippingInfos.map((info, index) => (
+
+                        <View key={index} style={styles.savedTextContainer}>
+                            <View style={styles.savedTextbox}>
+                                <View style={styles.TextContainer}>
+                                <Text style={styles.savedText}>Full Name: {info.Fullname}</Text>
+                                <Text style={styles.savedText}>Address: {info.Address}</Text>
+                                <Text style={styles.savedText}>State: {info.state}</Text>
+                                <Text style={styles.savedText}>Pincode: {info.pincode}</Text>
+                                <Text style={styles.savedText}>Phone No.: {info.phone_no}</Text>
+                                </View>
+                            </View>
+
+                            <TouchableOpacity
+                    style={styles.selectButton}
+                    onPress={() => {
+                      // Toggle the selection of the address
+                      if (selectedAddress === address) {
+                        setSelectedAddress(null); // Deselect if it's already selected
+                      } else {
+                        setSelectedAddress(address); // Select the clicked address
+                      }
+                      if (address.id) {
+                        console.log("Selected Address ID:", address.id);
+                      }
+                    }}
+                  >
+                    <Ionicons
+                      name={
+                        selectedAddress === address
+                          ? "checkmark-circle"
+                          : "radio-button-off"
+                      }
+                      size={30}
+                      color={selectedAddress === address ? "#8FFA09" : "#fff"} // Green for selected, white for unselected
+                    />
+                  </TouchableOpacity>
+
+                        </View>
+                    ))
+                ) : (
+                    <Text style={styles.savedText}>No shipping information available</Text>
+                )}
+
+            </ScrollView>
+           
+
           {addresses.length > 0 && (
             <View style={styles.savedAddress}>
+               {/* <Text style={styles.sectionText}>New Shipping Information</Text> */}
               {addresses.map((address, index) => (
                 <View key={index} style={styles.savedTextContainer}>
                   <View key={index} style={styles.savedContainer}>
@@ -245,14 +272,14 @@ const Checkout = () => {
             <Text style={styles.addButtonText}>+ Add Address</Text>
           </TouchableOpacity>
 
-          {addresses.length > 0 && (
+          {/* {addresses.length > 0 && ( */}
             <TouchableOpacity
               style={styles.button}
               onPress={handleContinueToPayment}
             >
               <Text style={styles.buttonText}>Continue to Payment</Text>
             </TouchableOpacity>
-          )}
+          {/* )} */}
 
           <Modal
             animationType="slide"
@@ -378,6 +405,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     color: "#8FFA09",
+    marginTop:20,
   },
   modalContainer: {
     flex: 1,
@@ -434,10 +462,11 @@ const styles = StyleSheet.create({
   },
   savedAddress: {
     padding: 10,
-    marginVertical: 10,
+    // marginVertical: 10,
     // backgroundColor: "#8FFA09",
     borderRadius: 10,
     marginHorizontal: 20,
+    marginBottom:-45
   },
   savedTextContainer: {
     padding: 15,

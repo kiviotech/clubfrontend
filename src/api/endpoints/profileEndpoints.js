@@ -1,12 +1,3 @@
-// const profileEndpoints = {
-//     getProfiles: () => "/profiles?populate=*",
-//     getProfileById: (id) => `/profiles/${id}`,
-//     createProfile: "/profiles",
-//     updateProfile: (id) => `/profiles/${id}`,
-//     deleteProfile: (id) => `/profiles/${id}`,
-//   };
-  
-//   export default profileEndpoints;
 
 const profileEndpoints = {
     getProfiles: () => "/profiles?populate=*",

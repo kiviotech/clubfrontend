@@ -4,8 +4,8 @@ import profileEndpoints from "../endpoints/profileEndpoints";
 export const getProfiles = () =>
   apiClient.get(profileEndpoints.getProfiles());
 
-export const getProfileById = (id) =>
-  apiClient.get(profileEndpoints.getProfileById(id));
+export const getProfileByUserId = (userId) =>
+  apiClient.get(profileEndpoints.getProfileByUserId(userId));
 
 export const createProfile = (data) =>
   apiClient.post(profileEndpoints.createProfile, data);

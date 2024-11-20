@@ -5,25 +5,40 @@ import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useNavigation } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons";
+import { updateProfile } from '../../src/api/repositories/profileRepository';
 
 const ProfileScreen = () => {
-  
+
     const navigation = useNavigation();
-    const { profile = '', name = 'Default Name', username = 'DefaultUsername' } = useLocalSearchParams();
+    const { profile_img = '', name = 'Default Name', username = 'DefaultUsername' } = useLocalSearchParams();
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState(name); // State for edited name
     const [editedUsername, setEditedUsername] = useState(username);
+    const userId = "23";
 
     const toggleEditMode = () => {
         setIsEditing(!isEditing);
     };
 
     // Handle Save
-    const handleSave = () => {
-        // Here you can handle the save action, e.g., update the profile data
-        console.log('Saving...', editedName, editedUsername);
-        setIsEditing(false); // Exit edit mode after saving
+    const handleSave = async () => {
+        try {
+            // Send the updated profile data to the backend
+            const updatedData = {
+                name: editedName,
+                username: editedUsername,
+            };
+
+            // Make the API call to update the profile
+            await updateProfile(userId, updatedData);  // Pass userId to the update API
+            // On success, exit edit mode
+            setIsEditing(false);
+            console.log('Profile updated successfully');
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        }
     };
+
 
     return (
         <SafeAreaView style={styles.container}>
@@ -40,9 +55,13 @@ const ProfileScreen = () => {
 
             {/* Profile Picture */}
             <View style={styles.profileImageContainer}>
-                <View style={styles.profilePlaceholder}>
-                    <Icon name="person-outline" size={60} color="#fff" />
-                </View>
+                {profile_img ? (
+                    <Image source={{ uri: profile_img }} style={styles.profilePlaceholder} />
+                ) : (
+                    <View style={styles.profilePlaceholder}>
+                        <Icon name="person-outline" size={60} color="#fff" />
+                    </View>
+                )}
                 <TouchableOpacity style={styles.cameraIcon}>
                     <Icon name="camera-outline" size={20} color="#000" />
                 </TouchableOpacity>
@@ -85,13 +104,14 @@ const ProfileScreen = () => {
         </SafeAreaView>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#000',
         paddingHorizontal: 20,
         paddingTop: Platform.OS === 'android' ? 25 : 0,
+        paddingLeft:20,
+        paddingRight:20
     },
     backButton: {
         marginBottom: 10,
@@ -127,7 +147,7 @@ const styles = StyleSheet.create({
     cameraIcon: {
         position: 'absolute',
         bottom: 0,
-        right: '30%',
+        right: '38%',
         backgroundColor: '#8FFA09',
         borderRadius: 15,
         padding: 5,

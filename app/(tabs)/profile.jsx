@@ -143,50 +143,57 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import logo from "../../assets/logo.png";
 import Svgs from '../../constants/svgs';
 import { useRouter } from 'expo-router';
-import { getUserProfile } from '../../src/api/repositories/userRepository';
-import useStore from '../../src/store/useStore';
-
+import { getProfiles } from '../../src/api/repositories/profileRepository';
+import { MEDIA_BASE_URL } from '../../src/api/apiClient';
+import { getProfileByUserId } from '../../src/api/repositories/profileRepository';
 
 const Profile = () => {
+  const [profile, setProfile] = useState(null); 
+  const [loading, setLoading] = useState(true);
   const ProfileSvg = Svgs.profile;
   const router = useRouter();
-  // const [profile, setProfile] = useState(null);
-  const userId = useStore(state => state.user);
-console.log("User ID from Zustand store:", userId);
 
-  // useEffect(() => {
-  //   const fetchProfile = async () => {
-  //     try {
-  //       const userId =23; // Get the user ID from context or route params
-  //       const response = await getUserProfile(userId); // Get profile data using the API
-  //       setProfile(response.data[0]); 
-  //       console.log(response)
-  //     } catch (error) {
-  //       console.error("Error fetching profile:", error);
-  //     }
-  //   };
-  //   fetchProfile();
-  // }, []);
+  const userId = "23";
+
+   useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await getProfileByUserId(userId);
+        const profileData = response.data.data[0];
+        setProfile(profileData);
+      } catch (error) {
+        console.error("Failed to fetch profile data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [userId]);
 
 
   const ProfileRequest = () => {
+    if (!profile) return;
     router.push({
-      pathname: "/pages/profileScreen",  // Path to your profile screen
+      pathname: "/pages/profileScreen", // Path to your profile screen
       params: {
-        // profile: profile.ProfileSvg ,  // Pass the profile SVG
-        name: profile.name,       // Pass the name
-        username: profile.userName // Pass the username
+        name: profile.name,
+        username: profile.username,
+        profile_img: `${MEDIA_BASE_URL}${profile.profile_img.url}`,
       },
     });
   };
 
-  const profile = {
-    name: "Jess Bailey",
-    userName: "@jessbailey"
-  };
+  // const profile = {
+  //   name: "Jess Bailey",
+  //   userName: "@jessbailey"
+  // };
 
+  // const handlePassword = () => {
+  //   router.push("/pages/changePasswordScreen"); 
+  // };
   const handlePassword = () => {
-    router.push("/pages/changePasswordScreen"); 
+    router.push("/pages/ResetPasswordScreen"); 
   };
   const handleAddress = () => {
     router.push("/pages/changeAddress"); 
@@ -212,10 +219,18 @@ console.log("User ID from Zustand store:", userId);
 
       {/* Profile Section */}
       <View style={styles.header}>
-        <ProfileSvg/>
+          {/* Display Profile Image */}
+  {profile?.profile_img?.url ? (
+    <Image
+      source={{ uri: `${MEDIA_BASE_URL}${profile.profile_img.url}` }}
+      style={styles.profileImage}
+    />
+  ) : (
+    <ProfileSvg />
+  )}
         <View style={styles.profileText}>
-          <Text style={styles.profileName}>Jess bailey</Text>
-          <Text style={styles.profileUsername}>@jessbailey</Text>
+          <Text style={styles.profileName}>{profile?.name}</Text>
+          <Text style={styles.profileUsername}>{profile?.username}</Text>
         </View>
       </View>
 
@@ -305,9 +320,9 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   profileImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
   },
   profileText: {
     marginLeft: 15,

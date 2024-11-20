@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
   },
   quickRepliesContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    // flexWrap: 'wrap',
     marginBottom: 10,
     justifyContent: 'center',
   },
