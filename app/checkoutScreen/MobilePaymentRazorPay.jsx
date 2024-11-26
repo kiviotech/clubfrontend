@@ -1,75 +1,181 @@
 
+
 import React from 'react';
 import { WebView } from 'react-native-webview';
 import { Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
+import { deleteOrderDetail } from "../../src/api/repositories/orderDetailRepository";
+import { deleteOrderItem } from "../../src/api/repositories/orderItemRepository";
+import { useRouter } from "expo-router";
+import { createPaymentDetailService } from '../../src/api/services/paymentDetailsService';
 
 const MobilePaymentRazorPay = () => {
-    const { orderId } = useLocalSearchParams();
-    console.log(orderId);
-
+  const { totalAmount, razorpayOrderId, documentIds, orderDetailsDocumentId,orderdetailId } = useLocalSearchParams();
+    const router = useRouter();
+  
+    // Function to delete the order detail
+    const handleDeleteOrderDetail = async () => {
+      if (!orderDetailsDocumentId) {
+        console.warn("No order detail ID provided.");
+        return;
+      }
+  
+      try {
+        console.log(`Deleting order detail ID: ${orderDetailsDocumentId}`);
+        const response = await deleteOrderDetail(orderDetailsDocumentId);
+        console.log(`Delete response for order detail ID ${orderDetailsDocumentId}:`, response);
+  
+        if (response?.status !== 204) {
+          console.error("Failed to delete order detail document.");
+          Alert.alert("Error", "Failed to delete order detail document.");
+        }
+      } catch (error) {
+        console.error(`Error deleting order detail ID ${orderDetailsDocumentId}:`, error);
+      }
+    };
+  
+    // Function to delete the order items
+    const handleDeleteOrderItems = async () => {
+      const orderItemIds = documentIds ? JSON.parse(documentIds) : [];
+      console.log("Order item IDs to delete:", orderItemIds);
+  
+      if (orderItemIds.length === 0) {
+        console.warn("No order items to delete.");
+        return;
+      }
+  
+      try {
+        // Attempt to delete all order items
+        const deletePromises = orderItemIds.map(async (orderItemId) => {
+          try {
+            console.log(`Deleting order item ID: ${orderItemId}`);
+            const response = await deleteOrderItem(orderItemId);
+            console.log(`Delete response for ID ${orderItemId}:`, response);
+            return response;
+          } catch (error) {
+            console.error(`Error deleting order item ID ${orderItemId}:`, error);
+            return null;
+          }
+        });
+  
+        const orderItemsResponse = await Promise.all(deletePromises);
+  
+        if (orderItemsResponse.every((res) => res?.status === 204)) {
+          console.log("All order items deleted successfully.");
+        } else {
+          console.error("Some order items could not be deleted.");
+          Alert.alert("Error", "Failed to delete some order items.");
+        }
+      } catch (error) {
+        console.error("Error deleting order items:", error);
+        Alert.alert("Error", "An error occurred while deleting order items.");
+      }
+    };
+  
+    const navigateToHome = () => {
+      router.push("/home"); // Navigate to home
+    };
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <WebView
+                originWhitelist={['*']}
+                javaScriptEnabled={true}
+                domStorageEnabled={true}
                 source={{
                     html: `
                 <html>
                     <body>
                         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
                         <script>
-                            var options = {
-                                "key": "rzp_test_X9YfY2bGPwua8A",
-                                "amount": "${3 * 100}", // Amount is in paise
-                                "currency": "INR",
-                                "name": "Clubunplugged",
-                                "order_id": "${448}",
-                                "handler": function (response) {
+                            (function() {
+                                try {
+                                    var options = {
+                                        "key": "rzp_test_X9YfY2bGPwua8A", // Use test key if in development
+                                        "amount": "${totalAmount * 100}", // Amount in paise
+                                        "currency": "INR",
+                                        "name": "Dhairyawan",
+                                        "order_id": "${razorpayOrderId}",
+                                        "handler": function (response) {
+                                            window.ReactNativeWebView.postMessage(JSON.stringify({
+                                                status: 'success',
+                                                payment_id: response.razorpay_payment_id,
+                                                order_id: response.razorpay_order_id,
+                                                totalAmount: ${totalAmount}
+                                            }));
+                                        },
+                                        "modal": {
+                                            "ondismiss": function () {
+                                                window.ReactNativeWebView.postMessage(JSON.stringify({ status: 'cancelled' }));
+                                            }
+                                        },
+                                        "prefill": {
+                                            "name": "vipul",
+                                            "email": "vipul@gmail.com",
+                                            "contact": "6264452164"
+                                        },
+                                        "theme": {
+                                            "color": "#8FFA09"
+                                        },
+                                        "image": "https://imgur.com/z9kFZ4m.jpg"
+                                    };
+                                    var rzp1 = new Razorpay(options);
+                                    rzp1.open();
+                                } catch (error) {
                                     window.ReactNativeWebView.postMessage(JSON.stringify({
-                                        status: 'success',
-                                        payment_id: response.razorpay_payment_id,
-                                        order_id: response.razorpay_order_id,
-                                        totalAmount: 300
+                                        status: 'error',
+                                        message: error.message
                                     }));
-                                },
-                                "modal": {
-                                    "ondismiss": function () {
-                                        window.ReactNativeWebView.postMessage(JSON.stringify({ status: 'cancelled' }));
-                                    }
-                                },
-                                "prefill": {
-                                    "name": "vipul",
-                                    "email": "vipul@GMAIL.COM",
-                                    "contact": "6264452164"
-                                },
-                                "theme": {
-                                    "color": "#3399cc"
                                 }
-                            };
-                            var rzp1 = new Razorpay(options);
-                            rzp1.open();
+                            })();
                         </script>
                     </body>
-                </html>`,
+                </html>
+                `,
                 }}
                 onMessage={async (event) => {
-                    const paymentData = JSON.parse(event.nativeEvent.data);
-                    console.log("Received payment data:", paymentData);
-
-                    if (paymentData?.status === 'success') {
-                        Alert.alert(
-                            'Payment Success',
-                            `Order ID: ${paymentData.order_id}\nPayment ID: ${paymentData.payment_id}`
-                        );
-                    } else if (paymentData.status === 'cancelled') {
-                        Alert.alert('Payment Cancelled');
-                    } else {
-                        Alert.alert('Payment Failed or Not Completed');
-                    }
-                }}
-            />
-        </SafeAreaView>
+                            try {
+                              const paymentData = JSON.parse(event.nativeEvent.data);
+                              console.log("Received Payment Data:", paymentData);
+                              console.log("Received Payment Data:", orderDetailsDocumentId,orderdetailId,razorpayOrderId);
+                  
+                              if (paymentData?.status === "success") {
+                                const paymentDetails = {
+                                  order_detail: orderDetailsDocumentId,  // Make sure the backend expects this field
+                                  amount:  parseInt(totalAmount, 10),                    // Amount paid
+                                  level: "completed",
+                                  paymentDate: new Date().toISOString(),
+                                  razorpay_order_id: paymentData.order_id,
+                                  razorpay_payment_id: paymentData.payment_id,
+                                  razorpay_signature: paymentData.signature,
+                                  locale: "en",
+                                };
+                  
+                                await createPaymentDetailService(paymentDetails); // Save to backend
+                                Alert.alert("Payment Successful", `Payment ID: ${paymentData.payment_id}`);
+                                navigateToHome();
+                              } else if (paymentData?.status === "cancelled" || paymentData?.status === "error") {
+                                Alert.alert("Payment Cancelled", "Clearing the order due to failed payment.");
+                                await handleDeleteOrderDetail();
+                                await handleDeleteOrderItems();
+                                navigateToHome();
+                              }
+                            } catch (error) {
+                              console.error("Error processing payment:", error);
+                              Alert.alert("Payment Error", "Unable to process the payment.");
+                              navigateToHome();
+                            }
+                          }}
+                          onError={(syntheticEvent) => {
+                            const { nativeEvent } = syntheticEvent;
+                            console.error("WebView Error:", nativeEvent);
+                            Alert.alert("WebView Error", nativeEvent.description);
+                            navigateToHome();
+                          }}
+                        />
+                      </SafeAreaView>
     );
 };
 
 export default MobilePaymentRazorPay;
+

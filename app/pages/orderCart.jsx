@@ -1,28 +1,36 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import TrackOrderScreen from './TrackOrderScreen';
-
-const OrderCart = () => {
+const OrderCart = ({ imageUrl, productName, productPrice ,level}) => {
   const router = useRouter();
+  // console.log(level)
 
+  
   const handleTrack = () => {
-    router.push("/pages/TrackOrderScreen"); 
+    router.push({
+      pathname: "/pages/TrackOrderScreen", // Adjust the path based on your app's structure
+      params: {
+        imageUrl,
+        productName,
+        productPrice,
+        level,
+      },
+    });
   };
 
   return (
     <View style={styles.card}>
       <View style={styles.row}>
-        <Image
-          source={{ uri: 'https://via.placeholder.com/100' }} // Replace with actual product image URL
+      <Image
+          source={{ uri: imageUrl  ||'https://example.com/fallback.png' }} // Use dynamic image URL
           style={styles.productImage}
         />
         <View style={styles.details}>
-          <Text style={styles.productName}>Product Name</Text>
+        <Text style={styles.productName}>{productName}</Text>
           <Text style={styles.orderId}>Order #123456</Text>
           <Text style={styles.deliveryDate}>Delivering on 28 Nov, 2024</Text>
         </View>
-        <Text style={styles.price}>$250</Text>
+        <Text style={styles.price}>${productPrice}</Text>
       </View>
       <View style={styles.buttonRow}>
         <TouchableOpacity style={[styles.trackButton, styles.trackButtonCurved]} onPress={handleTrack}>

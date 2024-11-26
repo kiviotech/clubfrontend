@@ -4,6 +4,7 @@ import { useNavigation } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons";
 import { getShippingInfoByUserId ,createShippingInfo, deleteShippingInfo,updateShippingInfo } from '../../src/api/repositories/shippingInfoRepository';
 import useStore from '../../src/store/useStore';
+import useUserDataStore from '../../src/store/userData';
 
 const ChangeAddress = () => {
 
@@ -20,7 +21,15 @@ const ChangeAddress = () => {
     const [addresses, setAddresses] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [editingAddressId, setEditingAddressId] = useState(null);
-    const userId = 23
+    const userId = useUserDataStore((state) => state.users[0]?.id);
+
+    const [errors, setErrors] = useState({
+        fullName: '',
+        address: '',
+        state: '',
+        pincode: '',
+        phoneNo: '',
+    });
 
     useEffect(() => {
         const fetchShippingInfos = async () => {
@@ -35,44 +44,42 @@ const ChangeAddress = () => {
         fetchShippingInfos();
     }, [userId]); 
 
-
-
-    // const handleAddAddress = async () => {
-    //     const data = {
-    //         Fullname: fullName,
-    //         Address: address,
-    //         state: state,
-    //         pincode: parseInt(pincode),
-    //         phone_no: phoneNo,
-    //         user: userId,
-    //     };
-
-    //     try {
-        
-    //         const response = await createShippingInfo({ data });
-
-       
-    //         const shippingId = response.data.data.id; 
-    //         setShippingInfo(data);
-    //         setShippingId(shippingId);
-    //         setShippingInfos((prevShippingInfos) => [...prevShippingInfos, response.data.data]);
-
-           
-    //         setAddresses([...addresses, data]);
-    //         setFullName("");
-    //         setAddress("");
-    //         setState("");
-    //         setPincode("");
-    //         setPhoneNo("");
-
-    //         setModalVisible(false);
-    //     } catch (error) {
-    //         console.error("Error submitting shipping info:", error);
-    //         alert("Failed to submit shipping information.");
-    //     }
-    // };
-
     const handleAddOrUpdateAddress = async () => {
+        setErrors({ fullName: '', address: '', state: '', pincode: '', phoneNo: '' });
+
+        let valid = true;
+        const errorMessages = {};
+
+        if (!fullName) {
+            valid = false;
+            errorMessages.fullName = "Name is required";
+        }
+
+        if (!address) {
+            valid = false;
+            errorMessages.address = "Address is required";
+        }
+
+        if (!state) {
+            valid = false;
+            errorMessages.state = "State is required";
+        }
+
+        if (!pincode || pincode.length !== 6) {
+            valid = false;
+            errorMessages.pincode = "Pincode should be 6 digits";
+        }
+
+        if (!phoneNo || phoneNo.length !== 10) {
+            valid = false;
+            errorMessages.phoneNo = "Phone number should be 10 digits";
+        }
+
+        if (!valid) {
+            setErrors(errorMessages);
+            return;
+        }
+
         const data = {
             Fullname: fullName,
             Address: address,
@@ -161,6 +168,7 @@ const ChangeAddress = () => {
                 value={fullName}
                 onChangeText={setFullName}
             />
+            {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
 
             {/* Address */}
             <Text style={styles.label}>Address</Text>
@@ -171,6 +179,7 @@ const ChangeAddress = () => {
                 value={address}
                 onChangeText={setAddress}
             />
+            {errors.address && <Text style={styles.errorText}>{errors.address}</Text>}
 
             {/* State and Pincode */}
             <View style={styles.row}>
@@ -183,6 +192,7 @@ const ChangeAddress = () => {
                         value={state}
                         onChangeText={setState}
                     />
+                    {errors.state && <Text style={styles.errorText}>{errors.state}</Text>}
                 </View>
                 <View style={{ width: '48%' }}>
                     <Text style={styles.label}>Pincode</Text>
@@ -194,6 +204,7 @@ const ChangeAddress = () => {
                         onChangeText={setPincode}
                         keyboardType="numeric"
                     />
+                    {errors.pincode && <Text style={styles.errorText}>{errors.pincode}</Text>}
                 </View>
             </View>
 
@@ -207,15 +218,15 @@ const ChangeAddress = () => {
                 onChangeText={setPhoneNo}
                 keyboardType="phone-pad"
             />
+            {errors.phoneNo && <Text style={styles.errorText}>{errors.phoneNo}</Text>}
 
-<TouchableOpacity style={styles.button} onPress={handleAddOrUpdateAddress}>
-        <Text style={styles.buttonText}>{isEditing ? "Update Address" : "Save Address"}</Text>
-      </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleAddOrUpdateAddress}>
+                <Text style={styles.buttonText}>{isEditing ? "Update Address" : "Save Address"}</Text>
+            </TouchableOpacity>
 
             <ScrollView style={styles.savedAddress}>
                 {shippingInfos.length > 0 ? (
                     shippingInfos.map((info, index) => (
-
                         <View key={index} style={styles.savedTextContainer}>
                             <View style={styles.savedTextbox}>
                                 <View style={styles.TextContainer}>
@@ -229,12 +240,9 @@ const ChangeAddress = () => {
                                     style={styles.selectButton}
                                     onPress={() => {
                                         if (selectedAddress === info) {
-                                            setSelectedAddress(null); // Deselect if it's already selected
+                                            setSelectedAddress(null); // Deselect if already selected
                                         } else {
-                                            setSelectedAddress(info); // Select the clicked address
-                                        }
-                                        if (info.id) {
-                                            console.log("Selected Address ID:", info.id);
+                                            setSelectedAddress(info); // Select address
                                         }
                                     }}
                                 >
@@ -245,7 +253,6 @@ const ChangeAddress = () => {
                                     />
                                 </TouchableOpacity>
                             </View>
-
                             <View style={styles.buttonsContainer}>
                             <TouchableOpacity style={styles.editButton} onPress={() => handleEditShippingInfo(info)}>
                   <Ionicons name="create" size={30} color="#8FFA09" />
@@ -264,8 +271,6 @@ const ChangeAddress = () => {
                 )}
 
             </ScrollView>
-
-
         </ScrollView>
     );
 };
@@ -373,6 +378,10 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         // paddingHorizontal: 20,
     },
+    errorText:{
+        color:"red",
+        fontSize:10,
+    }
 });
 
 export default ChangeAddress;

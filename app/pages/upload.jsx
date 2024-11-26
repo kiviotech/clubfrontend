@@ -1,13 +1,20 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Image, FlatList,StyleSheet,ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, Image, FlatList,StyleSheet,ScrollView,Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import StepIndicator from "../../components/StepIndicator";
 import { router } from "expo-router";
 import svgs from "../../constants/svgs";
+import { BASE_URL } from "../../src/api/apiClient";
+import axios from "axios";
+import useFormStore from "../../src/store/useFormStore";
 
 const Measurement = () => {
   const [images, setImages] = useState([]);
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileImageId, setProfileImageId] = useState(null); // Track uploaded image ID
+  const [uploading, setUploading] = useState(false);
+  const { setUploads } = useFormStore(); 
 
   const pickImage = async () => {
     // Request permission to access the media library
@@ -20,12 +27,51 @@ const Measurement = () => {
     // Launch the image library for selection
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: true,
+      allowsMultipleSelection: false, 
       quality: 1,
     });
 
-    if (!result.canceled && result.assets) {
-      setImages([...images, ...result.assets]);
+    if (!result.canceled) {
+      const uri = result.assets[0].uri;
+      setImages([uri]);
+
+      try {
+        setUploading(true);
+
+        // Convert URI to Blob for upload
+        const imageBlob = await (await fetch(uri)).blob();
+        const formData = new FormData();
+        formData.append("files", imageBlob, {
+          name: uri.split("/").pop() || "image.jpg",
+          type: imageBlob.type || "image/jpeg",
+        });
+
+
+        const uploadResponse = await axios.post(
+          `${BASE_URL}/upload`,
+          formData,
+          {
+            headers: {
+              Authorization: `d52d17664c1b99486004f8cf9aca564b7696f0422229ab8ccd6c7aa4fa1c42aaad566097c1d87ed2487880e6b7c961ea57838c964a3a225fa6c713afab850e4b5bd3c5e1261e3fe5d45712e26dccb313da5f2c26f92a8101c74c4814ad3a0ace9cf9ca7b548082640741f96ce67ea60f00dd3a442fb948300f75e3a22dab556c`, // Replace with a valid JWT token
+            },
+          }
+        )
+        const uploadedImageId = uploadResponse.data[0]?.id; 
+        console.log(uploadedImageId)// Assuming the backend returns the uploaded file ID
+
+        if (uploadedImageId) {
+          setProfileImageId(uploadedImageId); 
+          setUploads(uploadedImageId);
+          Alert.alert("Upload Successful", "Profile image uploaded successfully!");
+        } else {
+          throw new Error("Failed to retrieve uploaded image ID.");
+        }
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        Alert.alert("Upload Error", "Failed to upload the image.");
+      } finally {
+        setUploading(false);
+      }
     }
   };
 
@@ -65,27 +111,27 @@ const Measurement = () => {
       </TouchableOpacity>
     </View>
     {images.length > 0 && (
-      <FlatList
-        data={images}
-        horizontal
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
-          <View style={styles.imageContainer}>
-            <Image
-              source={{ uri: item.uri }}
-              style={styles.image}
+            <FlatList
+              data={images}
+              horizontal
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item, index }) => (
+                <View style={styles.imageContainer}>
+                  <Image
+                    source={{ uri: item }} // Show image using the URI
+                    style={styles.image}
+                  />
+                  <TouchableOpacity
+                    onPress={() => removeImage(index)}
+                    style={styles.removeButton}
+                  >
+                    <Text style={styles.removeButtonText}>X</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+              contentContainerStyle={styles.flatListContainer}
             />
-            <TouchableOpacity
-              onPress={() => removeImage(index)}
-              style={styles.removeButton}
-            >
-              <Text style={styles.removeButtonText}>X</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        contentContainerStyle={styles.flatListContainer}
-      />
-    )}
+          )}
   </View>
   
   <View style={styles.buttonContainer}>

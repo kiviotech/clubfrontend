@@ -15,7 +15,7 @@ import useProductStore from "../../src/store/useProductStore";
 import useCartStore from "../../src/store/useCartStore";
 import useWishlistStore from "../../src/store/useWishlistStore";
 
-const ProductList = ({ limit}) => {
+const ProductList = ({ limit }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,8 +27,9 @@ const ProductList = ({ limit}) => {
   const addToWishlist = useWishlistStore((state) => state.addToWishlist);
   const { wishlist, removeFromWishlist } = useWishlistStore();
   const [popupMessage, setPopupMessage] = useState("");
-  
-  
+  const [popupProductId, setPopupProductId] = useState(null);
+
+
 
   const imagesArray =
     typeof products.images === "string"
@@ -45,13 +46,14 @@ const ProductList = ({ limit}) => {
       setQuantity(quantity - 1);
     }
   };
-  
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await getProducts();
         setProducts(response.data.data);
-        
+        // console.log(response.data.data[0].in_stock)
+
       } catch (error) {
         setError("Failed to load products");
       } finally {
@@ -66,7 +68,7 @@ const ProductList = ({ limit}) => {
 
 
   const displayedProducts = limit ? products.slice(0, limit) : products;
- 
+
 
   const handleProductDetails = (product) => {
     setProductDetails({
@@ -74,7 +76,9 @@ const ProductList = ({ limit}) => {
       images: product.product_image.url,
       name: product.name,
       price: product.price,
+      in_stock: product.in_stock,
       products,
+
     });
 
     router.push("../../pages/productDetails");
@@ -101,9 +105,13 @@ const ProductList = ({ limit}) => {
 
     if (wishlist.some((wishItem) => wishItem.id === product.id)) {
       removeFromWishlist(product.id);
+      // setPopupMessage("Removed from wishlist! ❌");
+      setPopupProductId(product.id); // Show popup for this product
       setPopupMessage("Removed from wishlist! ❌");
     } else {
       addToWishlist(item);
+      // setPopupMessage("Added to wishlist!✔️");
+      setPopupProductId(product.id); // Show popup for this product
       setPopupMessage("Added to wishlist!✔️");
     }
 
@@ -122,29 +130,47 @@ const ProductList = ({ limit}) => {
       image: imageUrl,
     };
 
-    addItemToCart(item);
-    setPopupMessage("Added to cart! 🛒");
+    // Check if the product is already in the cart
+    const isProductInCart = useCartStore.getState().items.some(
+      (cartItem) => cartItem.id === product.id
+    );
+
+    if (isProductInCart) {
+      setPopupProductId(product.id); // Show popup for this product
+      setPopupMessage("Product is already in the cart! 🛒");
+    } else {
+      addItemToCart(item);
+      setPopupProductId(product.id); // Show popup for this product
+      setPopupMessage("Added to cart! 🛒");
+    }
 
     // Automatically clear the popup message after 2 seconds
     setTimeout(() => {
-      setPopupMessage("");
+      setPopupProductId(null); // Hide popup
+      setPopupMessage(""); // Clear the message
     }, 2000);
   };
 
+
   return (
     <View style={styles.container}>
-      {popupMessage ? (
+      {/* {popupMessage ? (
         <View style={styles.popup}>
           <Text style={styles.popupText}>{popupMessage}</Text>
         </View>
-      ) : null}
+      ) : null} */}
       {displayedProducts.map((product, index) => {
         const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
         const isOutOfStock = !product.in_stock;
         const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
-
+        const isPopupVisible = popupProductId === product.id;
         return (
           <View key={index} style={styles.productCard}>
+            {isPopupVisible && popupMessage !== ""  && (
+              <View style={styles.popup}>
+                <Text style={styles.popupText}>{popupMessage}</Text>
+              </View>
+            )}
             <Image
               source={{ uri: imageUrl }}
               style={styles.productimage}
@@ -171,11 +197,16 @@ const ProductList = ({ limit}) => {
               </View>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.addToCartButton, isOutOfStock && styles.disabledButton]}
+              style={[
+                styles.addToCartButton,
+                isOutOfStock && styles.disabledButton,
+              ]}
               onPress={() => !isOutOfStock && handleCartAdd(product)}
               disabled={isOutOfStock}
             >
-              <Text style={styles.cartText}>{isOutOfStock ? 'Out of Stock' : 'Add to Cart'}</Text>
+              <Text style={styles.cartText}>
+                {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+              </Text>
             </TouchableOpacity>
           </View>
         );
@@ -212,7 +243,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 6, // Reduced margin for less height
   },
-  productdiscount:{
+  productdiscount: {
     color: "red",
     fontSize: 12,
   },
@@ -263,7 +294,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: 16,
     marginTop: 4, // Reduced margin for less height
-    marginBottom:9,
+    marginBottom: 9,
   },
   cartText: {
     color: "#ffffff",

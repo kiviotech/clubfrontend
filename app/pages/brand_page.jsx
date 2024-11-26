@@ -86,7 +86,7 @@ const brand_page = () => {
         {/* Image */}
         <View style={styles.imageContainer}>
           <Image
-            source={{ uri: brand_poster }} // Replace with actual image URL
+            source={{ uri: brand_poster  ||'https://example.com/fallback.png' }} // Replace with actual image URL
             style={styles.image}
           />
         </View>

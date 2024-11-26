@@ -1,11 +1,19 @@
 import React from 'react';
-import { View, Text, TouchableOpacity,StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity,StyleSheet,Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import StepIndicator from "../../components/StepIndicator";
 import { router } from 'expo-router';
 import svgs from '../../constants/svgs';
+import useFormStore from '../../src/store/useFormStore';
+import { createNewDesignRequest } from '../../src/api/services/designRequestService';
 
 const Review = () => {
+  const { designDetails, measurements, uploads } = useFormStore(state => state); // Access Zustand store
+
+console.log(designDetails)
+console.log(measurements.specialInstructions)
+console.log(uploads.imageId)
+
   const handlePrevSection = () => {
     router.push("../pages/upload");
   };
@@ -22,9 +30,40 @@ const Review = () => {
     router.push("../pages/upload");
   };
 
-  const handleConfirm = () => {
-    // Handle the final confirmation or submission logic here
-    alert('Confirmed!');
+  const handleConfirm = async () => {
+    // Prepare data to send to backend
+    const data = {
+      data:{
+      title: designDetails?.title || "string", 
+      description: designDetails?.description || "string", 
+      fabric_preferences: designDetails?.fabricPreferences || "Cotton", 
+      color_preferences: designDetails?.color || "string", 
+      deadline: designDetails?.formattedDeadline || "2024-11-26", 
+      budget: designDetails?.budget || 0, 
+      bust: measurements?.bust || "XS",
+      waist: measurements?.waist || "XS", 
+      hip: measurements?.hip || "XS", 
+      weight: measurements?.weight || 0, 
+      special_instructions: measurements?.specialInstructions || "string", 
+      image: uploads.imageId, 
+      users: "23", 
+      height: measurements?.height || "XS", 
+      }
+    }
+
+    try {
+      // Send the data to the backend via API
+      const response = await createNewDesignRequest(data);
+
+      // Handle success response
+      Alert.alert('Success', 'Your design request has been submitted successfully!');
+      router.push("../pages/confirmation"); // Redirect to a confirmation page or next step
+
+    } catch (error) {
+      // Handle error response
+      Alert.alert('Error', 'There was an issue submitting your design request. Please try again.');
+      console.error('Error creating design request:', error);
+    }
   };
 
   return (

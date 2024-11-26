@@ -1,22 +1,90 @@
-import React from 'react';
-import { View, ScrollView, SafeAreaView, StyleSheet,Text,TouchableOpacity } from 'react-native';
-import OrderCart from './orderCart';
-import { useNavigation } from 'expo-router';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  ScrollView,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from "react-native";
+import OrderCart from "./orderCart";
+import { useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { getUserWithOrderDetails } from "../../src/api/repositories/userRepository";
+import { MEDIA_BASE_URL } from "../../src/api/apiClient";
+import useUserDataStore from "../../src/store/userData";
 
 const OrderPage = () => {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
+  const [orderDetails, setOrderDetails] = useState(null); // Store the fetched order details
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
+  const userId = useUserDataStore((state) => state.users[0]?.id);
+
+  useEffect(() => {
+    const fetchOrderDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await getUserWithOrderDetails(userId); // Fetch data
+        setOrderDetails(response?.data); // Save the fetched order details
+        // console.log(response.data.order_details[0].level)
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching order details:", err);
+        setError("Failed to fetch order details");
+        setLoading(false);
+      }
+    };
+
+    fetchOrderDetails();
+  }, [userId]);
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <Text style={styles.loadingText}>Loading...</Text>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <Text style={styles.errorText}>{error}</Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
-         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                <Ionicons name="arrow-back" color="white" size={30} />
-            </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.backButton}
+      >
+        <Ionicons name="arrow-back" color="white" size={30} />
+      </TouchableOpacity>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>Orders</Text>
         <View style={styles.container}>
-          {/* Add multiple OrderCart components if needed */}
-          <OrderCart />
-          
+          {orderDetails?.order_details?.map((order) =>
+            order.orderItems.map((item) => {
+              const product = item.product; // Access product data
+              const imageUrl = `${MEDIA_BASE_URL}${product?.product_image?.url}`;
+              const productName = product?.name || "No Name";
+              const productPrice = product?.price || "0.00";
+              const level = order.level;
+
+              return (
+                <OrderCart
+                  key={item.id} // Unique key for each OrderCart
+                  imageUrl={imageUrl}
+                  productName={productName}
+                  productPrice={productPrice}
+                  level={level}
+                />
+              );
+            })
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -26,27 +94,39 @@ const OrderPage = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#000', // Black background
+    backgroundColor: "#000", // Black background
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingVertical: 10, // Add padding for spacing at the top and bottom
+    paddingVertical: 10,
   },
   container: {
     flex: 1,
-    backgroundColor: '#000', // Black background for inner container
+    backgroundColor: "#000",
   },
   title: {
     fontSize: 28,
-    fontWeight: '600',
-    color: '#FFFFFF',
+    fontWeight: "600",
+    color: "#FFFFFF",
     marginBottom: 20,
-    marginLeft:17,
-},
-backButton: {
+    marginLeft: 17,
+  },
+  backButton: {
     marginTop: 15,
-   marginLeft:15
-},
+    marginLeft: 15,
+  },
+  loadingText: {
+    color: "#fff",
+    textAlign: "center",
+    marginTop: 50,
+    fontSize: 18,
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 50,
+    fontSize: 18,
+  },
 });
 
 export default OrderPage;

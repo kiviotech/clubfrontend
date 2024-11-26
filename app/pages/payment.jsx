@@ -5,6 +5,7 @@ import {
   ScrollView,
   View,
   Alert,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState, useEffect } from "react";
@@ -14,7 +15,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 import CheckoutStep from "./checkoutstep";
 import Totalamount from "./totalamount";
 import Svgs from "../../constants/svgs";
-import useStore from "../../src/store/useStore";
 import useCartStore from "../../src/store/useCartStore";
 import { createOrderDetailService } from "../../src/api/services/orderDetailService";
 
@@ -27,6 +27,8 @@ export default function Payment() {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const cartItems = useCartStore((state) => state.items);
   const [error, setError] = useState(null);
+  const {documentIds} = useLocalSearchParams();
+
 
   useEffect(() => {
     if (!searchParams) return;
@@ -60,21 +62,53 @@ export default function Payment() {
       // Create order detail first
       const orderDetailData = {
         data: {
-          orderItems: [orderItem], // Assuming orderItem is the ID
+          orderItems: orderItem, // Assuming orderItem is the ID
           total: totalAmount,
           level: "pending",
           shipping_info: selectedAddress?.id, // Assuming selectedAddress has an id
-          user: "23", // Hardcoded user ID for now
+          user: "23", //  now change dynamic user id
           locale: "en",
+          razorpayOrderId: "string",
+          razorpayPaymentId: "string",
+          razorpaySignature: "string",
         },
       };
 
-      await createOrderDetailService(orderDetailData);
+      const response = await createOrderDetailService(orderDetailData);
+      const razorpayOrderId = response?.data?.razorpayOrderId;
+      const orderDetailsDocumentId = response?.data?.documentId;
+      const orderdetailId =  response?.data?.id; 
 
-      router.push({
-        pathname: "/checkoutScreen/MobilePaymentRazorPay",
-        params: { orderId: orderItem },
-      });
+      // console.log("Order Detail Response:", response.data.id);
+
+      if (Platform.OS === 'web') {
+        // Navigate to CheckoutScreen on web
+        router.push({
+          pathname: '/checkoutScreen/WebPaymentRazorPay',
+          params: {
+            totalAmount: totalAmount,
+            razorpayOrderId: razorpayOrderId,
+            orderItem:orderItem,
+            documentIds:documentIds,
+            orderDetailsDocumentId: orderdetailId, // Add the new documentId here
+            orderdetailId:orderdetailId,
+          },
+        });
+
+      } else if (Platform.OS === 'android') {
+        router.push({
+          pathname: '/checkoutScreen/MobilePaymentRazorPay',
+          params: {
+            totalAmount: totalAmount,
+            razorpayOrderId: razorpayOrderId,
+            orderItem:orderItem,
+            documentIds:documentIds,
+            orderDetailsDocumentId: orderDetailsDocumentId ,
+            orderdetailId:orderdetailId,
+
+          },
+        });
+      }
     } catch (err) {
       console.error("Payment error:", err);
       setError("Error processing payment");
@@ -123,9 +157,9 @@ export default function Payment() {
             />
           </View>
 
-          <Text style={styles.choosePaymentText}>Choose Payment Method</Text>
+          {/* <Text style={styles.choosePaymentText}>Choose Payment Method</Text> */}
 
-          <View style={styles.box}>
+          {/* <View style={styles.box}>
             <TouchableOpacity
               style={styles.option}
               onPress={() => handleSelect("CreditCard")}
@@ -182,13 +216,13 @@ export default function Payment() {
                 <MaterialIcons name="check-circle" size={24} color="green" />
               )}
             </TouchableOpacity>
-          </View>
+          </View> */}
 
           <View style={styles.info}>
             <Text style={styles.text}>Shipping Information</Text>
-            <Text style={styles.linktag} onPress={handlePress}>
+            {/* <Text style={styles.linktag} onPress={handlePress}>
               Edit
-            </Text>
+            </Text> */}
           </View>
 
           <View style={styles.addressContainer}>

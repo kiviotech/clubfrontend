@@ -132,7 +132,7 @@ const Category = () => {
         data={limitedProductDetails}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Image source={item.image} style={styles.image} resizeMode="contain" />
+            <Image source={item.image  ||'https://example.com/fallback.png'} style={styles.image} resizeMode="contain" />
             <Text style={styles.categoryText}>{item.category}</Text>
           </View>
         )}

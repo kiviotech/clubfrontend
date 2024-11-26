@@ -21,11 +21,11 @@ export const fetchOrderItems = async () => {
 // Fetch a specific order item by ID
 export const fetchOrderItemById = async (id) => {
   try {
-    const response = await apiClient.get(orderItemEndpoints.getOrderItemById(id));
-    return response.data;
+    const orderItem = await getOrderItemById(id);  // Calling repository method
+    return orderItem;
   } catch (error) {
     console.error(`Error fetching order item with ID ${id}:`, error);
-    throw error;
+    throw error;  // Propagate the error
   }
 };
 

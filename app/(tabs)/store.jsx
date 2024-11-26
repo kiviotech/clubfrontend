@@ -74,46 +74,52 @@ const store = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <TouchableWithoutFeedback onPress={closeFilterPanel}>
-        {/* Main content of the app, excluding the filter panel */}
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Image source={logo} style={styles.logo} />
-            <TouchableOpacity onPress={handleRequest}>
-              <Icon name="shopping-cart" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Image source={logo} style={styles.logo} />
+        <TouchableOpacity onPress={handleRequest}>
+          <Icon name="shopping-cart" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
 
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <Text style={styles.title}>Brands Store</Text>
-            <View style={styles.searchContainer}>
-              <SearchBar />
-              <TouchableOpacity onPress={toggleFilterPanel}>
-                <svgs.Group width={20} height={20} />
-              </TouchableOpacity>
-            </View>
+      {/* Scrollable Content */}
+      <ScrollView 
+        showsVerticalScrollIndicator={false} 
+        contentContainerStyle={styles.scrollViewContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text style={styles.title}>Brands Store</Text>
 
-            <Text style={styles.subtitle}>Top Categories</Text>
-            <CategoryButtons categories={categories} />
-
-            <Text style={styles.subtitle}>Top Brands</Text>
-            {/* <BrandIcons brands={brands} onBrandSelect={handleBrandSelect}/> */}
-            <BrandIcons/>
-
-            <View style={styles.popularProductsHeader}>
-              <Text style={styles.popularProductsTitle}>Popular Products</Text>
-              <TouchableOpacity onPress={handleViewAll}>
-                <Text style={styles.viewAll}>View All</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.products}>
-            <ProductList limit={4}/>
-            </View>
-          </ScrollView>
+        {/* Search Bar and Filter */}
+        <View style={styles.searchContainer}>
+          <SearchBar />
+          <TouchableOpacity onPress={toggleFilterPanel}>
+            <svgs.Group width={20} height={20} />
+          </TouchableOpacity>
         </View>
-      </TouchableWithoutFeedback>
 
-      {/* Filter panel which stays above the main content */}
+        {/* Top Categories */}
+        <Text style={styles.subtitle}>Top Categories</Text>
+        <CategoryButtons categories={categories} />
+
+        {/* Top Brands */}
+        <Text style={styles.subtitle}>Top Brands</Text>
+        <BrandIcons />
+
+        {/* Popular Products */}
+        <View style={styles.popularProductsHeader}>
+          <Text style={styles.popularProductsTitle}>Popular Products</Text>
+          <TouchableOpacity onPress={handleViewAll}>
+            <Text style={styles.viewAll}>View All</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.products}>
+          <ProductList limit={4} />
+        </View>
+      </ScrollView>
+
+      {/* Filter Panel */}
       {isFilterVisible && (
         <Animated.View
           style={{
@@ -121,8 +127,8 @@ const store = () => {
             transform: [
               {
                 translateY: slideAnim.interpolate({
-                  inputRange: [0, 4],
-                  outputRange: [100, 1000],
+                  inputRange: [0, 1],
+                  outputRange: [500, 0], // Adjust sliding range as needed
                 }),
               },
             ],
@@ -131,80 +137,84 @@ const store = () => {
           <FilterPanel />
         </Animated.View>
       )}
-    </SafeAreaView>
+    </View>
+  </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: "black",
   },
   container: {
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     height: 48,
-    width: '100%',
+    width: "100%",
     padding: 8,
   },
   logo: {
-    width: 100, // Adjust as needed
-    height: 40, // Adjust as needed
-    resizeMode: 'contain',
+    width: 100,
+    height: 40,
+    resizeMode: "contain",
   },
   title: {
     fontSize: 24,
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     marginBottom: 16,
-    paddingLeft:10,
+    paddingLeft: 10,
   },
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
     paddingHorizontal: 30,
   },
   subtitle: {
     fontSize: 20,
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     marginVertical: 8,
-    paddingLeft:10,
+    paddingLeft: 10,
+  },
+  scrollViewContent: {
+    paddingBottom: 40, // Add padding to prevent content from being hidden
   },
   popularProductsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   popularProductsTitle: {
     fontSize: 24,
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     marginVertical: 8,
-    paddingLeft:10,
+    paddingLeft: 10,
   },
   viewAll: {
     fontSize: 14,
-    color: 'white',
-    fontWeight: '500',
+    color: "white",
+    fontWeight: "500",
     marginVertical: 12,
   },
   filterPanel: {
     position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
     height: 500,
     backgroundColor: "#1D2221",
     zIndex: 10,
-   
   },
-  products:{
-    padding:10,
-    paddingBottom:40,
+  products: {
+    padding: 10,
   },
-  
   
 
 });

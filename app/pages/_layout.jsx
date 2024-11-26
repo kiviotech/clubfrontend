@@ -29,7 +29,6 @@ export default function Layout() {
       <Stack.Screen name="orderPage" options={{ headerShown: false }} />
       <Stack.Screen name="TrackOrderScreen" options={{ headerShown: false }} />
       <Stack.Screen name="LanguageSelector" options={{ headerShown: false }} />
-      {/* <Stack.Screen name="viewProduct" options={{ headerShown: false }} /> */}
     </Stack>
   );
 }

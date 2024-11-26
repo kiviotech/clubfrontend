@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity,StyleSheet ,ScrollView} from "react-native";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownPicker from "react-native-dropdown-picker";
-import { TextInput } from "react-native";
-import StepIndicator from "../../components/StepIndicator"
+import StepIndicator from "../../components/StepIndicator";
 import { router } from "expo-router";
 import svgs from "../../constants/svgs";
+import CrossPlatformDatePicker from "./CrossPlatformDatePicker";
+import useFormStore from "../../src/store/useFormStore";
 
 const RequestDesign = () => {
   const [fabricOpen, setFabricOpen] = useState(false);
@@ -16,24 +16,9 @@ const RequestDesign = () => {
     { label: "Polyester", value: "polyester" },
     { label: "Silk", value: "silk" },
   ]);
+  const [startDate, setStartDate] = useState(null);
+  const { designDetails, setDesignDetails } = useFormStore();
 
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [deadline, setDeadline] = useState("");
-
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
-
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
-
-  const handleConfirm = (date) => {
-    setDeadline(date.toLocaleDateString());
-    hideDatePicker();
-  };
-
-  
   const handlePrevSection = () => {
     router.push("/(tabs)/home");
   };
@@ -44,15 +29,19 @@ const RequestDesign = () => {
 
   const handleGoHome = () => {
     router.push("/(tabs)/home");
-  }
+  };
+
+  const handleDesignDetailsChange = (key, value) => {
+    console.log(`${key}:`, value);
+    setDesignDetails({ [key]: value });
+  };
 
   return (
-
-
-<SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView>
         <TouchableOpacity onPress={handleGoHome}>
-          <svgs.back />
+          {/* Ensure svgs.back renders a valid component */}
+          {svgs.back ? <svgs.back /> : <Text style={styles.backText}>Back</Text>}
         </TouchableOpacity>
         <StepIndicator currentPosition={0} />
 
@@ -62,6 +51,8 @@ const RequestDesign = () => {
             style={styles.input}
             placeholder="Design Title"
             placeholderTextColor="#ccc"
+            value={designDetails.title}
+            onChangeText={(text) => handleDesignDetailsChange("title", text)}
           />
 
           <TextInput
@@ -69,8 +60,10 @@ const RequestDesign = () => {
             placeholder="Description"
             placeholderTextColor="#ccc"
             multiline={true}
-            numberOfLines={4}
+            value={designDetails.description}
+            onChangeText={(text) => handleDesignDetailsChange("description", text)}
           />
+         <Text style={styles.label}>Select Fabric</Text>
           <DropDownPicker
             open={fabricOpen}
             value={fabricValue}
@@ -78,38 +71,38 @@ const RequestDesign = () => {
             setOpen={setFabricOpen}
             setValue={setFabricValue}
             setItems={setFabricItems}
-            placeholder="Fabric Preferences"
+            placeholder="Select Fabric"
+            placeholderStyle={styles.placeholderStyle}
             style={styles.dropdown}
             dropDownContainerStyle={styles.dropdownContainer}
-            placeholderStyle={styles.placeholderStyle}
+            onChangeValue={(value) => handleDesignDetailsChange("fabric", value)}
           />
+
 
           <TextInput
             style={styles.input}
             placeholder="Colour Preferences"
             placeholderTextColor="#ccc"
+            value={designDetails.color}
+            onChangeText={(text) => handleDesignDetailsChange("color", text)}
           />
-
-          <TouchableOpacity style={styles.deadlineButton} onPress={showDatePicker}>
-            <Text style={styles.deadlineText}>{deadline || "Select Deadline"}</Text>
-          </TouchableOpacity>
-
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
-            mode="date"
-            onConfirm={handleConfirm}
-            onCancel={hideDatePicker}
-            themeVariant="dark"
+          <CrossPlatformDatePicker
+            label="Select Deadline"
+            value={startDate}
+            onChange={(date) => {
+              setStartDate(date);
+              handleDesignDetailsChange("deadline", date);
+            }}
           />
-
           <TextInput
             style={styles.input}
             placeholder="Budget"
             placeholderTextColor="#ccc"
+            value={designDetails.budget}
+            onChangeText={(text) => handleDesignDetailsChange("budget", text)}
           />
         </View>
 
-        {/* Buttons Section */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.goBackButton} onPress={handlePrevSection}>
             <Text style={styles.buttonText}>Go Back</Text>
@@ -126,74 +119,122 @@ const RequestDesign = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
-    paddingHorizontal: 16, // Equivalent to px-4
+    backgroundColor: "black",
+    paddingHorizontal: 14,
+    paddingBottom: 20,
   },
   detailsContainer: {
-    marginBottom: 64, // Equivalent to mb-16
-    borderRadius: 16, // Equivalent to rounded-2xl
-    backgroundColor: '#181818',
-    paddingVertical: 32, // Equivalent to py-8
-    paddingHorizontal: 20, // Equivalent to px-5
-    marginTop: 12, // Equivalent to mt-3
+    marginBottom: 64,
+    borderRadius: 16,
+    backgroundColor: "#181818",
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    marginTop: 12,
   },
   title: {
-    color: 'white',
-    fontSize: 24, // Equivalent to text-2xl
-    marginBottom: 24, // Equivalent to mb-6
-    fontFamily: 'Poppins-SemiBold', // Replace with your font
+    color: "white",
+    fontSize: 24,
+    marginBottom: 24,
+    fontFamily: "Poppins-SemiBold",
   },
   input: {
-    marginBottom: 16, // Equivalent to mb-4
-    backgroundColor: '#919EAB29',
-    color: 'white',
-    padding: 12, // Equivalent to p-3
-    borderRadius: 8, // Equivalent to rounded-md
+    marginBottom: 16,
+    backgroundColor: "#919EAB29",
+    color: "white",
+    padding: 12,
+    borderRadius: 8,
   },
   multilineInput: {
-    height: 96, // Adjust height for multiline input
+    height: 96,
   },
   dropdown: {
-    marginBottom: 16, // Equivalent to mb-4
-    backgroundColor: '#919EAB29',
+    marginBottom: 16,
+    backgroundColor: "#919EAB29",
+
   },
   dropdownContainer: {
-    backgroundColor: 'white',
-  },
-  placeholderStyle: {
-    color: 'white',
-  },
-  deadlineButton: {
-    marginBottom: 16, // Equivalent to mb-4
-    backgroundColor: '#919EAB29',
-    padding: 12, // Equivalent to p-3
-    borderRadius: 8, // Equivalent to rounded-md
-  },
-  deadlineText: {
-    color: 'white',
+    backgroundColor: "white",
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   goBackButton: {
-    backgroundColor: 'white',
-    borderRadius: 8, // Equivalent to rounded-lg
-    padding: 12, // Equivalent to p-3
+    backgroundColor: "white",
+    borderRadius: 8,
+    padding: 12,
     flex: 1,
-    marginRight: 8, // Equivalent to mr-2
+    marginRight: 8,
   },
   nextSectionButton: {
-    backgroundColor: '#8FFA09', // Replace with your primary color
-    borderRadius: 8, // Equivalent to rounded-lg
-    padding: 12, // Equivalent to p-3
+    backgroundColor: "#8FFA09",
+    borderRadius: 8,
+    padding: 12,
     flex: 1,
   },
   buttonText: {
-    color: 'black',
-    fontSize: 16, // Equivalent to text-base
-    fontFamily: 'Poppins-SemiBold', // Replace with your font
-    textAlign: 'center',
+    color: "black",
+    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+    textAlign: "center",
+  },
+  backText: {
+    color: "white",
+    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+  },
+  placeholderStyle: {
+    color: "white", // Set the placeholder text color to white
+  },
+  dropdown: {
+    marginBottom: 16,
+    backgroundColor: "#919EAB29",
+    borderColor: "transparent",
+  },
+  dropdownContainer: {
+    backgroundColor: "#fff",
+    borderColor: "#919EAB29",
+  },
+  placeholderStyle: {
+    color: "white",
+  },
+  label: {
+    color: "white",
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  goBackButton: {
+    backgroundColor: "white",
+    borderRadius: 8,
+    padding: 12,
+    flex: 1,
+    marginRight: 8,
+  },
+  nextSectionButton: {
+    backgroundColor: "#8FFA09",
+    borderRadius: 8,
+    padding: 12,
+    flex: 1,
+  },
+  buttonText: {
+    color: "black",
+    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+    textAlign: "center",
+  },
+  backText: {
+    color: "white",
+    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+  },
+  placeholderStyle: {
+    color: "white", // Placeholder text color
+    fontSize: 14, // Optional: Adjust the font size if needed
+    fontFamily: "Poppins-Regular", // Optional: Match the font with the rest of the UI
   },
 });
 

@@ -22,6 +22,8 @@ import {
 } from "../../src/api/services/orderItemService";
 import useCartStore from "../../src/store/useCartStore";
 import { getShippingInfoByUserId } from "../../src/api/repositories/shippingInfoRepository";
+import useOrderStore from "../../src/store/useOrderItemStore";
+import useUserDataStore from "../../src/store/userData";
 
 const Checkout = () => {
   const router = useRouter();
@@ -36,16 +38,19 @@ const Checkout = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [orderItems, setOrderItems] = useState([]);
   const params = useLocalSearchParams();
-  const [createdOrderItems, setCreatedOrderItems] = useState([]);
   const [shippingInfos, setShippingInfos] = useState([]);
   const cartItems = useCartStore((state) => state.items);
+
+  const { addOrderItem } = useOrderStore();
 
   const handlePress = () => {
     router.back();
   };
 
-  const userId = 23;
+  const userId = useUserDataStore((state) => state.users[0]?.id);
   useEffect(() => {
+    if (!userId) return; // Ensure userId is available before proceeding
+
     const fetchShippingInfos = async () => {
       try {
         const response = await getShippingInfoByUserId(userId);
@@ -56,66 +61,121 @@ const Checkout = () => {
     };
 
     fetchShippingInfos();
-  }, [userId]);
+  }, [userId]); // Re-fetch if userId changes
+
 
   const handlePayment = async () => {
     if (!cartItems || cartItems.length === 0) {
       alert("Your cart is empty. Please add items to proceed.");
       return;
     }
-
-    try {
-      const orderId = 1;
-      const createdItems = [];
-
-      const promises = cartItems.map(async (item) => {
-        const orderItemData = {
-          data: {
-            quantity: item.quantity || 1,
-            price: item.price || 1,
-            subtotal: (item.quantity || 1) * (item.price || 1),
-            product: item.id,
-            order: orderId,
-            locale: "en",
-          },
-        };
-
-        const response = await createOrder(orderItemData);
-        createdItems.push(response.data.id);
-      });
-
-      await Promise.all(promises);
-      setCreatedOrderItems(createdItems);
-    } catch (error) {
-      console.error("Error creating order items:", error);
-      alert("Failed to create order items.");
-    }
-  };
-
-  const handlepay = () => {
+  
     if (selectedAddress) {
-      console.log("Selected Address:", selectedAddress);
-      console.log("Created Order Items:", createdOrderItems);
-
-      if (createdOrderItems.length > 0) {
+      // console.log("Selected Address:", selectedAddress);
+      try {
+        const createdItems = [];
+        const documentIds = []; // Initialize array to store documentIds
+  
+        // Map over cartItems and process each asynchronously
+        const promises = cartItems.map(async (item) => {
+          const orderItemData = {
+            data: {
+              quantity: item.quantity || 1,
+              price: item.price || 1,
+              subtotal: (item.quantity || 1) * (item.price || 1),
+              product: item.id,
+              locale: "en",
+            },
+          };
+  
+          // Await the creation of the order and store the result
+          const response = await createOrder(orderItemData);
+          createdItems.push(response.data.id);
+  
+          // Push the documentId to documentIds array
+          documentIds.push(response.data.documentId);
+  
+          addOrderItem(response.data.id); // Store the order item ID
+          // console.log("Order Item Stored:", response.data.documentId);
+        });
+  
+        // Wait for all promises to resolve
+        await Promise.all(promises);
+  
+        // Only proceed if all promises are successful
         const encodedOrderItems = encodeURIComponent(
-          JSON.stringify(createdOrderItems)
+          JSON.stringify(createdItems)
         );
+  
+        const encodedDocumentIds = encodeURIComponent(
+          JSON.stringify(documentIds)
+        );
+  
+        // console.log(documentIds); // This will now show populated documentIds
+  
         router.push({
           pathname: "/pages/payment",
           params: {
             orderItemCreated: encodedOrderItems,
             selectedAddress: JSON.stringify(selectedAddress),
+            documentIds: encodedDocumentIds,
           },
         });
-        console.log("Navigating with Order Items:", createdOrderItems);
+      } catch (error) {
+        console.error("Error creating order items:", error);
+        alert("Failed to create order items.");
       }
     } else {
       alert("Please select an address!");
     }
   };
+  
+// const documentIdOrderItem = response.data.documentId;
+// console.log("hello",docu)
+const [errors, setErrors] = useState({
+  fullName: '',
+  address: '',
+  state: '',
+  pincode: '',
+  phoneNo: '',
+});
+
 
   const handleAddAddress = async () => {
+    setErrors({ fullName: '', address: '', state: '', pincode: '', phoneNo: '' });
+    let valid = true;
+        const errorMessages = {};
+
+        if (!fullName) {
+            valid = false;
+            errorMessages.fullName = "Name is required";
+        }
+
+        if (!address) {
+            valid = false;
+            errorMessages.address = "Address is required";
+        }
+
+        if (!state) {
+            valid = false;
+            errorMessages.state = "State is required";
+        }
+
+        if (!pincode || pincode.length !== 6) {
+            valid = false;
+            errorMessages.pincode = "Pincode should be 6 digits";
+        }
+
+        if (!phoneNo || phoneNo.length !== 10) {
+            valid = false;
+            errorMessages.phoneNo = "Phone number should be 10 digits";
+        }
+
+        if (!valid) {
+            setErrors(errorMessages);
+            return;
+        }
+
     const data = {
       Fullname: fullName,
       Address: address,
@@ -148,7 +208,6 @@ const Checkout = () => {
   };
 
   const handleContinueToPayment = () => {
-    handlepay();
     handlePayment();
   };
 
@@ -258,12 +317,16 @@ const Checkout = () => {
                   value={fullName}
                   onChangeText={setFullName}
                 />
+                {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
+
                 <Text style={styles.inputLabel}>Address</Text>
                 <TextInput
                   style={styles.input}
                   value={address}
                   onChangeText={setAddress}
                 />
+                {errors.address && <Text style={styles.errorText}>{errors.address}</Text>}
+
                 <View style={styles.row}>
                   <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>State</Text>
@@ -272,6 +335,7 @@ const Checkout = () => {
                       value={state}
                       onChangeText={setState}
                     />
+                     {errors.state && <Text style={styles.errorText}>{errors.state}</Text>}
                   </View>
                   <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>Pincode</Text>
@@ -281,6 +345,7 @@ const Checkout = () => {
                       onChangeText={setPincode}
                       keyboardType="numeric"
                     />
+                    {errors.pincode && <Text style={styles.errorText}>{errors.pincode}</Text>}
                   </View>
                 </View>
                 <Text style={styles.inputLabel}>Phone No.</Text>
@@ -290,6 +355,7 @@ const Checkout = () => {
                   onChangeText={setPhoneNo}
                   keyboardType="phone-pad"
                 />
+                 {errors.phoneNo && <Text style={styles.errorText}>{errors.phoneNo}</Text>}
                 <TouchableOpacity
                   style={styles.button}
                   onPress={handleAddAddress}
@@ -453,6 +519,12 @@ const styles = StyleSheet.create({
     right: 10,
     padding: 10,
   },
+  errorText:{
+    color:"red",
+    fontSize:10,
+    // marginBottom:10,
+    // margin:0
+}
 });
 
 export default Checkout;

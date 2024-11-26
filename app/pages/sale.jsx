@@ -59,7 +59,7 @@ const FlashSaleComponent = () => {
       onPress={() => handleItemPress(item)}
     >
       <Image
-        source={{ uri: item.mainImage }}
+        source={{ uri: item.mainImage  ||'https://example.com/fallback.png'}}
         style={styles.image}
         onError={() => console.log("Error loading image:", item.image)}
       />

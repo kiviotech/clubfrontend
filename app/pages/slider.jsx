@@ -5,7 +5,6 @@ import {
   StyleSheet,
   FlatList,
   Image,
-  TouchableOpacity,
   Animated,
   Dimensions,
 } from "react-native";
@@ -20,6 +19,7 @@ const ITEM_SPACING = 10;
 const HorizontalCarousel = () => {
   const { brandCollabs, setBrandCollabs } = useBrandCollabStore();
   const scrollX = useRef(new Animated.Value(0)).current;
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     const fetchBrandCollabs = async () => {
@@ -33,6 +33,22 @@ const HorizontalCarousel = () => {
 
     fetchBrandCollabs();
   }, [setBrandCollabs]);
+
+  // Auto-slide effect
+  useEffect(() => {
+    let currentIndex = 0;
+    const interval = setInterval(() => {
+      if (scrollRef.current && brandCollabs.length > 0) {
+        currentIndex = (currentIndex + 1) % brandCollabs.length; // Loop back to the start
+        scrollRef.current.scrollToOffset({
+          offset: currentIndex * (ITEM_WIDTH + ITEM_SPACING),
+          animated: true,
+        });
+      }
+    }, 2000); // Slide every 3 seconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [brandCollabs]);
 
   const renderItem = ({ item, index }) => {
     const inputRange = [
@@ -59,14 +75,8 @@ const HorizontalCarousel = () => {
 
     return (
       <Animated.View style={[styles.card, { transform: [{ scale }], opacity }]}>
-        {/* <Text style={styles.title}>{item.title || "Brand Collaboration"}</Text> */}
-        {/* <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>
-            {item.buttonLabel || "Learn More"}
-          </Text>
-        </TouchableOpacity> */}
         {imageUrl ? (
-          <Image source={{ uri: imageUrl }} style={styles.image} />
+          <Image source={{ uri: imageUrl  ||'https://example.com/fallback.png'}} style={styles.image} />
         ) : (
           <Text style={{ color: "#fff" }}>Image not available</Text>
         )}
@@ -76,6 +86,7 @@ const HorizontalCarousel = () => {
 
   return (
     <Animated.FlatList
+      ref={scrollRef} // Reference to FlatList
       data={brandCollabs}
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
@@ -101,36 +112,10 @@ const styles = StyleSheet.create({
     width: ITEM_WIDTH,
     height: 170,
     borderRadius: 10,
-    // backgroundColor:
-    //   "linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%)",
-    // // padding: 15,
     marginRight: ITEM_SPACING,
     justifyContent: "space-between",
     position: "relative",
   },
-  title: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  button: {
-    backgroundColor: "#000",
-    borderRadius: 5,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    alignSelf: "flex-start",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  // image: {
-  //   width: 60,
-  //   height: 60,
-  //   position: "absolute",
-  //   right: 10,
-  //   bottom: 10,
-  // },
   image: {
     width: "100%",
     height: "100%",

@@ -5,11 +5,9 @@
 //   createUser: "/auth/local/register",
 //   updateUser: (id) => `/users/${id}`,
 //   deleteUser: (id) => `/users/${id}`,
-//   changePassword: "/auth/change-password",
 // };
 
 // export default userEndpoints;
-
 const userEndpoints = {
   getUsers: "/users",
   getUserById: (id) => `/users/${id}`,
@@ -18,6 +16,7 @@ const userEndpoints = {
   updateUser: (id) => `/users/${id}`,
   deleteUser: (id) => `/users/${id}`,
   changePassword: "/auth/change-password",
+  getUserWithOrderDetails: (id) => `/users/${id}?populate[order_details][populate][orderItems][populate][product][populate]=*`,
 };
 
 export default userEndpoints

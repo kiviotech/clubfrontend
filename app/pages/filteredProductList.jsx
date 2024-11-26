@@ -161,7 +161,7 @@ const FilteredProductList = ({ selectedDiscount }) => {
         return (
           <View key={index} style={styles.productCard}>
             <Image
-              source={{ uri: imageUrl }}
+              source={{ uri: imageUrl  ||'https://example.com/fallback.png' }}
               style={styles.productimage}
               resizeMode="contain"
             />

@@ -19,3 +19,6 @@ export const deleteUser = (id) =>
 export const changePassword = (data) =>
   apiClient.post(userEndpoints.changePassword, data, {
   });
+
+  export const getUserWithOrderDetails = (id) =>
+    apiClient.get(userEndpoints.getUserWithOrderDetails(id));

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -9,10 +9,11 @@ import {
   ScrollView,
 } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { useLocalSearchParams } from "expo-router";
 
 const TrackOrderScreen = () => {
-  const [currentStep, setCurrentStep] = useState(0);
   const trackingProgress = useRef(new Animated.Value(0)).current;
+  const { imageUrl, productName, productPrice, level } = useLocalSearchParams();
 
   const steps = [
     {
@@ -40,19 +41,32 @@ const TrackOrderScreen = () => {
       description: "Your order is out for delivery",
       icon: "directions-bike",
     },
+    {
+      status: "Delivered",
+      description: "Your order has been successfully delivered",
+      icon: "home",
+    },
   ];
 
-  const goToNextStep = () => {
-    if (currentStep < steps.length - 1) {
-      Animated.timing(trackingProgress, {
-        toValue: currentStep + 1,
-        duration: 800,
-        useNativeDriver: false,
-      }).start(() => {
-        setCurrentStep(currentStep + 1);
-      });
-    }
+  // Map order levels to currentStep indices
+  const levelMapping = {
+    pending: 1, // Order confirmed
+    processing: 2, // Order processed
+    shipped: 3, // Shipped
+    delivered: 4, // Out for delivery
   };
+
+  // Determine the current step based on the level
+  const currentStep = levelMapping[level] || 0;
+
+  // Animate the progress bar
+  useEffect(() => {
+    Animated.timing(trackingProgress, {
+      toValue: currentStep,
+      duration: 800,
+      useNativeDriver: false,
+    }).start();
+  }, [currentStep]);
 
   return (
     <ScrollView style={styles.container}>
@@ -61,13 +75,10 @@ const TrackOrderScreen = () => {
 
       {/* Product Information */}
       <View style={styles.productContainer}>
-        <Image
-          source={{ uri: "https://via.placeholder.com/100" }}
-          style={styles.productImage}
-        />
+        <Image source={{ uri: imageUrl  ||'https://example.com/fallback.png'}} style={styles.productImage} />
         <View style={styles.productDetails}>
-          <Text style={styles.productName}>Product Name</Text>
-          <Text style={styles.price}>$250</Text>
+          <Text style={styles.productName}>{productName}</Text>
+          <Text style={styles.productPrice}>${productPrice}</Text>
           <Text style={styles.deliveryDate}>Delivering on 28 Nov, 2024</Text>
           <View style={styles.ratingContainer}>
             {Array.from({ length: 5 }).map((_, index) => (
@@ -134,12 +145,6 @@ const TrackOrderScreen = () => {
           </Text>
         </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.nextStepButton} onPress={goToNextStep}>
-        <Text style={styles.buttonText}>
-          {currentStep < steps.length - 1 ? "Next Step" : "Completed"}
-        </Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -188,7 +193,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#fff",
   },
-  price: {
+  productPrice: {
     fontSize: 18,
     fontWeight: "500",
     color: "#3CE13D",
@@ -263,17 +268,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "normal",
   },
-  nextStepButton: {
-    backgroundColor: "#3CE13D",
-    padding: 15,
-    borderRadius: 10,
-    width: "50%",
-    alignItems: "center",
-    alignSelf: "center",
-    marginTop: 20,
-    marginBottom:30,
-  },
-  
 });
 
 export default TrackOrderScreen;

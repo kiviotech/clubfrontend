@@ -5,7 +5,7 @@ export const getOrderItems = () =>
   apiClient.get(orderItemEndpoints.getOrderItems());
 
 export const getOrderItemById = (id) =>
-  apiClient.get(orderItemEndpoints.getOrderItemById(id));
+  apiClient.get(orderItemEndpoints.getOrderItemById(id)); 
 
 export const createOrderItem = (data) => 
   apiClient.post(orderItemEndpoints.createOrderItem, data)

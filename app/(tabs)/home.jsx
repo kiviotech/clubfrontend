@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -22,11 +22,35 @@ import Sale from "../pages/sale";
 import NewArrival from "../../components/productList/NewArrival";
 import Shop_Brands from "../pages/shop_Brands";
 import Brand_page from "../pages/brand_page";
-import useStore from "../../src/store/useStore";
+import { getProfileByUserId } from "../../src/api/repositories/profileRepository";
+import useUserDataStore from "../../src/store/userData";
+import { getUserById } from "../../src/api/repositories/userRepository";
+
 
 const Home = () => {
-  const user = useStore((state) => state.user);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  const userId = useUserDataStore((state) => state.users[0]?.id);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await getUserById(userId); // Fetch user data by ID
+        console.log(response.data.username);
+        setUser(response.data); // Set the fetched user data to the state
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
+      } finally {
+        setLoading(false); // Set loading to false once the data is fetched
+      }
+    };
+
+    if (userId) {
+      fetchUser();
+    }
+  }, [userId]);
 
   const openVideoLink = (videoUrl) => {
     Linking.openURL(videoUrl);
@@ -69,7 +93,11 @@ const Home = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.welcomeBox}>
           <Text style={styles.welcomeText}>Welcome back 👋</Text>
-          <Text style={styles.userName}>Aditya Kumar Singh</Text>
+          {user?.username ? (
+            <Text style={styles.userName}>{user.username}</Text> // Display the username
+          ) : (
+            <Text style={styles.userName}>User</Text> // Fallback for undefined username
+          )}
           <Text style={styles.explore}>Explore Brands</Text>
           <Slider />
         </View>
@@ -85,6 +113,10 @@ const Home = () => {
           <Text style={styles.explore}>Brand Collaborations</Text>
           <Slider />
         </View>
+
+        <TouchableOpacity style={styles.requestDesignButton} onPress={handleRequest}>
+          <Text style={styles.requestDesignButtonText}>Request Design</Text>
+        </TouchableOpacity>
 
         <View style={styles.popularProductsHeader}>
           <Text style={styles.popularProductsTitle}>Popular Products</Text>
@@ -277,6 +309,27 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "500",
     marginVertical: 12,
+  },
+  requestDesignButton: {
+    backgroundColor: "#8FFA09", // Bright green
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8, // Rounded corners
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 12,
+    marginTop: 16,
+    shadowColor: "#8FFA09", // Subtle shadow for the button
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+    elevation: 4, // Shadow for Android
+  },
+  requestDesignButtonText: {
+    color: "black", // Contrast text
+    fontSize: 16,
+    fontWeight: "bold",
+    fontFamily: fonts["Poppins-SemiBold"],
   },
 });
 
