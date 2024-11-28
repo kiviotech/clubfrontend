@@ -47,6 +47,11 @@ const Checkout = () => {
     router.back();
   };
 
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+
   const userId = useUserDataStore((state) => state.users[0]?.id);
   useEffect(() => {
     if (!userId) return; // Ensure userId is available before proceeding
@@ -69,13 +74,13 @@ const Checkout = () => {
       alert("Your cart is empty. Please add items to proceed.");
       return;
     }
-  
+
     if (selectedAddress) {
       // console.log("Selected Address:", selectedAddress);
       try {
         const createdItems = [];
         const documentIds = []; // Initialize array to store documentIds
-  
+
         // Map over cartItems and process each asynchronously
         const promises = cartItems.map(async (item) => {
           const orderItemData = {
@@ -87,32 +92,32 @@ const Checkout = () => {
               locale: "en",
             },
           };
-  
+
           // Await the creation of the order and store the result
           const response = await createOrder(orderItemData);
           createdItems.push(response.data.id);
-  
+
           // Push the documentId to documentIds array
           documentIds.push(response.data.documentId);
-  
+
           addOrderItem(response.data.id); // Store the order item ID
           // console.log("Order Item Stored:", response.data.documentId);
         });
-  
+
         // Wait for all promises to resolve
         await Promise.all(promises);
-  
+
         // Only proceed if all promises are successful
         const encodedOrderItems = encodeURIComponent(
           JSON.stringify(createdItems)
         );
-  
+
         const encodedDocumentIds = encodeURIComponent(
           JSON.stringify(documentIds)
         );
-  
+
         // console.log(documentIds); // This will now show populated documentIds
-  
+
         router.push({
           pathname: "/pages/payment",
           params: {
@@ -129,52 +134,52 @@ const Checkout = () => {
       alert("Please select an address!");
     }
   };
-  
-// const documentIdOrderItem = response.data.documentId;
-// console.log("hello",docu)
-const [errors, setErrors] = useState({
-  fullName: '',
-  address: '',
-  state: '',
-  pincode: '',
-  phoneNo: '',
-});
+
+  // const documentIdOrderItem = response.data.documentId;
+  // console.log("hello",docu)
+  const [errors, setErrors] = useState({
+    fullName: '',
+    address: '',
+    state: '',
+    pincode: '',
+    phoneNo: '',
+  });
 
 
   const handleAddAddress = async () => {
     setErrors({ fullName: '', address: '', state: '', pincode: '', phoneNo: '' });
     let valid = true;
-        const errorMessages = {};
+    const errorMessages = {};
 
-        if (!fullName) {
-            valid = false;
-            errorMessages.fullName = "Name is required";
-        }
+    if (!fullName) {
+      valid = false;
+      errorMessages.fullName = "Name is required";
+    }
 
-        if (!address) {
-            valid = false;
-            errorMessages.address = "Address is required";
-        }
+    if (!address) {
+      valid = false;
+      errorMessages.address = "Address is required";
+    }
 
-        if (!state) {
-            valid = false;
-            errorMessages.state = "State is required";
-        }
+    if (!state) {
+      valid = false;
+      errorMessages.state = "State is required";
+    }
 
-        if (!pincode || pincode.length !== 6) {
-            valid = false;
-            errorMessages.pincode = "Pincode should be 6 digits";
-        }
+    if (!pincode || pincode.length !== 6) {
+      valid = false;
+      errorMessages.pincode = "Pincode should be 6 digits";
+    }
 
-        if (!phoneNo || phoneNo.length !== 10) {
-            valid = false;
-            errorMessages.phoneNo = "Phone number should be 10 digits";
-        }
+    if (!phoneNo || phoneNo.length !== 10) {
+      valid = false;
+      errorMessages.phoneNo = "Phone number should be 10 digits";
+    }
 
-        if (!valid) {
-            setErrors(errorMessages);
-            return;
-        }
+    if (!valid) {
+      setErrors(errorMessages);
+      return;
+    }
 
     const data = {
       Fullname: fullName,
@@ -302,10 +307,7 @@ const [errors, setErrors] = useState({
               <View style={styles.modalContent}>
                 <TouchableOpacity
                   style={styles.closeButton}
-                  onPress={() => {
-                    console.log("Close button pressed");
-                    setModalVisible(false);
-                  }}
+                  onPress={closeModal}
                 >
                   <Ionicons name="close-circle" size={30} color="#fff" />
                 </TouchableOpacity>
@@ -335,7 +337,7 @@ const [errors, setErrors] = useState({
                       value={state}
                       onChangeText={setState}
                     />
-                     {errors.state && <Text style={styles.errorText}>{errors.state}</Text>}
+                    {errors.state && <Text style={styles.errorText}>{errors.state}</Text>}
                   </View>
                   <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>Pincode</Text>
@@ -355,7 +357,7 @@ const [errors, setErrors] = useState({
                   onChangeText={setPhoneNo}
                   keyboardType="phone-pad"
                 />
-                 {errors.phoneNo && <Text style={styles.errorText}>{errors.phoneNo}</Text>}
+                {errors.phoneNo && <Text style={styles.errorText}>{errors.phoneNo}</Text>}
                 <TouchableOpacity
                   style={styles.button}
                   onPress={handleAddAddress}
@@ -519,12 +521,17 @@ const styles = StyleSheet.create({
     right: 10,
     padding: 10,
   },
-  errorText:{
-    color:"red",
-    fontSize:10,
+  errorText: {
+    color: "red",
+    fontSize: 10,
     // marginBottom:10,
     // margin:0
-}
+  },
+  modalContent: {
+    backgroundColor: "rgba(0, 0, 0, 0.8)", // Adjust opacity to see overlaps
+    padding: 20,
+    borderRadius: 10,
+  },
 });
 
 export default Checkout;

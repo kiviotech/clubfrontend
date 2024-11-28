@@ -64,6 +64,9 @@ const Home = () => {
   const handleNotify = () => {
     router.push("/pages/notification");
   };
+  const handleView = () => {
+    router.push("/pages/viewProduct");
+  };
 
   const handleProfileNavigation = (designer) => {
     router.push({
@@ -122,7 +125,7 @@ const Home = () => {
         <View style={styles.popularProductsHeader}>
           <Text style={styles.popularProductsTitle}>Popular Products</Text>
           <TouchableOpacity>
-            <Text style={styles.viewAll}>View All</Text>
+            <Text style={styles.viewAll} onPress={handleView}>View All</Text>
           </TouchableOpacity>
         </View>
         <View>

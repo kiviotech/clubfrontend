@@ -74,6 +74,66 @@ const ProductSearch = ({ limit,searchTerm }) => {
   if (error) {
     return <Text style={styles.errorText}>{error}</Text>;
   }
+  
+  const handleWishlistAdd = (product) => {
+    const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+    const item = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: quantity,
+      image: imageUrl,
+    };
+
+    if (wishlist.some((wishItem) => wishItem.id === product.id)) {
+      removeFromWishlist(product.id);
+      // setPopupMessage("Removed from wishlist! ❌");
+      setPopupProductId(product.id); // Show popup for this product
+      setPopupMessage("Removed from wishlist! ❌");
+    } else {
+      addToWishlist(item);
+      // setPopupMessage("Added to wishlist!✔️");
+      setPopupProductId(product.id); // Show popup for this product
+      setPopupMessage("Added to wishlist!✔️");
+    }
+
+    setTimeout(() => {
+      setPopupMessage("");
+    }, 2000);
+  };
+
+  const handleCartAdd = (product) => {
+    const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+    const item = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: quantity,
+      image: imageUrl,
+    };
+
+    // Check if the product is already in the cart
+    const isProductInCart = useCartStore.getState().items.some(
+      (cartItem) => cartItem.id === product.id
+    );
+
+    if (isProductInCart) {
+      setPopupProductId(product.id); // Show popup for this product
+      setPopupMessage("Product is already in the cart! 🛒");
+    } else {
+      addItemToCart(item);
+      setPopupProductId(product.id); // Show popup for this product
+      setPopupMessage("Added to cart! 🛒");
+    }
+
+    // Automatically clear the popup message after 2 seconds
+    setTimeout(() => {
+      setPopupProductId(null); // Hide popup
+      setPopupMessage(""); // Clear the message
+    }, 2000);
+  };
+
+
 
   return (
     <ScrollView style={styles.scrollContainer}>

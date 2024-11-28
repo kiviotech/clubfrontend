@@ -50,7 +50,11 @@ const RequestDesign = () => {
 
   const validateFields = () => {
     const errors = {};
-    if (!designDetails.title) errors.title = "Design Title is required.";
+    if (!designDetails.title) {
+      errors.title = "Design Title is required.";
+    } else if (!/^[a-zA-Z\s]+$/.test(designDetails.title)) {
+      errors.title = "Design Title can only contain letters and spaces.";
+    }
     if (!designDetails.description) errors.description = "Description is required.";
     if (!fabricValue) errors.fabric = "Fabric selection is required.";
     if (!designDetails.color) errors.color = "Color preference is required.";

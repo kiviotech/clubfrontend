@@ -27,6 +27,8 @@ const OrderPage = () => {
         setLoading(true);
         const response = await getUserWithOrderDetails(userId); // Fetch data
         setOrderDetails(response?.data); // Save the fetched order details
+        console.log(response.data.order_details[0].id)
+        console.log(response.data.order_details[0].documentId)
         // console.log(response.data.order_details[0].level)
         setLoading(false);
       } catch (err) {
@@ -73,6 +75,9 @@ const OrderPage = () => {
               const productName = product?.name || "No Name";
               const productPrice = product?.price || "0.00";
               const level = order.level;
+              const id = order.id; // Extract order id
+              const documentId = order.documentId;
+              
 
               return (
                 <OrderCart
@@ -81,6 +86,8 @@ const OrderPage = () => {
                   productName={productName}
                   productPrice={productPrice}
                   level={level}
+                  id={id} // Pass id
+                  documentId={documentId}
                 />
               );
             })

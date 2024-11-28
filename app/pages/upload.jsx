@@ -107,7 +107,7 @@ const Measurement = () => {
 
 
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <View>
         <TouchableOpacity onPress={handleGoHome}>
           <svgs.back />
         </TouchableOpacity>
@@ -179,7 +179,7 @@ const Measurement = () => {
             <Text style={styles.reviewButtonText}>Review</Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };

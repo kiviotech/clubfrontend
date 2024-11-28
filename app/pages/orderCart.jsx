@@ -1,9 +1,9 @@
 import React,{useState,useEffect} from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-const OrderCart = ({ imageUrl, productName, productPrice ,level}) => {
+const OrderCart = ({ imageUrl, productName, productPrice ,level,id,documentId}) => {
   const router = useRouter();
-  // console.log(level)
+  // console.log(id,documentId)
 
   
   const handleTrack = () => {
@@ -14,6 +14,8 @@ const OrderCart = ({ imageUrl, productName, productPrice ,level}) => {
         productName,
         productPrice,
         level,
+        id,
+        documentId
       },
     });
   };
