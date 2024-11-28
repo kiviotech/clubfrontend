@@ -40,6 +40,7 @@ const Home = () => {
         const response = await getUserById(userId); // Fetch user data by ID
         console.log(response.data.username);
         setUser(response.data); // Set the fetched user data to the state
+        
       } catch (error) {
         console.error("Failed to fetch user data", error);
       } finally {
@@ -126,6 +127,7 @@ const Home = () => {
         </View>
         <View>
           <ProductList limit={4} />
+        
         </View>
 
         <View>

@@ -2,7 +2,7 @@ import React from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import { FontAwesome } from "@expo/vector-icons"; // You can use any icon library like react-native-vector-icons
 
-const SearchBar = () => {
+const SearchBar = ({ searchTerm, setSearchTerm }) => {
   return (
     <View style={styles.container}>
       {/* Add Search Icon */}
@@ -12,6 +12,8 @@ const SearchBar = () => {
         style={styles.input}
         placeholder="Search"
         placeholderTextColor="gray"
+        onChangeText={(text) => setSearchTerm(text)}
+        
       />
     </View>
   );

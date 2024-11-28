@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput,Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownPicker from "react-native-dropdown-picker";
 import StepIndicator from "../../components/StepIndicator";
@@ -18,14 +18,15 @@ const RequestDesign = () => {
   ]);
   const [startDate, setStartDate] = useState(null);
   const { designDetails, setDesignDetails } = useFormStore();
+  const [validationErrors, setValidationErrors] = useState({});
 
   const handlePrevSection = () => {
     router.push("/(tabs)/home");
   };
 
-  const handleNextSection = () => {
-    router.push("../pages/measurement");
-  };
+  // const handleNextSection = () => {
+  //   router.push("../pages/measurement");
+  // };
 
   const handleGoHome = () => {
     router.push("/(tabs)/home");
@@ -35,6 +36,33 @@ const RequestDesign = () => {
     console.log(`${key}:`, value);
     setDesignDetails({ [key]: value });
   };
+
+  const handleNextSection = () => {
+    const errors = validateFields();
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      Alert.alert("Validation Error", "Please correct the highlighted fields.");
+    } else {
+      setValidationErrors({});
+      router.push("../pages/measurement");
+    }
+  };
+
+  const validateFields = () => {
+    const errors = {};
+    if (!designDetails.title) errors.title = "Design Title is required.";
+    if (!designDetails.description) errors.description = "Description is required.";
+    if (!fabricValue) errors.fabric = "Fabric selection is required.";
+    if (!designDetails.color) errors.color = "Color preference is required.";
+    if (!startDate) errors.deadline = "Deadline is required.";
+    if (!designDetails.budget) {
+      errors.budget = "Budget is required.";
+    } else if (!/^\d+$/.test(designDetails.budget)) {
+      errors.budget = "Budget must be a valid number.";
+    }
+    return errors;
+  };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -54,6 +82,7 @@ const RequestDesign = () => {
             value={designDetails.title}
             onChangeText={(text) => handleDesignDetailsChange("title", text)}
           />
+          {validationErrors.title && <Text style={styles.errorText}>{validationErrors.title}</Text>}
 
           <TextInput
             style={[styles.input, styles.multilineInput]}
@@ -63,7 +92,9 @@ const RequestDesign = () => {
             value={designDetails.description}
             onChangeText={(text) => handleDesignDetailsChange("description", text)}
           />
-         <Text style={styles.label}>Select Fabric</Text>
+          {validationErrors.description && <Text style={styles.errorText}>{validationErrors.description}</Text>}
+
+          <Text style={styles.label}>Select Fabric</Text>
           <DropDownPicker
             open={fabricOpen}
             value={fabricValue}
@@ -77,6 +108,7 @@ const RequestDesign = () => {
             dropDownContainerStyle={styles.dropdownContainer}
             onChangeValue={(value) => handleDesignDetailsChange("fabric", value)}
           />
+          {validationErrors.fabric && <Text style={styles.errorText}>{validationErrors.fabric}</Text>}
 
 
           <TextInput
@@ -86,6 +118,8 @@ const RequestDesign = () => {
             value={designDetails.color}
             onChangeText={(text) => handleDesignDetailsChange("color", text)}
           />
+          {validationErrors.color && <Text style={styles.errorText}>{validationErrors.color}</Text>}
+
           <CrossPlatformDatePicker
             label="Select Deadline"
             value={startDate}
@@ -94,6 +128,8 @@ const RequestDesign = () => {
               handleDesignDetailsChange("deadline", date);
             }}
           />
+          {validationErrors.deadline && <Text style={styles.errorText}>{validationErrors.deadline}</Text>}
+
           <TextInput
             style={styles.input}
             placeholder="Budget"
@@ -101,6 +137,8 @@ const RequestDesign = () => {
             value={designDetails.budget}
             onChangeText={(text) => handleDesignDetailsChange("budget", text)}
           />
+          {validationErrors.budget && <Text style={styles.errorText}>{validationErrors.budget}</Text>}
+
         </View>
 
         <View style={styles.buttonContainer}>
@@ -184,7 +222,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-SemiBold",
   },
   placeholderStyle: {
-    color: "white", // Set the placeholder text color to white
+    color: "ccc", // Set the placeholder text color to white
   },
   dropdown: {
     marginBottom: 16,
@@ -235,6 +273,15 @@ const styles = StyleSheet.create({
     color: "white", // Placeholder text color
     fontSize: 14, // Optional: Adjust the font size if needed
     fontFamily: "Poppins-Regular", // Optional: Match the font with the rest of the UI
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginBottom: 8,
+  },
+  errorInput: {
+    borderColor: "red",
+    borderWidth: 1,
   },
 });
 

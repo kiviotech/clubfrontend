@@ -34,7 +34,7 @@ const NewArrival = ({ limit }) => {
   const addToWishlist = useWishlistStore((state) => state.addToWishlist);
   const { wishlist, removeFromWishlist } = useWishlistStore();
   const [popupMessage, setPopupMessage] = useState("");
-  
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -79,30 +79,30 @@ const NewArrival = ({ limit }) => {
     const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
     console.log("Is product in wishlist:", isInWishlist);
     const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
-  const item = {
-    id: product.id,
-    name: product.name,
-    price: product.price,
-    image: imageUrl,
+    const item = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: imageUrl,
+    };
+
+    if (isInWishlist) {
+      removeFromWishlist(product.id);
+      console.log("Removed from wishlist");
+      setPopupMessage("Removed from wishlist! ❌");
+    } else {
+      addToWishlist(item);
+      console.log("Added to wishlist");
+      setPopupMessage("Added to wishlist! ✔️");
+    }
+
+    setTimeout(() => {
+      setPopupMessage("");
+    }, 2000);
   };
 
-  if (isInWishlist) {
-    removeFromWishlist(product.id);
-    console.log("Removed from wishlist");
-    setPopupMessage("Removed from wishlist! ❌");
-  } else {
-    addToWishlist(item);
-    console.log("Added to wishlist");
-    setPopupMessage("Added to wishlist! ✔️");
-  }
-
-  setTimeout(() => {
-    setPopupMessage("");
-  }, 2000);
-};
-
   const handleNotify = () => {
-    router.push("/pages/viewProduct"); 
+    router.push("/pages/viewProduct");
   };
 
 
@@ -122,24 +122,24 @@ const NewArrival = ({ limit }) => {
               // onPress={() => handleProductDetails(item)} // Call handleProductDetails with product data
               style={styles.cardContent}
             >
-             <TouchableOpacity
-  onPress={() => handleWishlistAdd(item)}
-  style={styles.favoriteIcon}
->
-  <MaterialIcons
-    name={
-      wishlist.some((wishItem) => wishItem.id === item.id)
-        ? "favorite"
-        : "favorite-border"
-    }
-    size={18}
-    color={
-      wishlist.some((wishItem) => wishItem.id === item.id)
-        ? "red"
-        : "#fff"
-    }
-  />
-</TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleWishlistAdd(item)}
+                style={styles.favoriteIcon}
+              >
+                <MaterialIcons
+                  name={
+                    wishlist.some((wishItem) => wishItem.id === item.id)
+                      ? "favorite"
+                      : "favorite-border"
+                  }
+                  size={18}
+                  color={
+                    wishlist.some((wishItem) => wishItem.id === item.id)
+                      ? "red"
+                      : "#fff"
+                  }
+                />
+              </TouchableOpacity>
               <Image
                 source={{ uri: `${MEDIA_BASE_URL}${item.product_image.url}` }}
                 style={styles.productImage}

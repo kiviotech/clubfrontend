@@ -19,12 +19,12 @@ const useCartStore = create(
               index === existingItemIndex
                 ? {
                     ...cartItem,
-                    quantity: cartItem.quantity ? cartItem.quantity + 1 : 1,
+                    quantity: item.quantity || cartItem.quantity,
                   }
                 : cartItem
             );
           } else {
-            newItems = [...state.items, { ...item, quantity: 1 }];
+            newItems = [...state.items, { ...item, quantity: item.quantity || 1 }];
           }
 
           const newSubtotal = newItems.reduce(

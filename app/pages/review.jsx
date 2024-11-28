@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState} from 'react';
 import { View, Text, TouchableOpacity,StyleSheet,Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import StepIndicator from "../../components/StepIndicator";
@@ -6,13 +6,13 @@ import { router } from 'expo-router';
 import svgs from '../../constants/svgs';
 import useFormStore from '../../src/store/useFormStore';
 import { createNewDesignRequest } from '../../src/api/services/designRequestService';
+import useUserDataStore from '../../src/store/userData';
 
 const Review = () => {
   const { designDetails, measurements, uploads } = useFormStore(state => state); // Access Zustand store
+  const userId = useUserDataStore((state) => state.users[0]?.id);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-console.log(designDetails)
-console.log(measurements.specialInstructions)
-console.log(uploads.imageId)
 
   const handlePrevSection = () => {
     router.push("../pages/upload");
@@ -31,6 +31,8 @@ console.log(uploads.imageId)
   };
 
   const handleConfirm = async () => {
+    if (isSubmitting) return; // Prevent further submissions
+  setIsSubmitting(true); 
     // Prepare data to send to backend
     const data = {
       data:{
@@ -46,7 +48,7 @@ console.log(uploads.imageId)
       weight: measurements?.weight || 0, 
       special_instructions: measurements?.specialInstructions || "string", 
       image: uploads.imageId, 
-      users: "23", 
+      users: userId, 
       height: measurements?.height || "XS", 
       }
     }
@@ -54,10 +56,11 @@ console.log(uploads.imageId)
     try {
       // Send the data to the backend via API
       const response = await createNewDesignRequest(data);
+      
 
       // Handle success response
       Alert.alert('Success', 'Your design request has been submitted successfully!');
-      router.push("../pages/confirmation"); // Redirect to a confirmation page or next step
+      router.push("pages/designRequestCart"); // Redirect to a confirmation page or next step
 
     } catch (error) {
       // Handle error response

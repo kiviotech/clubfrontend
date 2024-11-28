@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import svgs from "../../constants/svgs";
 import useCartStore from "../../src/store/useCartStore";
@@ -9,26 +9,31 @@ export default function CartList({
   price,
   image,
   quantity: initialQuantity = 1,
+  size,
   isWishlist = false,
 }) {
-  // const [quantity, setQuantity] = useState(1);
   const [quantity, setQuantity] = useState(initialQuantity);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
 
+  useEffect(() => {
+    setQuantity(initialQuantity);
+  }, [initialQuantity]);
+
   const increment = () => {
     const newQuantity = quantity + 1;
     setQuantity(newQuantity);
-    updateQuantity(id, newQuantity); // Update store
+    updateQuantity(id, newQuantity);
   };
 
   const decrement = () => {
     if (quantity > 1) {
       const newQuantity = quantity - 1;
       setQuantity(newQuantity);
-      updateQuantity(id, newQuantity); // Update store
+      updateQuantity(id, newQuantity);
     }
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.productContainer}>

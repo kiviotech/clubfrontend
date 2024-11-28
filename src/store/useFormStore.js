@@ -9,14 +9,14 @@ const useFormStore = create((set) => ({
     fabric: '',
     color: '',
     deadline: '',
-    budget: 0,
+    budget: '',
   },
   measurements: {
     bust: '',
     waist: '',
     hip: '',
     height: '',
-    weight: 0,
+    weight: '',
     specialInstructions: '',
   },
   uploads: {
@@ -48,14 +48,14 @@ const useFormStore = create((set) => ({
       fabric: '',
       color: '',
       deadline: '',
-      budget: 0,
+      budget: '',
     },
     measurements: {
       bust: '',
       waist: '',
       hip: '',
       height: '',
-      weight: 0,
+      weight: '',
       specialInstructions: '',
     },
     uploads: {

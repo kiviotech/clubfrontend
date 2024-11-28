@@ -29,6 +29,9 @@ export default function Layout() {
       <Stack.Screen name="orderPage" options={{ headerShown: false }} />
       <Stack.Screen name="TrackOrderScreen" options={{ headerShown: false }} />
       <Stack.Screen name="LanguageSelector" options={{ headerShown: false }} />
+      <Stack.Screen name="passwordChangedNotification" options={{ headerShown: false }} />
+      <Stack.Screen name="designRequestCart" options={{ headerShown: false }} />
+      
     </Stack>
   );
 }

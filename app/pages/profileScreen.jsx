@@ -1,210 +1,76 @@
-// import React from 'react';
-// import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-// import Icon from 'react-native-vector-icons/Ionicons';
-// import { useLocalSearchParams } from 'expo-router';
-// import { useState } from 'react';
-// import { useNavigation } from 'expo-router';
-// import { Ionicons } from "@expo/vector-icons";
-// import { updateProfile } from '../../src/api/repositories/profileRepository';
-
-// const ProfileScreen = () => {
-
-//     const navigation = useNavigation();
-//     const { profile_img = '', name = 'Default Name', username = 'DefaultUsername' } = useLocalSearchParams();
-//     const [isEditing, setIsEditing] = useState(false);
-//     const [editedName, setEditedName] = useState(name); // State for edited name
-//     const [editedUsername, setEditedUsername] = useState(username);
-//     const userId = "23";
-
-//     const toggleEditMode = () => {
-//         setIsEditing(!isEditing);
-//     };
-
-//     // Handle Save
-//     const handleSave = async () => {
-//         try {
-//             // Send the updated profile data to the backend
-//             const updatedData = {
-//                 name: editedName,
-//                 username: editedUsername,
-//             };
-
-//             // Make the API call to update the profile
-//             await updateProfile(userId, updatedData);  // Pass userId to the update API
-//             // On success, exit edit mode
-//             setIsEditing(false);
-//             console.log('Profile updated successfully');
-//         } catch (error) {
-//             console.error('Error updating profile:', error);
-//         }
-//     };
-
-
-//     return (
-//         <SafeAreaView style={styles.container}>
-//             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-//                 <Ionicons name="arrow-back" color="white" size={30} />
-//             </TouchableOpacity>
-//             {/* Profile Header */}
-//             <View style={styles.header}>
-//                 <Text style={styles.title}>Profile</Text>
-//                 <TouchableOpacity onPress={toggleEditMode}>
-//                     <Text style={styles.editText}>{isEditing ? 'Cancel' : 'Edit'}</Text>
-//                 </TouchableOpacity>
-//             </View>
-
-//             {/* Profile Picture */}
-//             <View style={styles.profileImageContainer}>
-//                 {profile_img ? (
-//                     <Image source={{ uri: profile_img }} style={styles.profilePlaceholder} />
-//                 ) : (
-//                     <View style={styles.profilePlaceholder}>
-//                         <Icon name="person-outline" size={60} color="#fff" />
-//                     </View>
-//                 )}
-//                 <TouchableOpacity style={styles.cameraIcon}>
-//                     <Icon name="camera-outline" size={20} color="#000" />
-//                 </TouchableOpacity>
-//             </View>
-
-//             {/* Name Input or Display */}
-//             <View style={styles.inputContainer}>
-//                 {isEditing ? (
-//                     <TextInput
-//                         style={[styles.input, isEditing && styles.inputEditing]} // Conditionally apply border style
-//                         value={editedName}
-//                         onChangeText={setEditedName}
-//                         placeholder="Enter your name"
-//                         placeholderTextColor="#fff"
-//                     />
-//                 ) : (
-//                     <Text style={styles.input}>{editedName}</Text>
-//                 )}
-//             </View>
-
-//             {/* Username Input or Display */}
-//             <View style={styles.inputContainer}>
-//                 {isEditing ? (
-//                     <TextInput
-//                         style={[styles.input, isEditing && styles.inputEditing]} // Conditionally apply border style
-//                         value={editedUsername}
-//                         onChangeText={setEditedUsername}
-//                         placeholder="Enter your username"
-//                         placeholderTextColor="#fff"
-//                     />
-//                 ) : (
-//                     <Text style={styles.input}>{editedUsername}</Text>
-//                 )}
-//             </View>
-
-//             {/* Save Button */}
-//             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-//                 <Text style={styles.saveButtonText}>Save Changes</Text>
-//             </TouchableOpacity>
-//         </SafeAreaView>
-//     );
-// };
-// const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         backgroundColor: '#000',
-//         paddingHorizontal: 20,
-//         paddingTop: Platform.OS === 'android' ? 25 : 0,
-//         paddingLeft:20,
-//         paddingRight:20
-//     },
-//     backButton: {
-//         marginBottom: 10,
-//     },
-//     header: {
-//         flexDirection: 'row',
-//         justifyContent: 'space-between',
-//         alignItems: 'center',
-//         marginBottom: 20,
-//     },
-//     title: {
-//         color: '#fff',
-//         fontSize: 28,
-//         fontWeight: '600',
-//     },
-//     editText: {
-//         color: '#8FFA09',
-//         fontSize: 16,
-//         fontWeight: '500',
-//     },
-//     profileImageContainer: {
-//         alignItems: 'center',
-//         marginVertical: 20,
-//     },
-//     profilePlaceholder: {
-//         width: 120,
-//         height: 120,
-//         borderRadius: 60,
-//         backgroundColor: '#333',
-//         justifyContent: 'center',
-//         alignItems: 'center',
-//     },
-//     cameraIcon: {
-//         position: 'absolute',
-//         bottom: 0,
-//         right: '38%',
-//         backgroundColor: '#8FFA09',
-//         borderRadius: 15,
-//         padding: 5,
-//     },
-//     inputContainer: {
-//         marginBottom: 15,
-//     },
-//     input: {
-//         backgroundColor: '#1e1e1e',
-//         color: '#fff',
-//         borderRadius: 5,
-//         padding: 15,
-//         fontSize: 16,
-//     },
-//     inputEditing: {
-//         borderWidth: 2,
-//         borderColor: '#8FFA09',
-//     },
-//     saveButton: {
-//         backgroundColor: '#8FFA09',
-//         borderRadius: 5,
-//         paddingVertical: 15,
-//         alignItems: 'center',
-//         marginTop: 20,
-//     },
-//     saveButtonText: {
-//         color: '#000',
-//         fontSize: 16,
-//         fontWeight: 'bold',
-//     },
-// });
-
-// export default ProfileScreen;
-
-
-
-import React, { useState,useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Platform, Image,Alert } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import { useNavigation } from 'expo-router';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Platform, Image, Alert } from 'react-native';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons";
-import { createProfile } from '../../src/api/repositories/profileRepository'; // Import the createProfile function
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
-import { uploadFileById } from '../../src/api/services/uploadServices';
 import axios from 'axios';
+import { fetchProfileById, updateProfileById } from '../../src/api/services/profileService';
 import { BASE_URL } from '../../src/api/apiClient';
-import { updateProfile } from '../../src/api/repositories/profileRepository';
+import { uploadNewFile } from '../../src/api/services/uploadServices';
+import useUserDataStore from '../../src/store/userData';
+import { getUserProfile } from '../../src/api/repositories/userRepository';
+import useProfileStore from '../../src/store/useProfileStore';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const { profile_img = '', name: initialName = 'Default Name', username: initialUsername = 'DefaultUsername' } = useLocalSearchParams();
+  const { id, profile_img = '', name: initialName = 'Default Name', username: initialUsername = 'DefaultUsername' } = useLocalSearchParams();
   const [name, setName] = useState(initialName);
   const [username, setUsername] = useState(initialUsername);
   const [profileImage, setProfileImage] = useState(null);
-  const [profileImageId, setProfileImageId] = useState(null); // Track uploaded image ID
+  const [profileImageId, setProfileImageId] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const userId = useUserDataStore((state) => state.users[0]?.id);
+  const [profileId, setProfileId] = useState("")
+  const [profileData,setProfileData]=useState("")
+  const { setProfile } = useProfileStore();
+  
+  console.log('id', id, 'userid',userId)
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        if (userId) {
+          const response = await getUserProfile(userId); // Call the service
+          const { data } = response; // Extract data from the response
+          console.log('Fetched Profile Data:', data);
+          setProfileId(data?.profile?.documentId)
+          // console.log(profileId)
+          setProfile({
+            name: data?.profile?.name || '',
+            username: data?.profile?.username || '',
+            image: data?.profile?.image?.url || ''
+          });
+          // Update state with fetched profile data
+          setProfileData(data);
+          setName(data?.profile?.name || '');
+          setUsername(data?.profile?.username || '');
+          setProfileImage(data?.profile?.image?.url || '');
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        Alert.alert('Error', 'Failed to fetch profile.');
+      }
+    };
+
+    fetchProfile();
+  }, [id]);
+
+
+  useEffect(() => {
+    const getProfileData = async () => {
+      try {
+        if (id) {
+          const profileData = await fetchProfileById(id);
+          console.log('Fetched Profile Data:', profileData);
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+
+    getProfileData();
+  }, [id]);
 
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -231,21 +97,22 @@ const ProfileScreen = () => {
         const formData = new FormData();
         formData.append("files", imageBlob, uri.split("/").pop());
 
-        // Upload file with ID (e.g., user ID or profile ID)
+        // Upload file with bearer token
         const uploadResponse = await axios.post(
           `${BASE_URL}/upload`,
           formData,
           {
             headers: {
-              Authorization: `d52d17664c1b99486004f8cf9aca564b7696f0422229ab8ccd6c7aa4fa1c42aaad566097c1d87ed2487880e6b7c961ea57838c964a3a225fa6c713afab850e4b5bd3c5e1261e3fe5d45712e26dccb313da5f2c26f92a8101c74c4814ad3a0ace9cf9ca7b548082640741f96ce67ea60f00dd3a442fb948300f75e3a22dab556c`, // Replace with a valid JWT token
+              'Authorization': 'Bearer e243b33014fab23926d9b9079d6c90018b288b84740bb443eb910febdec1b93b6563c2b091a18081788c2bb2eb950ad15bead95e14029283ab2bfd0f4ea563eb590955e3cbbfdc100e9ef8a565993c6bd8e02985ef14df8f83123689c5f139ac50263be891842c8522877b7b73fe5136c56e0ae9823d1e9d96743ebcff502780',
+              'Content-Type': 'multipart/form-data',
             },
           }
-        )
-        const uploadedImageId = uploadResponse.data[0]?.id; 
-        console.log(uploadedImageId)// Assuming the backend returns the uploaded file ID
+        );
+        const uploadedImageId = uploadResponse.data[0]?.id;
+        console.log('Uploaded Image ID:', uploadedImageId);
 
         if (uploadedImageId) {
-          setProfileImageId(uploadedImageId); 
+          setProfileImageId(uploadedImageId);
           Alert.alert("Upload Successful", "Profile image uploaded successfully!");
         } else {
           throw new Error("Failed to retrieve uploaded image ID.");
@@ -256,25 +123,39 @@ const ProfileScreen = () => {
       } finally {
         setUploading(false);
       }
-    }
+    } 
   };
 
-  const postProfileData = async () => {
+  const handleUpdateProfile = async () => {
     try {
-      const profileData = {
-        name:name,
-        username:username,
-        profile_img: String(profileImageId),
-        user: "23", 
+      setUploading(true);
+      
+      const updateData = {
+        username,
+        name,
+        user:userId,
+        // Only include image if profileImageId exists
+        ...(profileImageId && {image: profileImageId.toString() }),
+        locale: "en"
       };
+      console.log('data', updateData)
 
-      const response = await createProfile(profileData);
-      console.log("Profile created successfully:", response.data);
-
+      const response = await updateProfileById(profileId, updateData);
       Alert.alert("Success", "Profile updated successfully!");
+      console.log("Updated Profile:", response);
+
+      useProfileStore.getState().setProfile({
+        name,
+        username,
+        image: profileImage ? profileImage : profileData?.profile?.image?.url,
+      });
+
+      navigation.goBack();
     } catch (error) {
-      console.error("Error creating profile:", error);
-      Alert.alert("Error", "Failed to create profile. Please try again.");
+      console.error("Error updating profile:", error);
+      Alert.alert("Error", "Failed to update profile: " + error.message);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -321,10 +202,10 @@ const ProfileScreen = () => {
         />
       </View>
 
-      <TouchableOpacity style={styles.saveButton} onPress={postProfileData} disabled={uploading}>
+      <TouchableOpacity style={styles.saveButton} onPress={handleUpdateProfile} disabled={uploading}>
         <Text style={styles.saveButtonText}>{uploading ? "Uploading..." : "Save Changes"}</Text>
       </TouchableOpacity>
-    </SafeAreaView> 
+    </SafeAreaView>
   );
 };
 

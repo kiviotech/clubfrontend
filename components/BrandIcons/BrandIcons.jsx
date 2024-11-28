@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     marginVertical: 16,
-    gap: 30,
+    gap: 15,
   },
   brandItem: {
     alignItems: "center",

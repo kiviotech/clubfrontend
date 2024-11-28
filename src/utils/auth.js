@@ -1,6 +1,7 @@
 import apiClient from "../api/apiClient";
 import { deleteToken, saveToken, saveUserId } from "./storage";
 import useUserDataStore from "../store/userData";
+import {useStore} from "zustand";
 
 // Login function
 export const login = async (email, password) => {
@@ -73,35 +74,87 @@ export const signup = async (username, email, password) => {
     saveToken(jwt);
     saveUserId(user.id);
 
-    // Access Zustand stores
-    const addUser = useUserDataStore.getState().addUser;
-    const setUser = useStore.getState().setUser;
+    // // Access Zustand stores
+    // const addUser = useUserDataStore.getState().addUser;
+    // const setUser = useStore.getState().setUser;
 
-    // Check if store functions are available
-    if (!addUser || !setUser) {
-      console.error("Store functions not found");
-      throw new Error("Failed to access store functions");
-    }
+    // // Check if store functions are available
+    // if (!addUser || !setUser) {
+    //   console.error("Store functions not found");
+    //   throw new Error("Failed to access store functions");
+    // }
 
-    // Update user data store
-    addUser({
-      id: user.id,
-      documentId: user.documentId || "",
-      username: user.username,
-      email: user.email,
-    });
+    // // Update user data store
+    // addUser({
+    //   id: user.id,
+    //   documentId: user.documentId || "",
+    //   username: user.username,
+    //   email: user.email,
+    // });
 
-    // Update main user store
-    setUser({
-      id: user.id,
-      documentId: user.documentId || "",
-      username: user.username,
-      email: user.email,
-    });
+    // // Update main user store
+    // setUser({
+    //   id: user.id,
+    //   documentId: user.documentId || "",
+    //   username: user.username,
+    //   email: user.email,
+    // });
 
     return response.data;
   } catch (error) {
     console.error("Signup error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const changePassword = async (currentPassword, password, passwordConfirmation) => {
+  try {
+    const response = await apiClient.post("/auth/change-password", {
+      currentPassword,
+      password,
+      passwordConfirmation,
+    });
+
+    // Log and return the response to notify the user
+    console.log("Change password response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Change password error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
+export const forgotPassword = async (email) => {
+  try {
+    const response = await apiClient.post("/auth/forgot-password", {
+      email,
+    });
+
+    // Handle the response and notify the user
+    console.log("Forgot password response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    throw error;
+  }
+};
+
+export const resetPassword = async (data) => {
+  try {
+    const response = await apiClient.post("/auth/reset-password", 
+      {
+        "password": data.password,
+        "passwordConfirmation": data.passwordConfirm,
+        "code": data.code
+      }
+    );
+
+    // Handle the response and notify the user
+    console.log("Forgot password response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Forgot password error:", error);
     throw error;
   }
 };
@@ -112,16 +165,13 @@ export const logout = () => {
     // Clear JWT token from storage
     deleteToken();
 
-    // Reset user state in stores
-    const setUser = useStore.getState().setUser;
-    if (setUser) {
-      setUser({
-        id: "",
-        documentId: "",
-        username: "",
-        email: "",
-      });
+    // Clear user data from Zustand store
+    const clearUserData = useUserDataStore.getState().clearUserData; // Ensure you have this action defined
+    if (clearUserData) {
+      clearUserData(); // Reset user data
     }
+
+    console.log("User logged out successfully.");
   } catch (error) {
     console.error("Logout error:", error);
     throw error;

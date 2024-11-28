@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView,Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownPicker from "react-native-dropdown-picker";
 import { TextInput } from "react-native";
@@ -12,9 +12,17 @@ import useFormStore from "../../src/store/useFormStore";
 
 const measurement = () => {
   const { measurements, setMeasurements } = useFormStore();
+  const [validationErrors, setValidationErrors] = useState({});
 
   const handleNextSection = () => {
-    router.push("../pages/upload");
+    const errors = validateFields();
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      Alert.alert("Validation Error", "Please correct the highlighted fields.");
+    } else {
+      setValidationErrors({});
+      router.push("/pages/upload");
+    }
   };
 
   const handlePrevSection = () => {
@@ -29,6 +37,22 @@ const measurement = () => {
     console.log(`${key}:`, value);
     setMeasurements({ [key]: value }); // Update global state
   };
+
+  const validateFields = () => {
+    const errors = {};
+    if (!measurements.bust) errors.bust = "Bust measurement is required.";
+    if (!measurements.waist) errors.waist = "Waist measurement is required.";
+    if (!measurements.hip) errors.hip = "Hip measurement is required.";
+    if (!measurements.height) errors.height = "Height measurement is required.";
+    if (!measurements.weight) {
+      errors.weight = "Weight is required.";
+    } else if (!/^\d+$/.test(measurements.weight)) {
+      errors.weight = "Weight must be a valid number.";
+    }
+    if (!measurements.specialInstructions) errors.specialInstructions = "Special instructions are required.";
+    return errors;
+  };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -46,21 +70,25 @@ const measurement = () => {
             label="Bust"
             value={measurements.bust} // Get value from global store
             onChange={(value) => handleMeasurementsChange("bust", value)} // Pass the selected size to global store
+            error={validationErrors.bust}
           />
           <MeasurementField
             label="Waist"
             value={measurements.waist}
             onChange={(value) => handleMeasurementsChange("waist", value)}
+            error={validationErrors.waist}
           />
           <MeasurementField
             label="Hip"
             value={measurements.hip}
             onChange={(value) => handleMeasurementsChange("hip", value)}
+            error={validationErrors.hip}
           />
           <MeasurementField
             label="Height"
             value={measurements.height}
             onChange={(value) => handleMeasurementsChange("height", value)}
+            error={validationErrors.height}
           />
 
 
@@ -72,6 +100,8 @@ const measurement = () => {
             value={measurements.weight}
             onChangeText={(value) => handleMeasurementsChange("weight", value)}
           />
+           {validationErrors.weight && <Text style={styles.errorText}>{validationErrors.weight}</Text>}
+
 
           <TextInput
             style={[styles.input, styles.multilineInput]}
@@ -82,6 +112,9 @@ const measurement = () => {
             value={measurements.specialInstruction}
             onChangeText={(value) => handleMeasurementsChange("specialInstructions", value)}
           />
+           {validationErrors.specialInstructions && (
+            <Text style={styles.errorText}>{validationErrors.specialInstructions}</Text>
+          )}
         </View>
 
         {/* Buttons Section */}
@@ -156,6 +189,15 @@ const styles = StyleSheet.create({
     fontSize: 16, // Equivalent to text-base
     fontFamily: 'Poppins-SemiBold', // Replace with your font
     textAlign: 'center',
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginBottom: 8,
+  },
+  errorInput: {
+    borderColor: "red",
+    borderWidth: 1,
   },
 });
 

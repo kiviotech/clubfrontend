@@ -17,7 +17,8 @@ import SocialLoginButtons from "../../components/SocialLoginButtons/SocialLoginB
 import { router } from "expo-router";
 import { signup } from "../../src/utils/auth";
 import { createProfileService } from "../../src/api/services/profileService";
-import { useStore } from "zustand";
+import useProfileStore from "../../src/store/profileStore";
+// import { useStore } from "zustand";
 
 // Helper function for storage
 export const saveData = async (key, value) => {
@@ -71,49 +72,55 @@ const SignUp = () => {
     return true;
   };
 
+ 
+  const createUserProfile = async (user) => {
+    
+    const data = {
+      username: user.username || user.user_name,  // Adjust if the actual field name is different
+      name: user.username || user.user_name,
+      user: user.documentId || user.id,
+      locale: 'en',
+    };
 
+    try {
+      const profileResponse = await createProfileService(data);
+      console.log("Profile created successfully:", profileResponse);
+
+      useProfileStore.getState().setProfile(profileResponse);
+
+      return profileResponse;
+    } catch (error) {
+      console.error("Profile creation error:", error);
+      throw new Error("Failed to create user profile");
+    }
+  };
 
   const handleSignup = async () => {
     const isValidUsername = validateUsername();
     const isValidEmail = validateEmail();
     const isValidPassword = validatePassword();
 
-    if (isValidUsername && isValidEmail && isValidPassword) {
-      router.push("/sign-in"); // Only route when all validations pass
-    } else {
-      // Optionally, you can handle the case when any validation fails
-      console.log("Validation failed. Fix the errors.");
+    if (!isValidUsername || !isValidEmail || !isValidPassword) {
+      return; // Stop if validation fails
     }
-
 
     try {
       const response = await signup(username, email, password);
-      console.log("Signup successful:", response);
+      console.log("Signup successful:", response.user);
+      console.log("Signup successful:", response.user.username);
 
-      // Extract token and user information from the response
-      const { jwt, user } = response.data;
+     const user = response.user;  // Extract the user from the response
+     console.log(user)
 
-      // **Store token and user ID depending on platform**
-      await saveData("token", jwt); // Save the JWT token
-      await saveData("userId", user.id); // Save the user ID
-      console.log(username,id,profile_img)
+      // Proceed to create the user profile
+      await createUserProfile(user);
+      router.push("/sign-in");
+      // Optionally, save token and user data to AsyncStorage
+      await saveData("token", response.data.jwt);
+      await saveData("userId", user.id);
 
-      const profileData = {
-        profile_img:"https://myraymond.com/cdn/shop/files/XMKB06320-N8_1.jpg?v=1731656640",
-        username: user.username,  
-        name: user.username,      
-        user: user.id,            
-        locale: 'en',             
-        // localizations: [],       
-      };
-
-      // Call the createProfileService to create a new profile
-      const profileResponse = await createProfileService(profileData);
-      console.log("Profile created successfully:", profileResponse);
-
-     
+      // Navigate to the sign-in page after successful signup
       
-      router.push("/view-profile");
     } catch (error) {
       console.error("Signup error:", error);
       Alert.alert(

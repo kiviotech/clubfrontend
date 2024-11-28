@@ -18,6 +18,7 @@ import { router } from "expo-router";
 import { login } from "../../src/utils/auth";
 import useStore from "../../src/store/useStore";
 import useUserDataStore from "../../src/store/userData";
+import { useRouter } from "expo-router";
 
 // Helper functions for platform-specific storage
 const saveData = async (key, value) => {
@@ -63,6 +64,11 @@ const SignIn = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const setUser = useStore((state) => state.setShippingInfo);
   const addUser = useUserDataStore((state) => state.addUser);
+  const router = useRouter();
+
+  const handlePassword = () => {
+    router.push("/pages/changePasswordScreen");
+  };
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -124,6 +130,9 @@ const SignIn = () => {
     }
   };
 
+
+
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.logoContainer}>
@@ -173,7 +182,7 @@ const SignIn = () => {
         <Text style={styles.errorText}>{formErrors.password}</Text>
       )}
 
-      <TouchableOpacity style={styles.forgotPasswordContainer}>
+      <TouchableOpacity style={styles.forgotPasswordContainer} onPress={handlePassword}>
         <Text style={styles.forgotPasswordText}>Forgot password?</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>

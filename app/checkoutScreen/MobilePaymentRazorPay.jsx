@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import { WebView } from 'react-native-webview';
 import { Alert } from 'react-native';
@@ -134,46 +132,96 @@ const MobilePaymentRazorPay = () => {
                 `,
                 }}
                 onMessage={async (event) => {
+                    try {
+                        const paymentData = JSON.parse(event.nativeEvent.data);
+                        console.log("Received Payment Data:", paymentData);
+
+                        if (paymentData?.status === "success") {
                             try {
-                              const paymentData = JSON.parse(event.nativeEvent.data);
-                              console.log("Received Payment Data:", paymentData);
-                              console.log("Received Payment Data:", orderDetailsDocumentId,orderdetailId,razorpayOrderId);
-                  
-                              if (paymentData?.status === "success") {
-                                const paymentDetails = {
-                                  order_detail: orderDetailsDocumentId,  // Make sure the backend expects this field
-                                  amount:  parseInt(totalAmount, 10),                    // Amount paid
-                                  level: "completed",
-                                  paymentDate: new Date().toISOString(),
-                                  razorpay_order_id: paymentData.order_id,
-                                  razorpay_payment_id: paymentData.payment_id,
-                                  razorpay_signature: paymentData.signature,
-                                  locale: "en",
+                                // Get the signature from the correct property
+                                const signature = paymentData.razorpay_signature || paymentData.signature;
+                                console.log("Payment signature:", signature);
+
+                                const requestBody = {
+                                    data: {
+                                        order_detail: orderdetailId,
+                                        amount: Number(totalAmount),
+                                        level: "completed",
+                                        paymentDate: new Date().toISOString(),
+                                        razorpay_order_id: razorpayOrderId,
+                                        razorpay_payment_id: paymentData.payment_id,
+                                        razorpay_signature: signature, // Use the extracted signature
+                                        locale: "en"
+                                    }
                                 };
-                  
-                                await createPaymentDetailService(paymentDetails); // Save to backend
-                                Alert.alert("Payment Successful", `Payment ID: ${paymentData.payment_id}`);
-                                navigateToHome();
-                              } else if (paymentData?.status === "cancelled" || paymentData?.status === "error") {
-                                Alert.alert("Payment Cancelled", "Clearing the order due to failed payment.");
-                                await handleDeleteOrderDetail();
-                                await handleDeleteOrderItems();
-                                navigateToHome();
-                              }
-                            } catch (error) {
-                              console.error("Error processing payment:", error);
-                              Alert.alert("Payment Error", "Unable to process the payment.");
-                              navigateToHome();
+
+                                console.log("Attempting to save payment with data:", JSON.stringify(requestBody, null, 2));
+
+                                const response = await createPaymentDetailService(requestBody);
+                                console.log("Backend Response:", response);
+
+                                if (response?.status === 201 || response?.status === 200) {
+                                    console.log("Payment saved successfully:", response.data);
+                                    Alert.alert(
+                                        "Success",
+                                        "Payment processed and saved successfully!",
+                                        [{ text: "OK", onPress: () => navigateToHome() }]
+                                    );
+                                } else {
+                                    throw new Error(`Unexpected response status: ${response?.status}`);
+                                }
+                            } catch (serviceError) {
+                                console.error("Error creating payment detail: ", serviceError);
+                                console.error("Payment Service Error:", {
+                                    message: serviceError.message,
+                                    response: serviceError.response?.data,
+                                    status: serviceError.response?.status
+                                });
+
+                                Alert.alert(
+                                    "Payment Recorded",
+                                    `Payment was successful.\n\n` +
+                                    `Please save these details for reference:\n` +
+                                    `Payment ID: ${paymentData.payment_id}\n` +
+                                    `Order ID: ${razorpayOrderId}\n` +
+                                    `Amount: ₹${totalAmount}`,
+                                    [{ text: "OK", onPress: () => navigateToHome() }]
+                                );
                             }
-                          }}
-                          onError={(syntheticEvent) => {
-                            const { nativeEvent } = syntheticEvent;
-                            console.error("WebView Error:", nativeEvent);
-                            Alert.alert("WebView Error", nativeEvent.description);
-                            navigateToHome();
-                          }}
-                        />
-                      </SafeAreaView>
+                        } else if (paymentData?.status === "cancelled" || paymentData?.status === "error") {
+                            console.log("Payment cancelled or failed:", paymentData);
+                            Alert.alert(
+                                "Payment Not Completed",
+                                "The payment was not completed. Your order will be cancelled.",
+                                [
+                                    {
+                                        text: "OK",
+                                        onPress: async () => {
+                                            await handleDeleteOrderDetail();
+                                            await handleDeleteOrderItems();
+                                            navigateToHome();
+                                        }
+                                    }
+                                ]
+                            );
+                        }
+                    } catch (error) {
+                        console.error("Payment Processing Error:", error);
+                        Alert.alert(
+                            "Error",
+                            "There was an error processing your payment. Please try again.",
+                            [{ text: "OK", onPress: () => navigateToHome() }]
+                        );
+                    }
+                }}
+                onError={(syntheticEvent) => {
+                    const { nativeEvent } = syntheticEvent;
+                    console.error("WebView Error:", nativeEvent);
+                    Alert.alert("WebView Error", nativeEvent.description);
+                    navigateToHome();
+                }}
+            />
+        </SafeAreaView>
     );
 };
 

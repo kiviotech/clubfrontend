@@ -19,7 +19,7 @@ import { useRouter } from "expo-router";
 import FilterPanel from "../pages/filter";
 import svgs from "../../constants/svgs";
 import { useState } from "react";
-
+import ProductSearch from "../pages/ProductSearch";
 
 
 const categories = ["All", "Men", "Women", "Kids Wear"];
@@ -27,6 +27,13 @@ const categories = ["All", "Men", "Women", "Kids Wear"];
 
 
 const store = () => {
+
+  
+  const [searchTerm, setSearchTerm] = useState("");
+  const [slideAnim] = useState(new Animated.Value(0));
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [selectedBrand, setSelectedBrand] = useState("");
+
   const router = useRouter();
 
   const handleRequest = () => {
@@ -38,9 +45,7 @@ const store = () => {
   };
 
   
-  const [slideAnim] = useState(new Animated.Value(0));
-  const [isFilterVisible, setIsFilterVisible] = useState(false);
-  const [selectedBrand, setSelectedBrand] = useState("");
+  
   
 
   const handleBrandSelect = (brandName) => {
@@ -93,29 +98,36 @@ const store = () => {
 
         {/* Search Bar and Filter */}
         <View style={styles.searchContainer}>
-          <SearchBar />
-          <TouchableOpacity onPress={toggleFilterPanel}>
-            <svgs.Group width={20} height={20} />
-          </TouchableOpacity>
-        </View>
+        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
+            <TouchableOpacity onPress={toggleFilterPanel}>
+              <svgs.Group width={20} height={20} />
+            </TouchableOpacity>
+          </View>
 
         {/* Top Categories */}
         <Text style={styles.subtitle}>Top Categories</Text>
         <CategoryButtons categories={categories} />
 
         {/* Top Brands */}
+        <View>
         <Text style={styles.subtitle}>Top Brands</Text>
         <BrandIcons />
+        </View>
 
+        <Text style={styles.subtitle}>Search Products</Text>
+        <ProductSearch limit={8} searchTerm={searchTerm}/> 
+      
         {/* Popular Products */}
         <View style={styles.popularProductsHeader}>
+        
           <Text style={styles.popularProductsTitle}>Popular Products</Text>
           <TouchableOpacity onPress={handleViewAll}>
             <Text style={styles.viewAll}>View All</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.products}>
-          <ProductList limit={4} />
+        <ProductList limit={4} searchTerm={searchTerm} />
         </View>
       </ScrollView>
 

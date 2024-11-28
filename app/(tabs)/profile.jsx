@@ -1,7 +1,7 @@
 
 
 import React,{useEffect,useState} from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity,ScrollView,Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import logo from "../../assets/logo.png";
 import Svgs from '../../constants/svgs';
@@ -11,32 +11,47 @@ import { MEDIA_BASE_URL } from '../../src/api/apiClient';
 import { getProfileByUserId } from '../../src/api/repositories/profileRepository';
 import useUserDataStore from '../../src/store/userData';
 import { getUserById } from '../../src/api/repositories/userRepository';
+import { logout } from '../../src/utils/auth';
+import { getUserProfile } from '../../src/api/repositories/userRepository';
+import useProfileStore from '../../src/store/useProfileStore';
 
 const Profile = () => {
   const [user, setUser] = useState(null); 
   const [loading, setLoading] = useState(true);
   const ProfileSvg = Svgs.profile;
   const router = useRouter();
-
   const userId = useUserDataStore((state) => state.users[0]?.id);
+  const [profile, setProfile] = useState(null);
+  const { name, username, image } = useProfileStore((state) => state.profile);
+  console.log('Profile from Zustand:', { name, username, image });
+  // Watch for changes in the profile state
 
+
+ 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchProfile = async () => {
       try {
-        const response = await getUserById(userId); // Fetch user data by ID
-        console.log(response.data);
-        setUser(response.data); // Set the fetched user data to the state
-        console.log(response.data.username)
+        if (userId) {
+          const response = await getUserProfile(userId); // Fetch user profile by user ID
+          const { data } = response; // Extract data from response
+          if (data && data.profile) {
+            setProfile({
+              name: data.profile.name || '',
+              username: data.profile.username || '',
+              profileImage: data.profile.image?.url ? `${MEDIA_BASE_URL}${data.profile.image.url}` : 'https://example.com/fallback.png'
+            });
+          }
+          
+        }
       } catch (error) {
-        console.error("Failed to fetch user data", error);
+        console.error('Error fetching profile:', error);
+        Alert.alert('Error', 'Failed to fetch profile.');
       } finally {
-        setLoading(false); // Set loading to false once the data is fetched
+        setLoading(false);
       }
     };
 
-    if (userId) {
-      fetchUser();
-    }
+    fetchProfile();
   }, [userId]);
 
 
@@ -53,6 +68,7 @@ const Profile = () => {
     });
   };
   
+  
 
   // const profile = {
   //   name: "Jess Bailey",
@@ -62,6 +78,20 @@ const Profile = () => {
   // const handlePassword = () => {
   //   router.push("/pages/changePasswordScreen"); 
   // };
+  const handleSignOut = () => {
+    try {
+      logout(); // Call the logout function
+      router.push("sign-in"); // Redirect to sign-in page
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
+
+  const Profile = () => {
+    router.push("/pages/profileScreen"); 
+  };
+
   const handlePassword = () => {
     router.push("/pages/ResetPasswordScreen"); 
   };
@@ -72,16 +102,16 @@ const Profile = () => {
     router.push("/pages/orderPage"); 
   };
   const handleLanguage = () => {
-    router.push("/pages/LanguageSelector"); 
+    router.push("pages/designRequestCart"); 
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
      
       {/* Header with Logo and Logout */}
       <View style={styles.headerRow}>
         <Image source={logo} style={styles.logo} />
-        <TouchableOpacity style={styles.logoutButton}>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
           <Text style={styles.logoutText}>Logout</Text>
           <Icon name="log-out-outline" size={20} color="#00ff00" style={styles.logoutIcon} />
         </TouchableOpacity>
@@ -89,25 +119,19 @@ const Profile = () => {
 
       {/* Profile Section */}
       <View style={styles.header}>
-          {/* Display Profile Image */}
-  {user?.profile_img?.url ? (
-    <Image
-      source={{ uri: `${MEDIA_BASE_URL}${user.profile_img.url}` ||'https://example.com/fallback.png'}}
-      style={styles.profileImage}
-    />
-  ) : (
-    <ProfileSvg />
-  )}
+        {/* Display Profile Image */}
+        <Image source={{ uri: profile?.profileImage }} style={styles.profileImage} />
         <View style={styles.profileText}>
-          <Text style={styles.profileName}>{user?.name}</Text>
-          <Text style={styles.profileUsername}>{user?.username}</Text>
+          <Text style={styles.profileName}>{profile?.name}</Text>
+          <Text style={styles.profileUsername}>{profile?.username}</Text>
         </View>
       </View>
+     
 
       {/* Account Section */}
       <Text style={styles.sectionTitle}>Account</Text>
       <View style={styles.section}>
-      <TouchableOpacity onPress={() => ProfileRequest(user)} style={styles.menuItem}>
+      <TouchableOpacity onPress={Profile} style={styles.menuItem}>
           <Icon name="person" size={20} color="#00ff00" style={styles.icon} />
           <Text style={styles.menuText}>Profile</Text>
           <Icon name="chevron-forward" size={20} color="#00ff00" />
@@ -129,7 +153,7 @@ const Profile = () => {
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={handleLanguage }>
           <Icon name="language" size={20} color="#00ff00" style={styles.icon} />
-          <Text style={styles.menuText}>Language</Text>
+          <Text style={styles.menuText}>Design Request</Text>
           <Icon name="chevron-forward" size={20} color="#00ff00" />
         </TouchableOpacity>
       </View>
@@ -153,7 +177,7 @@ const Profile = () => {
           <Icon name="chevron-forward" size={20} color="#00ff00" />
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
