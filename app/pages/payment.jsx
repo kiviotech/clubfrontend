@@ -17,6 +17,7 @@ import Totalamount from "./totalamount";
 import Svgs from "../../constants/svgs";
 import useCartStore from "../../src/store/useCartStore";
 import { createOrderDetailService } from "../../src/api/services/orderDetailService";
+import useUserDataStore from "../../src/store/userData";
 
 export default function Payment() {
   const [totalAmount, setTotalAmount] = useState(0);
@@ -28,6 +29,7 @@ export default function Payment() {
   const cartItems = useCartStore((state) => state.items);
   const [error, setError] = useState(null);
   const {documentIds} = useLocalSearchParams();
+  const userId = useUserDataStore((state) => state.users[0]?.id);
 
 
   useEffect(() => {
@@ -66,7 +68,7 @@ export default function Payment() {
           total: totalAmount,
           level: "pending",
           shipping_info: selectedAddress?.id, // Assuming selectedAddress has an id
-          user: "23", //  now change dynamic user id
+          user: userId, //  now change dynamic user id
           locale: "en",
           razorpayOrderId: "string",
           razorpayPaymentId: "string",

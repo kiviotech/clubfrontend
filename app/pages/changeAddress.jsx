@@ -53,18 +53,29 @@ const ChangeAddress = () => {
         if (!fullName) {
             valid = false;
             errorMessages.fullName = "Name is required";
+        } else if (!/^[a-zA-Z\s]+$/.test(fullName)) {
+            valid = false;
+            errorMessages.fullName = "Name should contain only alphabets and spaces";
         }
-
+    
+        // Validate address (alphabets, numbers, spaces, and some punctuation allowed)
         if (!address) {
             valid = false;
             errorMessages.address = "Address is required";
+        } else if (!/^[a-zA-Z0-9\s,.'-]+$/.test(address)) {
+            valid = false;
+            errorMessages.address = "Address contains invalid characters";
         }
-
+    
+        // Validate state (only alphabets and spaces allowed)
         if (!state) {
             valid = false;
             errorMessages.state = "State is required";
+        } else if (!/^[a-zA-Z\s]+$/.test(state)) {
+            valid = false;
+            errorMessages.state = "State should contain only alphabets and spaces";
         }
-
+    
         if (!pincode || pincode.length !== 6) {
             valid = false;
             errorMessages.pincode = "Pincode should be 6 digits";

@@ -21,6 +21,7 @@ const Brand = ({ limit }) => {
   const addToWishlist = useWishlistStore((state) => state.addToWishlist);
   const { wishlist, removeFromWishlist } = useWishlistStore();
   const [popupMessage, setPopupMessage] = useState("");
+  const [popupProductId, setPopupProductId] = useState(null);
   
   const imagesArray =
     typeof products.images === "string"
@@ -77,6 +78,7 @@ const Brand = ({ limit }) => {
     return <Text>{error}</Text>;
   }
 
+ 
   const handleWishlistAdd = (product) => {
     const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
     const item = {
@@ -89,9 +91,13 @@ const Brand = ({ limit }) => {
 
     if (wishlist.some((wishItem) => wishItem.id === product.id)) {
       removeFromWishlist(product.id);
+      // setPopupMessage("Removed from wishlist! ❌");
+      setPopupProductId(product.id); // Show popup for this product
       setPopupMessage("Removed from wishlist! ❌");
     } else {
       addToWishlist(item);
+      // setPopupMessage("Added to wishlist!✔️");
+      setPopupProductId(product.id); // Show popup for this product
       setPopupMessage("Added to wishlist!✔️");
     }
 
@@ -110,94 +116,110 @@ const Brand = ({ limit }) => {
       image: imageUrl,
     };
 
-    addItemToCart(item);
-    setPopupMessage("Added to cart! 🛒");
+    // Check if the product is already in the cart
+    const isProductInCart = useCartStore.getState().items.some(
+      (cartItem) => cartItem.id === product.id
+    );
 
+    if (isProductInCart) {
+      setPopupProductId(product.id); // Show popup for this product
+      setPopupMessage("Product is already in the cart! 🛒");
+    } else {
+      addItemToCart(item);
+      setPopupProductId(product.id); // Show popup for this product
+      setPopupMessage("Added to cart! 🛒");
+    }
+
+    // Automatically clear the popup message after 2 seconds
     setTimeout(() => {
-      setPopupMessage("");
+      setPopupProductId(null); // Hide popup
+      setPopupMessage(""); // Clear the message
     }, 2000);
   };
 
   return (
-    <SafeAreaView style={styles.safeAreaContainer}>
-      <View style={styles.container}>
-        <Text style={styles.brandHeader}>{selectedBrand ? selectedBrand : 'Brand Products'} Products</Text>
-        {popupMessage ? (
-          <View style={styles.popup}>
-            <Text style={styles.popupText}>{popupMessage}</Text>
-          </View>
-        ) : null}
-        {displayedProducts.map((product, index) => {
-          const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
-          const isOutOfStock = !product.in_stock;
-          const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
-
-          return (
-            <View key={index} style={styles.productCard}>
-              <Image
-                source={{ uri: imageUrl  ||'https://example.com/fallback.png' }}
-                style={styles.productimage}
-                resizeMode="contain"
-              />
-              <View style={styles.buttonContainer}>
-                {/* Wishlist Button */}
-                <TouchableOpacity style={styles.wishlistButton} onPress={() => handleWishlistAdd(product)}>
-                  <Text style={styles.heartIcon}>{isInWishlist ? '❤️' : '🤍'}</Text>
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity onPress={() => handleProductDetails(product)}>
-                <View style={styles.imageWrapper}>
-                  <Text style={styles.productName}>{product.name}</Text>
-                  <Text style={styles.productdiscount}>{product.discount}% discount</Text>
-                  <Text style={styles.productBrand}>
-                    {product.brand.brand_name}
-                  </Text>
-                  <Text style={styles.productDescription}>
-                    {product.description}
-                  </Text>
-                  <Text style={styles.productPrice}>{product.price}</Text>
-                  {isOutOfStock && <Text style={styles.stockText}></Text>}
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.addToCartButton, isOutOfStock && styles.disabledButton]}
-                onPress={() => !isOutOfStock && handleCartAdd(product)}
-                disabled={isOutOfStock}
-              >
-                <Text style={styles.cartText}>{isOutOfStock ? 'Out of Stock' : 'Add to Cart'}</Text>
-              </TouchableOpacity>
-            </View>
-          );
-        })}
+    <SafeAreaView style={styles.area}>
+    <View style={styles.container}>
+    {/* {popupMessage ? (
+      <View style={styles.popup}>
+        <Text style={styles.popupText}>{popupMessage}</Text>
       </View>
-    </SafeAreaView>
+    ) : null} */}
+    {displayedProducts.map((product, index) => {
+      const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+      const isOutOfStock = !product.in_stock;
+      const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
+      const isPopupVisible = popupProductId === product.id;
+      return (
+        <View key={index} style={styles.productCard}>
+          {isPopupVisible && popupMessage !== ""  && (
+            <View style={styles.popup}>
+              <Text style={styles.popupText}>{popupMessage}</Text>
+            </View>
+          )}
+          <Image
+            source={{ uri: imageUrl }}
+            style={styles.productimage}
+            resizeMode="contain"
+          />
+          <View style={styles.buttonContainer}>
+            {/* Wishlist Button */}
+            <TouchableOpacity style={styles.wishlistButton} onPress={() => handleWishlistAdd(product)}>
+              <Text style={styles.heartIcon}>{isInWishlist ? '❤️' : '🤍'}</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity onPress={() => handleProductDetails(product)}>
+            <View style={styles.imageWrapper}>
+              <Text style={styles.productName}>{product.name}</Text>
+              <Text style={styles.productdiscount}>{product.discount}% discount</Text>
+              <Text style={styles.productBrand}>
+                {product.brand.brand_name}
+              </Text>
+              <Text style={styles.productDescription}>
+                {product.description}
+              </Text>
+              <Text style={styles.productPrice}>{product.price}</Text>
+              {isOutOfStock && <Text style={styles.stockText}></Text>}
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.addToCartButton,
+              isOutOfStock && styles.disabledButton,
+            ]}
+            onPress={() => !isOutOfStock && handleCartAdd(product)}
+            disabled={isOutOfStock}
+          >
+            <Text style={styles.cartText}>
+              {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      );
+    })}
+  </View>
+  </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  safeAreaContainer: {
+  area:{
     flex: 1,
-    backgroundColor: 'black', // Setting black background
+    backgroundColor:"#000"
   },
   container: {
-    flexDirection: "column",
+    // flex: 1,
+    flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
     marginVertical: 16,
-    paddingHorizontal: 8,
-  },
-  brandHeader: {
-    color: "#ffffff",
-    fontSize: 26, // Font size
-    fontWeight: "bold",
-    marginTop: 6,
-    marginBottom: 25,
-    marginLeft: 7,
+    paddingHorizontal: 8, // Padding for spacing
+    // backgroundColor:"#000"
   },
   productCard: {
     width: "48%", // Adjusted width for card size
     marginBottom: 16,
-    backgroundColor: "#1F2937",
+    backgroundColor: "#1D2221",
     borderRadius: 10,
     overflow: "hidden",
     elevation: 5,
@@ -235,7 +257,9 @@ const styles = StyleSheet.create({
   },
   productimage: {
     width: "100%", // Make image responsive
-    height: 150, // Increase image height for a larger appearance
+    height: 130, // Increase image height for a larger appearance
+    // borderTopLeftRadius: 10,
+    // borderTopRightRadius: 10,
   },
   stockText: {
     color: "#FF6347",
@@ -258,11 +282,12 @@ const styles = StyleSheet.create({
   },
   addToCartButton: {
     backgroundColor: "#8FFA09",
-    paddingVertical: 6, // Padding for button
+    paddingVertical: 4, // Padding for button
     borderRadius: 8,
     alignItems: "center",
     marginHorizontal: 16,
     marginTop: 4, // Reduced margin for less height
+    marginBottom: 9,
   },
   cartText: {
     color: "#ffffff",
@@ -270,17 +295,30 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   popup: {
-    position: "absolute",
-    top: 50,
-    left: "50%",
-    transform: [{ translateX: -120 }],
-    backgroundColor: "#000000",
-    padding: 8,
-    borderRadius: 4,
+    position: 'absolute',
+    top: '10%',
+    left: '50%',
+    transform: [{ translateX: -50 }],
+    backgroundColor: '#000',
+    padding: 12, // Padding for popup
+    borderRadius: 8,
+    zIndex: 100,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
   popupText: {
-    color: "#ffffff",
-    fontSize: 14,
+    color: '#fff',
+    textAlign: 'center',
+  },
+  disabledButton: {
+    backgroundColor: "#D3D3D3",
+    opacity: 0.6,
   },
 });
 

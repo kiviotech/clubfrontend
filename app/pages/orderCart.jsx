@@ -20,6 +20,8 @@ const OrderCart = ({ imageUrl, productName, productPrice ,level,id,documentId}) 
     });
   };
 
+ 
+
   return (
     <View style={styles.card}>
       <View style={styles.row}>
@@ -38,7 +40,7 @@ const OrderCart = ({ imageUrl, productName, productPrice ,level,id,documentId}) 
         <TouchableOpacity style={[styles.trackButton, styles.trackButtonCurved]} onPress={handleTrack}>
           <Text style={styles.trackButtonText}>Track Order</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.cancelButton, styles.cancelButtonCurved]}>
+        <TouchableOpacity style={[styles.cancelButton, styles.cancelButtonCurved]} onPress={handleTrack}>
           <Text style={styles.cancelButtonText}>Cancel Order</Text>
         </TouchableOpacity>
       </View>

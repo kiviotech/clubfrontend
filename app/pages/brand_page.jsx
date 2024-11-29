@@ -1,51 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { useBrandStore } from '../../src/store/brandStore';
 import { getBrands } from '../../src/api/repositories/brandRepository';
 import { MEDIA_BASE_URL } from '../../src/api/apiClient';
 import { useRouter } from "expo-router";
+import { useBrandStore } from '../../src/store/brandStore';
 
-
-const brand_page = () => {
-  const { brands, setBrands } = useBrandStore();
-  const [logo, setLogo] = useState("")
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
+const BrandPage = () => {
+  const [brands, setBrands] = useState([]);
   const router = useRouter();
+  const selectedBrand = useBrandStore((state) => state.selectedBrand);
   const setSelectedBrand = useBrandStore((state) => state.setSelectedBrand);
-
-
-  // const handleRequest = (brandName) => {
-  //   setSelectedBrand(brandName);
-  //   router.push("/pages/brand_details"); // Update the path if necessary
-  // };
-  const handleinfo = (brands,brandName) => {
-    setSelectedBrand(brandName);
-    router.push({
-      pathname: "/pages/brand_info",
-      params: {
-        brandName: brands.brand_name,
-        brandId: brands.id,
-        brandImage: brands.brand_logo.url,
-        brandDescription: brands.description,
-      },
-
-    }); // Update the path if necessary
-  };
-
 
   const fetchBrands = async () => {
     try {
       const response = await getBrands();
-      setBrands(response.data.data);
-      setBrands(response.data.data[1].brand_poster[0].url)
-      setLogo(`${MEDIA_BASE_URL}${response.data.data[0].brand_logo.url}`)
-      setDescription(response.data.data[0].description)
-      setName(response.data.data[0].brand_name);
-      // console.log(brands)
-      // console.log(response.data.data[0].description)
-
+      setBrands(response.data.data); // Store all brand data in state
     } catch (error) {
       console.error("Error fetching brands:", error);
     }
@@ -55,49 +25,75 @@ const brand_page = () => {
     fetchBrands(); // Fetch brands when component mounts
   }, []);
 
-  const brand_poster = `${MEDIA_BASE_URL}${brands}`;
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity>
-        {/* Logo and Share Icon */}
-        <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <TouchableOpacity onPress={() => handleinfo({
-              brand_name: name,
-              id: brands.id,
-              brand_logo: { url: logo },
-              description
-            })}>
+  const handleInfo = (brand) => {
+    router.push({
+      pathname: "/pages/brand_info",
+      params: {
+        brandName: brand.brand_name,
+        brandId: brand.id,
+        brandImage: `${MEDIA_BASE_URL}${brand.brand_logo.url}`,
+        brandDescription: brand.description,
+      },
+    });
+  };
+
+  const handleIconPress = (brandName) => {
+    
+    setSelectedBrand(brandName); 
+    router.push('pages/brand');
+  };
+
+  const renderBrand = ({ item }) => {
+    const logoUrl = `${MEDIA_BASE_URL}${item.brand_logo.url}`;
+    const brandPosterUrl = item.brand_poster?.[0]?.url
+      ? `${MEDIA_BASE_URL}${item.brand_poster[0].url}`
+      : 'https://example.com/fallback.png';
+
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity onPress={() => handleInfo(item)}>
+          {/* Logo and Share Icon */}
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
               <Image
-                source={{ uri: logo }}
+                source={{ uri: logoUrl }}
                 style={styles.brandLogo}
                 resizeMode="contain"
               />
-            </TouchableOpacity>
-            <Text style={styles.brandName}>{name}</Text>
-
+              <Text style={styles.brandName}>{item.brand_name}</Text>
+            </View>
+            <Icon name="share" size={20} color="#fff" style={styles.shareIcon} />
           </View>
-          <Icon name="share" size={20} color="#fff" style={styles.shareIcon} />
-        </View>
 
-        {/* Description */}
-        <Text style={styles.description}>{description}</Text>
+          {/* Description */}
+          <Text style={styles.description}>{item.description}</Text>
 
-        {/* Image */}
-        <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: brand_poster  ||'https://example.com/fallback.png' }} // Replace with actual image URL
-            style={styles.image}
-          />
-        </View>
-      </TouchableOpacity>
+          {/* Image */}
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: brandPosterUrl }}
+              style={styles.image}
+            />
+          </View>
+        </TouchableOpacity>
 
-      {/* Products Button */}
-      <TouchableOpacity style={styles.button}>
-        <Icon name="shopping-bag" size={16} color="#fff" />
-        <Text style={styles.buttonText}>7 Products</Text>
-      </TouchableOpacity>
-    </View>
+        {/* Products Button */}
+        
+        <TouchableOpacity style={styles.button} onPress={() => handleIconPress(item.brand_name)}>
+          <Icon name="shopping-bag" size={16} color="#fff" />
+          <Text style={styles.buttonText}>{item.brand_name} Products</Text>
+          {selectedBrand === item.brand_name && <View style={styles.selectedText}></View>}
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  return (
+    <FlatList
+      data={brands}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={renderBrand}
+    />
   );
 };
 
@@ -106,6 +102,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
     padding: 16,
+    marginBottom: 16,
+    borderRadius: 8,
   },
   header: {
     flexDirection: 'row',
@@ -120,22 +118,9 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   logoContainer: {
-    // backgroundColor: '#fff',
-    padding: 4,
-    borderRadius: 50,
-    width: 40,
-    height: 40,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: "row",
-    marginLeft: 20,
-    gap: 9
-
-  },
-  logoText: {
-    fontWeight: 'bold',
-    color: '#000',
-    fontSize: 12,
+    gap: 9,
   },
   shareIcon: {
     color: '#00ff00',
@@ -155,12 +140,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: '100%',
     height: 200,
-
   },
   image: {
     width: '100%',
     height: '100%',
-    objectFit: "cover"
   },
   button: {
     flexDirection: 'row',
@@ -173,7 +156,7 @@ const styles = StyleSheet.create({
   brandLogo: {
     width: 50,
     height: 50,
-    borderRadius: 50
+    borderRadius: 50,
   },
   buttonText: {
     color: '#fff',
@@ -182,4 +165,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default brand_page;
+export default BrandPage;

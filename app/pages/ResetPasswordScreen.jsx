@@ -1,65 +1,48 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { useNavigation } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { changePassword } from '../../src/api/repositories/userRepository';
-import { getToken } from '../../src/utils/storage';
-import { Alert } from 'react-native';
-import AlertPro from 'react-native-alert-pro';
 
 const ResetPasswordScreen = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false); // For toggling current password visibility
-  const [showNewPassword, setShowNewPassword] = useState(false); // For toggling new password visibility
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // For toggling confirm password visibility
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState(''); // State to track server-side errors
   const navigation = useNavigation();
 
   const validateForm = () => {
     let formErrors = {};
-
-    if (!currentPassword) {
-      formErrors.currentPassword = 'Current password is required';
-    }
-    if (!newPassword) {
-      formErrors.newPassword = 'New password is required';
-    } else if (newPassword.length < 8) {
-      formErrors.newPassword = 'New password should be at least 8 characters';
-    }
-    if (!confirmPassword) {
-      formErrors.confirmPassword = 'Confirm password is required';
-    } else if (newPassword !== confirmPassword) {
-      formErrors.confirmPassword = 'Passwords do not match';
-    }
-
+    if (!currentPassword) formErrors.currentPassword = 'Current password is required';
+    if (!newPassword) formErrors.newPassword = 'New password is required';
+    else if (newPassword.length < 8) formErrors.newPassword = 'New password should be at least 8 characters';
+    if (!confirmPassword) formErrors.confirmPassword = 'Confirm password is required';
+    else if (newPassword !== confirmPassword) formErrors.confirmPassword = 'Passwords do not match';
     setErrors(formErrors);
     return Object.keys(formErrors).length === 0;
   };
 
   const apihandleResetPassword = async () => {
+    setServerError(''); // Clear any previous server error
     if (validateForm()) {
-      if (newPassword === confirmPassword && newPassword.length >= 8) {
-        try {
-          const data = {
-            currentPassword,
-            password: newPassword,
-            passwordConfirmation: confirmPassword,
-          };
-
-          await changePassword(data);
-          setShowSuccessAlert(true);
-        } catch (error) {
-          console.error('Password reset error:', error);
-          Alert.alert('Error', error.response?.data?.message || 'Failed to reset password');
-        }
-      } else if (newPassword !== confirmPassword) {
-        Alert.alert('Error', 'New passwords do not match');
-      } else {
-        Alert.alert('Error', 'New password is too short (minimum 8 characters)');
+      try {
+        const data = {
+          currentPassword,
+          password: newPassword,
+          passwordConfirmation: confirmPassword,
+        };
+        await changePassword(data);
+        setShowSuccessAlert(true);
+      } catch (error) {
+        console.error('Password reset error:', error);
+        const errorMessage = error.response?.data?.message || 'Failed to reset password Current PassWord is Incorrect';
+        setServerError(errorMessage); // Update the serverError state
       }
     }
   };
@@ -136,37 +119,13 @@ const ResetPasswordScreen = () => {
         </View>
         {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
 
+        {/* Display server error */}
+        {serverError && <Text style={styles.serverErrorText}>{serverError}</Text>}
+
         <TouchableOpacity style={styles.button} onPress={apihandleResetPassword}>
           <Text style={styles.buttonText}>Reset Password</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
-
-      {/* SweetAlert2 styled success popup */}
-      {/* <AlertPro
-        ref={(ref) => {
-          this.AlertPro = ref;
-        }}
-        onConfirm={() => {
-          setShowSuccessAlert(false);
-          navigation.goBack();
-        }}
-        show={showSuccessAlert}
-        title="Success"
-        message="Your password has been changed successfully!"
-        textConfirm="OK"
-        customStyles={{
-          mask: {
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-          },
-          container: {
-            borderRadius: 10,
-            backgroundColor: '#FFF',
-          },
-          buttonConfirm: {
-            backgroundColor: '#8FFA09',
-          },
-        }}
-      /> */}
     </SafeAreaView>
   );
 };
@@ -221,6 +180,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'left',
   },
+  serverErrorText: {
+    color: 'red',
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
   button: {
     backgroundColor: '#8FFA09',
     borderRadius: 5,
@@ -235,7 +200,7 @@ const styles = StyleSheet.create({
   eyeIcon: {
     position: 'absolute',
     right: 15,
-    top: 15, // Adjusted for each input field
+    top: 15,
   },
 });
 
