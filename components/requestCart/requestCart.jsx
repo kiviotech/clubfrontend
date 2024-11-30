@@ -3,14 +3,16 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { deleteDesignRequest } from '../../src/api/repositories/designRequestRepository';
 import { removeDesignRequest } from '../../src/api/services/designRequestService';
+import useRequestStore from '../../src/store/useRequestStore';
 
 const RequestCart = ({ title, budget, colorPreferences, deadline,image,requestId, onDelete, documentId}) => {
-  const [quantity, setQuantity] = useState(1);
+  // const [quantity, setQuantity] = useState(1);
   // console.log(documentId)
-
-  const incrementQuantity = () => setQuantity(quantity + 1);
+  const { getQuantity, updateQuantity } = useRequestStore();
+  const quantity = getQuantity(requestId);
+  const incrementQuantity = () => updateQuantity(requestId, quantity + 1);
   const decrementQuantity = () => {
-    if (quantity > 1) setQuantity(quantity - 1);
+    if (quantity > 1) updateQuantity(requestId, quantity - 1);
   };
 
   const handleDelete = async () => {

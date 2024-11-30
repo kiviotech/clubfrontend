@@ -11,6 +11,8 @@ import { uploadNewFile } from '../../src/api/services/uploadServices';
 import useUserDataStore from '../../src/store/userData';
 import { getUserProfile } from '../../src/api/repositories/userRepository';
 import useProfileStore from '../../src/store/useProfileStore';
+import { MEDIA_BASE_URL } from '../../src/api/apiClient';
+
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -31,21 +33,25 @@ const ProfileScreen = () => {
     const fetchProfile = async () => {
       try {
         if (userId) {
-          const response = await getUserProfile(userId); // Call the service
-          const { data } = response; // Extract data from the response
+          const response = await getUserProfile(userId);
+          const { data } = response;
           console.log('Fetched Profile Data:', data);
-          setProfileId(data?.profile?.documentId)
-          // console.log(profileId)
+          setProfileId(data?.profile?.documentId);
+          
+          const imageUrl = data?.profile?.image?.url 
+            ? `${MEDIA_BASE_URL}${data.profile.image.url}`
+            : '';
+            
           setProfile({
             name: data?.profile?.name || '',
             username: data?.profile?.username || '',
-            image: data?.profile?.image?.url || ''
+            image: imageUrl
           });
-          // Update state with fetched profile data
+          
           setProfileData(data);
           setName(data?.profile?.name || '');
           setUsername(data?.profile?.username || '');
-          setProfileImage(data?.profile?.image?.url || '');
+          setProfileImage(imageUrl);
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -62,7 +68,10 @@ const ProfileScreen = () => {
       try {
         if (id) {
           const profileData = await fetchProfileById(id);
-          console.log('Fetched Profile Data:', profileData);
+          console.log('Profile Data by ID:', {
+            id: id,
+            profileData: profileData
+          });
         }
       } catch (error) {
         console.error('Error fetching profile:', error);

@@ -8,18 +8,18 @@ import {
   Animated,
   ScrollView,
   Modal,
-  Alert
+  Alert,
 } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-
+import { getOrderDetailById, updateOrderDetailById } from "../../src/api/services/orderDetailService"; // Fetch & update services
+import { fetchOrderDetailById } from "../../src/api/services/orderDetailService";
 
 const TrackOrderScreen = () => {
   const trackingProgress = useRef(new Animated.Value(0)).current;
-  const { imageUrl, productName, productPrice, level,id,documentId } = useLocalSearchParams();
+  const { imageUrl, productName, productPrice, id, documentId } =
+    useLocalSearchParams();
 
-  const [isCanceled, setIsCanceled] = useState(false); // Track order cancellation
-  const [showCancelModal, setShowCancelModal] = useState(false); 
   const [steps, setSteps] = useState([
     {
       status: "Order placed",
@@ -52,6 +52,9 @@ const TrackOrderScreen = () => {
       icon: "home",
     },
   ]);
+  const [currentStep, setCurrentStep] = useState(1); // Track current step
+  const [isCanceled, setIsCanceled] = useState(false); // Track order cancellation
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   // Map order levels to currentStep indices
   const levelMapping = {
@@ -59,9 +62,47 @@ const TrackOrderScreen = () => {
     processing: 2, // Order processed
     shipped: 3, // Shipped
     delivered: 4, // Out for delivery
+    cancelled: -1, // Order cancelled
   };
 
-  const currentStep = levelMapping[level] || 0;
+  // Fetch the order details from the backend on mount
+  useEffect(() => {
+    const fetchOrderStatus = async () => {
+      try {
+        const cachedStatus = localStorage.getItem(`order_${documentId}_status`);
+        if (cachedStatus) {
+          setCurrentStep(levelMapping[cachedStatus]);
+          setIsCanceled(cachedStatus === "cancelled");
+        }
+  
+        const orderDetail = await fetchOrderDetailById(documentId);
+        console.log(orderDetail.data.level)
+        const backendLevel = orderDetail?.data?.level || "pending";
+        localStorage.setItem(`order_${documentId}_status`, backendLevel); // Cache status
+        const stepIndex = levelMapping[backendLevel];
+  
+        if (backendLevel === "cancelled") {
+          setSteps([
+            steps[0],
+            {
+              status: "Order Cancelled",
+              description: "Your order has been canceled.",
+              icon: "cancel",
+            },
+          ]);
+          setIsCanceled(true);
+        } else {
+          setCurrentStep(stepIndex);
+        }
+      } catch (error) {
+        console.error("Error fetching order status:", error);
+        Alert.alert("Error", "Failed to fetch order status.");
+      }
+    };
+  
+    fetchOrderStatus();
+  }, []);
+  
 
   // Animate the progress bar
   useEffect(() => {
@@ -71,156 +112,164 @@ const TrackOrderScreen = () => {
       useNativeDriver: false,
     }).start();
   }, [currentStep]);
- // Handle order cancellation
- const handleCancelOrder = () => {
-  setIsCanceled(true); // Mark the order as canceled
 
-  const canceledStep = {
-    status: "Order Cancelled",
-    description: "Your order has been canceled.",
-    icon: "cancel",
+  // Handle order cancellation
+  const handleCancelOrder = async () => {
+    try {
+      const updatedStatus = { level: "cancelled" }; // Correctly set the status to "cancelled"
+  
+      await updateOrderDetailById(documentId, updatedStatus); // Update the backend
+  
+      setSteps([
+        steps[0],
+        {
+          status: "Order Cancelled",
+          description: "Your order has been canceled.",
+          icon: "cancel",
+        },
+      ]);
+      setIsCanceled(true);
+      setShowCancelModal(false);
+      Alert.alert("Order Canceled", "Your order has been successfully canceled.");
+    } catch (error) {
+      console.error("Error cancelling the order:", error);
+      Alert.alert("Error", "Failed to cancel the order. Please try again.");
+    }
   };
+  
 
-  const updatedSteps = [
-    ...steps.slice(0, 1), // Keep the steps before "Order confirmed"
-    canceledStep, // Insert "Order Cancelled"
-    ...steps.slice(1), // Keep the steps after "Order confirmed"
-  ];
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.header}>Track Your Order</Text>
+      <Text style={styles.orderId}>Order #123456</Text>
 
-  setSteps(updatedSteps); // Update the steps with the canceled status
-  setShowCancelModal(false); // Close the modal
-  Alert.alert("Order Canceled", "Your order has been successfully canceled.");
-};
-
-return (
-  <ScrollView style={styles.container}>
-    <Text style={styles.header}>Track Your Order</Text>
-    <Text style={styles.orderId}>Order #123456</Text>
-
-    {/* Product Information */}
-    <View style={styles.productContainer}>
-      <Image
-        source={{ uri: imageUrl || "https://example.com/fallback.png" }}
-        style={styles.productImage}
-      />
-      <View style={styles.productDetails}>
-        <Text style={styles.productName}>{productName}</Text>
-        <Text style={styles.productPrice}>${productPrice}</Text>
-        <Text style={styles.deliveryDate}>Delivering on 28 Nov, 2024</Text>
-        <View style={styles.ratingContainer}>
-          {Array.from({ length: 5 }).map((_, index) => (
-            <FontAwesome key={index} name="star" size={16} color="#FFD700" />
-          ))}
+      {/* Product Information */}
+      <View style={styles.productContainer}>
+        <Image
+          source={{ uri: imageUrl || "https://example.com/fallback.png" }}
+          style={styles.productImage}
+        />
+        <View style={styles.productDetails}>
+          <Text style={styles.productName}>{productName}</Text>
+          <Text style={styles.productPrice}>${productPrice}</Text>
+          <Text style={styles.deliveryDate}>Delivering on 28 Nov, 2024</Text>
+          <View style={styles.ratingContainer}>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <FontAwesome key={index} name="star" size={16} color="#FFD700" />
+            ))}
+          </View>
         </View>
       </View>
-    </View>
 
-    {/* Vertical Step Indicator */}
-    <View style={styles.trackingContainer}>
-      {steps.map((step, index) => (
-        <View key={index} style={styles.trackingStepContainer}>
-          <View style={styles.iconContainer}>
-            <MaterialIcons
-              name={step.icon}
-              size={24}
-              color={index <= currentStep ? "#3CE13D" : "#555"} // Active step is green
-            />
-            {index < steps.length - 1 && (
-              <Animated.View
+      {/* Vertical Step Indicator */}
+      <View style={styles.trackingContainer}>
+        {steps.map((step, index) => (
+          <View key={index} style={styles.trackingStepContainer}>
+            <View style={styles.iconContainer}>
+              <MaterialIcons
+                name={step.icon}
+                size={24}
+                color={index <= currentStep ? "#3CE13D" : "#555"}
+              />
+              {index < steps.length - 1 && (
+                <Animated.View
+                  style={[
+                    styles.verticalLine,
+                    {
+                      backgroundColor: "#3CE13D",
+                      opacity: trackingProgress.interpolate({
+                        inputRange: [index, index + 1],
+                        outputRange: [1, 0.3],
+                        extrapolate: "clamp",
+                      }),
+                      height: trackingProgress.interpolate({
+                        inputRange: [index, index + 1],
+                        outputRange: [40, 0],
+                        extrapolate: "clamp",
+                      }),
+                    },
+                  ]}
+                />
+              )}
+            </View>
+            <View style={styles.trackingTextContainer}>
+              <Text
                 style={[
-                  styles.verticalLine,
+                  styles.trackingStatus,
                   {
-                    backgroundColor: "#3CE13D",
-                    opacity: trackingProgress.interpolate({
-                      inputRange: [index, index + 1],
-                      outputRange: [1, 0.3],
-                      extrapolate: "clamp",
-                    }),
-                    height: trackingProgress.interpolate({
-                      inputRange: [index, index + 1],
-                      outputRange: [40, 0],
-                      extrapolate: "clamp",
-                    }),
+                    color:
+                      step.status === "Order Cancelled"
+                        ? "#EF4444"
+                        : index <= currentStep
+                        ? "#3CE13D"
+                        : "#777",
                   },
                 ]}
-              />
-            )}
+              >
+                {step.status}
+              </Text>
+              <Text style={styles.trackingDescription}>
+                {step.description}
+              </Text>
+            </View>
           </View>
-
-          <View style={styles.trackingTextContainer}>
-            <Text
-              style={[
-                styles.trackingStatus,
-                {
-                  color:
-                    step.status === "Order Cancelled"
-                      ? "#EF4444" // Red for canceled order
-                      : index <= currentStep
-                      ? "#3CE13D"
-                      : "#777",
-                },
-              ]}
-            >
-              {step.status}
-            </Text>
-            <Text style={styles.trackingDescription}>{step.description}</Text>
-          </View>
-        </View>
-      ))}
-    </View>
-
-    {/* Order Canceled Message */}
-    {isCanceled && (
-      <Text style={styles.canceledMessage}>Your order has been canceled.</Text>
-    )}
-
-    {/* Action Buttons */}
-    <View style={[styles.buttonContainer, styles.buttonSpacing]}>
-      <TouchableOpacity style={styles.trackButton}>
-        <Text style={styles.buttonText}>Track Order</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.cancelButton}
-        onPress={() => setShowCancelModal(true)} // Show confirmation modal
-      >
-        <Text style={[styles.buttonText, styles.cancelButtonText]}>
-          Cancel Order
-        </Text>
-      </TouchableOpacity>
-    </View>
-
-    {/* Confirmation Modal */}
-    <Modal
-      transparent={true}
-      visible={showCancelModal}
-      animationType="slide"
-      onRequestClose={() => setShowCancelModal(false)}
-    >
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Cancel Order</Text>
-          <Text style={styles.modalMessage}>
-            Are you sure you want to cancel this order?
-          </Text>
-          <View style={styles.modalButtons}>
-            <TouchableOpacity
-              style={styles.modalButtonCancel}
-              onPress={() => setShowCancelModal(false)}
-            >
-              <Text style={styles.modalButtonText}>No</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.modalButtonConfirm}
-              onPress={handleCancelOrder}
-            >
-              <Text style={styles.modalButtonText}>Yes</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        ))}
       </View>
-    </Modal>
-  </ScrollView>
-);
+
+      {/* Order Canceled Message */}
+      {isCanceled && (
+        <Text style={styles.canceledMessage}>Your order has been canceled.</Text>
+      )}
+
+      {/* Action Buttons */}
+      <View style={[styles.buttonContainer, styles.buttonSpacing]}>
+        <TouchableOpacity style={styles.trackButton}>
+          <Text style={styles.buttonText}>Track Order</Text>
+        </TouchableOpacity>
+        {!isCanceled && (
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => setShowCancelModal(true)}
+          >
+            <Text style={[styles.buttonText, styles.cancelButtonText]}>
+              Cancel Order
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* Confirmation Modal */}
+      <Modal
+        transparent={true}
+        visible={showCancelModal}
+        animationType="slide"
+        onRequestClose={() => setShowCancelModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Cancel Order</Text>
+            <Text style={styles.modalMessage}>
+              Are you sure you want to cancel this order?
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.modalButtonCancel}
+                onPress={() => setShowCancelModal(false)}
+              >
+                <Text style={styles.modalButtonText}>No</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButtonConfirm}
+                onPress={handleCancelOrder}
+              >
+                <Text style={styles.modalButtonText}>Yes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </ScrollView>
+  );
 };
 
 const styles = StyleSheet.create({

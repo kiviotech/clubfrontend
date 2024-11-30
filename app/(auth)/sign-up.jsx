@@ -45,8 +45,12 @@ const SignUp = () => {
   };
 
   const validateUsername = () => {
+    const nameRegex = /^[a-zA-Z]+$/; // Allows only alphabetic characters
     if (username.trim() === "") {
       setUsernameError("Username is required.");
+      return false;
+    } else if (!nameRegex.test(username)) {
+      setUsernameError("Username must contain only alphabetic characters.");
       return false;
     }
     setUsernameError("");
@@ -54,15 +58,17 @@ const SignUp = () => {
   };
 
   const validateEmail = () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Valid email regex
+    if (email.trim() === "") {
+      setEmailError("Email is required.");
+      return false;
+    } else if (!emailRegex.test(email)) {
       setEmailError("Invalid email format.");
       return false;
     }
     setEmailError("");
     return true;
   };
-
   const validatePassword = () => {
     if (password.length < 8) {
       setPasswordError("Password must be at least 8 characters.");

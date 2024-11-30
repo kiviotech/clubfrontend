@@ -25,6 +25,17 @@ const useStore = create(
             id,
           },
         })),
+      // Add this new function
+      clearShippingInfo: () => set(() => ({
+        shippingInfo: {
+          id: "",
+          fullName: "",
+          address: "",
+          state: "",
+          pincode: "",
+          phoneNo: "",
+        }
+      })),
     }),
     {
       name: "user-storage", // Persist the store in localStorage

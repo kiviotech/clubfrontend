@@ -28,8 +28,11 @@ const ResetPasswordScreen = () => {
     return Object.keys(formErrors).length === 0;
   };
 
+  const [successMessage, setSuccessMessage] = useState('');
+
   const apihandleResetPassword = async () => {
-    setServerError(''); // Clear any previous server error
+    setServerError(''); // Clear previous errors
+    setSuccessMessage(''); // Clear previous success message
     if (validateForm()) {
       try {
         const data = {
@@ -37,15 +40,21 @@ const ResetPasswordScreen = () => {
           password: newPassword,
           passwordConfirmation: confirmPassword,
         };
+        console.log('Sending data to API:', data);
         await changePassword(data);
-        setShowSuccessAlert(true);
+  
+        console.log('Password reset successful');
+        setSuccessMessage('Your password has been successfully reset.'); // Set success message
       } catch (error) {
         console.error('Password reset error:', error);
-        const errorMessage = error.response?.data?.message || 'Failed to reset password Current PassWord is Incorrect';
-        setServerError(errorMessage); // Update the serverError state
+        const errorMessage = error.response?.data?.message || 'Failed to reset password. Current password is incorrect.';
+        setServerError(errorMessage); // Display server error
       }
     }
   };
+  
+  
+  
 
   return (
     <SafeAreaView style={styles.viewContainer}>
@@ -118,6 +127,10 @@ const ResetPasswordScreen = () => {
           </TouchableOpacity>
         </View>
         {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
+        {successMessage ? (
+  <Text style={styles.successText}>{successMessage}</Text>
+) : null}
+
 
         {/* Display server error */}
         {serverError && <Text style={styles.serverErrorText}>{serverError}</Text>}
@@ -202,6 +215,13 @@ const styles = StyleSheet.create({
     right: 15,
     top: 15,
   },
+  successText: {
+    color: 'green',
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  
 });
 
 export default ResetPasswordScreen;

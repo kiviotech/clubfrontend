@@ -82,11 +82,16 @@ const store = () => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Image source={logo} style={styles.logo} />
-        <TouchableOpacity onPress={handleRequest}>
-          <Icon name="shopping-cart" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
+  <Image source={logo} style={styles.logo} />
+  <View style={styles.headerIcons}>
+    <TouchableOpacity onPress={handleRequest} style={styles.iconButton}>
+      <Icon name="shopping-cart" size={24} color="white" />
+    </TouchableOpacity>
+    <TouchableOpacity onPress={() => router.push("/pages/wishlist")} style={styles.iconButton}>
+      <Icon name="heart" size={28} color="white" />
+    </TouchableOpacity>
+  </View>
+</View>
 
       {/* Scrollable Content */}
       <ScrollView 
@@ -174,6 +179,15 @@ const styles = StyleSheet.create({
     height: 40,
     resizeMode: "contain",
   },
+  headerIcons: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15, // Adds spacing between icons
+  },
+  iconButton: {
+    marginLeft: 10, // Optional: Adjust spacing between icons
+  },
+  
   title: {
     fontSize: 24,
     color: "white",

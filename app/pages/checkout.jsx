@@ -436,6 +436,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 10,
     padding: 20,
+    position: 'relative',
   },
   modalHeader: {
     fontSize: 20,
@@ -520,17 +521,13 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
     padding: 10,
+    zIndex: 1,
   },
   errorText: {
     color: "red",
     fontSize: 10,
     // marginBottom:10,
     // margin:0
-  },
-  modalContent: {
-    backgroundColor: "rgba(0, 0, 0, 0.8)", // Adjust opacity to see overlaps
-    padding: 20,
-    borderRadius: 10,
   },
 });
 

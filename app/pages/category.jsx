@@ -124,12 +124,12 @@ const Category = () => {
   }, []);
 
   
-  const limitedProductDetails = productDetails.slice(0, 4);
+  // const limitedProductDetails = productDetails.slice(0, 4);
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={limitedProductDetails}
+        // data={limitedProductDetails}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Image source={item.image  ||'https://example.com/fallback.png'} style={styles.image} resizeMode="contain" />

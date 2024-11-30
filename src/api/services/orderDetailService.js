@@ -42,13 +42,14 @@ export const createOrderDetailService = async (data) => {
 // Update an existing order detail by ID
 export const updateOrderDetailById = async (id, data) => {
   try {
-    const response = await updateOrderDetail(id, data);
+    const response = await updateOrderDetail(id, { data }); // Correctly pass the ID and payload
     return response.data;
   } catch (error) {
     console.error(`Error updating order detail with ID ${id}:`, error);
     throw error;
   }
 };
+
 
 // Delete an order detail by ID
 export const deleteOrderDetailById = async (id) => {

@@ -56,6 +56,8 @@ const useCartStore = create(
           );
           return { items: newItems, subtotal: newSubtotal };
         }),
+
+      clearCart: () => set({ items: [], subtotal: 0 }),
     }),
     {
       name: "cart-storage",

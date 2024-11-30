@@ -37,6 +37,8 @@ const BrandPage = () => {
     });
   };
 
+ 
+
   const handleIconPress = (brandName) => {
     
     setSelectedBrand(brandName); 
@@ -62,7 +64,9 @@ const BrandPage = () => {
               />
               <Text style={styles.brandName}>{item.brand_name}</Text>
             </View>
+            <TouchableOpacity onPress={() => handleInfo(item)}>
             <Icon name="share" size={20} color="#fff" style={styles.shareIcon} />
+            </TouchableOpacity>
           </View>
 
           {/* Description */}

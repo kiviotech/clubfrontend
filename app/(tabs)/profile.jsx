@@ -1,5 +1,3 @@
-
-
 import React,{useEffect,useState} from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity,ScrollView,Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -14,6 +12,9 @@ import { getUserById } from '../../src/api/repositories/userRepository';
 import { logout } from '../../src/utils/auth';
 import { getUserProfile } from '../../src/api/repositories/userRepository';
 import useProfileStore from '../../src/store/useProfileStore';
+import useCartStore from '../../src/store/useCartStore';
+import useStore from '../../src/store/useStore';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Profile = () => {
   const [user, setUser] = useState(null); 
@@ -24,36 +25,45 @@ const Profile = () => {
   const [profile, setProfile] = useState(null);
   const { name, username, image } = useProfileStore((state) => state.profile);
   console.log('Profile from Zustand:', { name, username, image });
+  const removeItem = useCartStore((state)=> state.removeItem)
+  const removeUser = useUserDataStore((state)=> state.removeUser)
+  const clearShippingInfo = useStore((state) => state.clearShippingInfo);
+  const clearCart = useCartStore((state) => state.clearCart);
   // Watch for changes in the profile state
 
+  // Replace the navigation effect with useFocusEffect
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchProfile();
+    }, [])
+  );
 
- 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        if (userId) {
-          const response = await getUserProfile(userId); // Fetch user profile by user ID
-          const { data } = response; // Extract data from response
-          if (data && data.profile) {
-            setProfile({
-              name: data.profile.name || '',
-              username: data.profile.username || '',
-              profileImage: data.profile.image?.url ? `${MEDIA_BASE_URL}${data.profile.image.url}` : 'https://example.com/fallback.png'
-            });
-          }
-          
+  // Move fetchProfile function outside the first useEffect for reusability
+  const fetchProfile = async () => {
+    try {
+      if (userId) {
+        const response = await getUserProfile(userId);
+        const { data } = response;
+        if (data && data.profile) {
+          setProfile({
+            name: data.profile.name || '',
+            username: data.profile.username || '',
+            profileImage: data.profile.image?.url ? `${MEDIA_BASE_URL}${data.profile.image.url}` : 'https://example.com/fallback.png'
+          });
         }
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-        Alert.alert('Error', 'Failed to fetch profile.');
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      Alert.alert('Error', 'Failed to fetch profile.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Keep the original useEffect that calls fetchProfile on mount
+  useEffect(() => {
     fetchProfile();
   }, [userId]);
-
 
   const ProfileRequest = () => {
     if (!user) return;
@@ -80,8 +90,14 @@ const Profile = () => {
   // };
   const handleSignOut = () => {
     try {
-      logout(); // Call the logout function
-      router.push("sign-in"); // Redirect to sign-in page
+      if (userId) {
+        removeUser(userId);
+      }
+      removeItem();
+      clearCart();
+      clearShippingInfo();
+      logout();
+      router.push("sign-in");
     } catch (error) {
       console.error("Error during logout:", error);
     }
