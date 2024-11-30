@@ -30,7 +30,7 @@ export const saveToken = async (token) => {
   try {
     await AsyncStorage.setItem("authToken", token);
   } catch (error) {
-    console.error("Error saving token:", error);
+    // console.error("Error saving token:", error);
   }
 };
 
@@ -39,7 +39,7 @@ export const getToken = async () => {
   try {
     return await AsyncStorage.getItem("authToken");
   } catch (error) {
-    console.error("Error retrieving token:", error);
+    // console.error("Error retrieving token:", error);
     return null;
   }
 };
@@ -49,7 +49,7 @@ export const saveUserId = async (userId) => {
   try {
     await AsyncStorage.setItem("userId", userId);
   } catch (error) {
-    console.error("Error saving user ID:", error);
+    // console.error("Error saving user ID:", error);
   }
 };
 
@@ -59,6 +59,6 @@ export const deleteToken = async () => {
     await AsyncStorage.removeItem("authToken");
     await AsyncStorage.removeItem("userId");
   } catch (error) {
-    console.error("Error deleting token or user ID:", error);
+    // console.error("Error deleting token or user ID:", error);
   }
 };

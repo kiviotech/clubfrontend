@@ -65,7 +65,7 @@ const Review = () => {
     } catch (error) {
       // Handle error response
       Alert.alert('Error', 'There was an issue submitting your design request. Please try again.');
-      console.error('Error creating design request:', error);
+      // console.error('Error creating design request:', error);
     }
   };
 

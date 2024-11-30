@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#000000',
     justifyContent: 'flex-end',
-    paddingBottom:70
+    paddingBottom:80
   },
   messageContainer: {
     marginBottom: 10,

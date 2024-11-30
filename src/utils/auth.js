@@ -39,7 +39,7 @@ export const login = async (email, password) => {
 
     // Check if store function is available
     if (!addUser) {
-      console.error("Store function not found");
+      // console.error("Store function not found");
       throw new Error("Failed to access store function");
     }
 
@@ -47,13 +47,13 @@ export const login = async (email, password) => {
       // Update user data store with complete user data
       addUser(userData);
     } catch (storeError) {
-      console.error("Error updating store:", storeError);
+      // console.error("Error updating store:", storeError);
       throw new Error("Failed to update user store");
     }
 
     return response.data;
   } catch (error) {
-    console.error("Login error:", error.response?.data || error.message);
+    // console.error("Login error:", error.response?.data || error.message);
     throw error;
   }
 };
@@ -102,7 +102,7 @@ export const signup = async (username, email, password) => {
 
     return response.data;
   } catch (error) {
-    console.error("Signup error:", error.response?.data || error.message);
+    // console.error("Signup error:", error.response?.data || error.message);
     throw error;
   }
 };
@@ -116,10 +116,10 @@ export const changePassword = async (currentPassword, password, passwordConfirma
     });
 
     // Log and return the response to notify the user
-    console.log("Change password response:", response.data);
+    // console.log("Change password response:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Change password error:", error.response?.data || error.message);
+    // console.error("Change password error:", error.response?.data || error.message);
     throw error;
   }
 };
@@ -132,10 +132,10 @@ export const forgotPassword = async (email) => {
     });
 
     // Handle the response and notify the user
-    console.log("Forgot password response:", response.data);
+    // console.log("Forgot password response:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Forgot password error:", error);
+    // console.error("Forgot password error:", error);
     throw error;
   }
 };
@@ -151,10 +151,10 @@ export const resetPassword = async (data) => {
     );
 
     // Handle the response and notify the user
-    console.log("Forgot password response:", response.data);
+    // console.log("Forgot password response:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Forgot password error:", error);
+    // console.error("Forgot password error:", error);
     throw error;
   }
 };
@@ -171,9 +171,9 @@ export const logout = () => {
       clearUserData(); // Reset user data
     }
 
-    console.log("User logged out successfully.");
+    // console.log("User logged out successfully.");
   } catch (error) {
-    console.error("Logout error:", error);
+    // console.error("Logout error:", error);
     throw error;
   }
 };

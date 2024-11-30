@@ -38,11 +38,11 @@ const Home = () => {
     const fetchUser = async () => {
       try {
         const response = await getUserById(userId); // Fetch user data by ID
-        console.log(response.data.username);
+        // console.log(response.data.username);
         setUser(response.data); // Set the fetched user data to the state
         
       } catch (error) {
-        console.error("Failed to fetch user data", error);
+        // console.error("Failed to fetch user data", error);
       } finally {
         setLoading(false); // Set loading to false once the data is fetched
       }
@@ -133,7 +133,7 @@ const Home = () => {
         
         </View>
 
-        <View>
+        <View style={styles.sale}>
           <Sale />
         </View>
 
@@ -250,6 +250,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontFamily: fonts["Poppins-Bold"],
   },
+  sale:{
+    margin:0,
+    padding:0
+  },
   exploreText2: {
     position: "absolute",
     bottom: 56,
@@ -306,19 +310,20 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: "white",
     fontWeight: "bold",
-    marginVertical: 8,
-    paddingLeft: 10,
+    marginVertical: 12,
+    paddingLeft: 8,
   },
   viewAll: {
     fontSize: 14,
     color: "white",
     fontWeight: "500",
     marginVertical: 12,
+    marginRight:8,
   },
   requestDesignButton: {
     backgroundColor: "#8FFA09", // Bright green
     paddingVertical: 12,
-    paddingHorizontal: 24,
+    paddingHorizontal: 40,
     borderRadius: 8, // Rounded corners
     alignItems: "center",
     justifyContent: "center",

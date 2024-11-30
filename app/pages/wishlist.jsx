@@ -32,6 +32,7 @@ const Wishlist = () => {
   };
 
   const removeFromWishlist = useWishlistStore((state) => state.removeFromWishlist);
+  
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -59,6 +60,7 @@ const Wishlist = () => {
                     image={item.image}
                     isWishlist={true}
                     onDelete={() => removeFromWishlist(item.id)} 
+                    inStock={item.in_stock} 
                   />
                 </View>
               ))}

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const useRequestStore = create(
   persist(
@@ -15,7 +16,8 @@ const useRequestStore = create(
       getQuantity: (requestId) => get().cart[requestId] || 1,
     }),
     {
-      name: 'request-storage', // Key to store in localStorage
+      name: 'request-storage', // Key to store in AsyncStorage
+      storage: AsyncStorage, // Use AsyncStorage for storage
     }
   )
 );

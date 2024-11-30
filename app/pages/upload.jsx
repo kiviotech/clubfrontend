@@ -59,7 +59,7 @@ const Measurement = () => {
           }
         )
         const uploadedImageId = uploadResponse.data[0]?.id;
-        console.log(uploadedImageId)// Assuming the backend returns the uploaded file ID
+        // console.log(uploadedImageId)// Assuming the backend returns the uploaded file ID
 
         if (uploadedImageId) {
           setProfileImageId(uploadedImageId);
@@ -70,7 +70,7 @@ const Measurement = () => {
           throw new Error("Failed to retrieve uploaded image ID.");
         }
       } catch (error) {
-        console.error("Error uploading image:", error);
+        // console.error("Error uploading image:", error);
         Alert.alert("Upload Error", "Failed to upload the image.");
       } finally {
         setUploading(false);

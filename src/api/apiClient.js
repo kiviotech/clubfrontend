@@ -1,8 +1,8 @@
 import axios from "axios";
 import { getToken } from "../utils/storage";
 
-export const BASE_URL = "http://localhost:1337/api";
-export const MEDIA_BASE_URL = "http://localhost:1337";
+export const BASE_URL = "http://192.168.0.23:1337/api";
+export const MEDIA_BASE_URL = "http://192.168.0.23:1337";
 
 // export const BASE_URL = "http://192.168.0.23:1337/api";
 // export const MEDIA_BASE_URL = "http://192.168.0.23:1337";
@@ -27,7 +27,7 @@ apiClient.interceptors.request.use(
         //console.warn("No token available"); // Warn if no token is found
       }
     } catch (error) {
-      console.error("Error fetching token:", error); // Log any error in fetching the token
+      // console.error("Error fetching token:", error); // Log any error in fetching the token
     }
 
     return config;

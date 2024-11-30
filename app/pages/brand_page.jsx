@@ -7,6 +7,7 @@ import { useRouter } from "expo-router";
 import { useBrandStore } from '../../src/store/brandStore';
 
 const BrandPage = () => {
+
   const [brands, setBrands] = useState([]);
   const router = useRouter();
   const selectedBrand = useBrandStore((state) => state.selectedBrand);
@@ -17,7 +18,7 @@ const BrandPage = () => {
       const response = await getBrands();
       setBrands(response.data.data); // Store all brand data in state
     } catch (error) {
-      console.error("Error fetching brands:", error);
+      // console.error("Error fetching brands:", error);
     }
   };
 
@@ -37,13 +38,19 @@ const BrandPage = () => {
     });
   };
 
- 
+
 
   const handleIconPress = (brandName) => {
-    
-    setSelectedBrand(brandName); 
+
+    setSelectedBrand(brandName);
     router.push('pages/brand');
   };
+  const handleIconBrand = (brandName) => {
+
+    setSelectedBrand(brandName);
+    router.push('pages/brand_info');
+  };
+  
 
   const renderBrand = ({ item }) => {
     const logoUrl = `${MEDIA_BASE_URL}${item.brand_logo.url}`;
@@ -53,7 +60,13 @@ const BrandPage = () => {
 
     return (
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => handleInfo(item)}>
+        <TouchableOpacity
+          onPress={() => {
+            handleIconBrand(item.brand_name);
+            handleInfo(item);
+            // handleIconBrand(item.brand_name);
+          }}
+        >
           {/* Logo and Share Icon */}
           <View style={styles.header}>
             <View style={styles.logoContainer}>
@@ -63,9 +76,10 @@ const BrandPage = () => {
                 resizeMode="contain"
               />
               <Text style={styles.brandName}>{item.brand_name}</Text>
+              {selectedBrand === item.brand_name && <View style={styles.selectedText}></View>}
             </View>
             <TouchableOpacity onPress={() => handleInfo(item)}>
-            <Icon name="share" size={20} color="#fff" style={styles.shareIcon} />
+              <Icon name="share" size={20} color="#fff" style={styles.shareIcon} />
             </TouchableOpacity>
           </View>
 
@@ -82,7 +96,7 @@ const BrandPage = () => {
         </TouchableOpacity>
 
         {/* Products Button */}
-        
+
         <TouchableOpacity style={styles.button} onPress={() => handleIconPress(item.brand_name)}>
           <Icon name="shopping-bag" size={16} color="#fff" />
           <Text style={styles.buttonText}>{item.brand_name} Products</Text>
@@ -105,7 +119,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
-    padding: 16,
+    padding: 5,
     marginBottom: 16,
     borderRadius: 8,
   },
@@ -153,7 +167,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#00ff00',
+    backgroundColor: '#8FFA09',
     paddingVertical: 10,
     borderRadius: 8,
   },
@@ -163,7 +177,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   buttonText: {
-    color: '#fff',
+    color: '#000',
     fontSize: 14,
     marginLeft: 8,
   },

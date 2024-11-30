@@ -13,7 +13,7 @@ export const fetchOrderItems = async () => {
     const response = await apiClient.get(orderItemEndpoints.getOrderItems());
     return response.data;
   } catch (error) {
-    console.error("Error fetching order items:", error);
+    // console.error("Error fetching order items:", error);
     throw error;
   }
 };
@@ -24,7 +24,7 @@ export const fetchOrderItemById = async (id) => {
     const orderItem = await getOrderItemById(id);  // Calling repository method
     return orderItem;
   } catch (error) {
-    console.error(`Error fetching order item with ID ${id}:`, error);
+    // console.error(`Error fetching order item with ID ${id}:`, error);
     throw error;  // Propagate the error
   }
 };
@@ -34,7 +34,7 @@ export const createOrder = async (data) => {
     const response = await createOrderItem(data);
     return response.data
   } catch (error) {
-    console.error("Error creating order item: ", error);
+    // console.error("Error creating order item: ", error);
     throw error;
   }
 }
@@ -45,7 +45,7 @@ export const updateOrderItemById = async (id, data) => {
     const response = await apiClient.put(orderItemEndpoints.updateOrderItem(id), data);
     return response.data;
   } catch (error) {
-    console.error(`Error updating order item with ID ${id}:`, error);
+    // console.error(`Error updating order item with ID ${id}:`, error);
     throw error;
   }
 };
@@ -56,7 +56,7 @@ export const deleteOrderItemById = async (id) => {
     const response = await apiClient.delete(orderItemEndpoints.deleteOrderItem(id));
     return response.data;
   } catch (error) {
-    console.error(`Error deleting order item with ID ${id}:`, error);
+    // console.error(`Error deleting order item with ID ${id}:`, error);
     throw error;
   }
 };

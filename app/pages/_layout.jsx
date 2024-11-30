@@ -31,6 +31,7 @@ export default function Layout() {
       <Stack.Screen name="LanguageSelector" options={{ headerShown: false }} />
       <Stack.Screen name="passwordChangedNotification" options={{ headerShown: false }} />
       <Stack.Screen name="designRequestCart" options={{ headerShown: false }} />
+      <Stack.Screen name="viewProduct" options={{ headerShown: false }} />
       
     </Stack>
   );

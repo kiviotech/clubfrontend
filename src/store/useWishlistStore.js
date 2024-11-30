@@ -1,22 +1,6 @@
-// import { create } from "zustand";
-
-// const useWishlistStore = create((set) => ({
-//   wishlist: [],
-//   addToWishlist: (item) =>
-//     set((state) => ({
-//       wishlist: [...state.wishlist, item],
-//     })),
-//   removeFromWishlist: (id) =>
-//     set((state) => ({
-//       wishlist: state.wishlist.filter((item) => item.id !== id),
-//     })),
-// }));
-
-// export default useWishlistStore;
-
-
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { persist } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const useWishlistStore = create(
   persist(
@@ -33,7 +17,7 @@ const useWishlistStore = create(
     }),
     {
       name: "wishlist-storage", // Unique name for the storage
-      storage: createJSONStorage(() => localStorage),
+      storage: AsyncStorage, // Use AsyncStorage instead of localStorage
     }
   )
 );

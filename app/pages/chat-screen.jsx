@@ -114,7 +114,7 @@ const ChatScreen = () => {
         // handle audio recording here
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 

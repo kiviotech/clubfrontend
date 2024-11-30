@@ -26,7 +26,7 @@ const saveData = async (key, value) => {
     if (typeof localStorage !== "undefined") {
       localStorage.setItem(key, value);
     } else {
-      console.error("localStorage is not available");
+      // console.error("localStorage is not available");
     }
   } else {
     await AsyncStorage.setItem(key, value);
@@ -38,7 +38,7 @@ const getData = async (key) => {
     if (typeof localStorage !== "undefined") {
       return localStorage.getItem(key);
     } else {
-      console.error("localStorage is not available");
+      // console.error("localStorage is not available");
       return null;
     }
   } else {
@@ -51,7 +51,7 @@ const removeData = async (key) => {
     if (typeof localStorage !== "undefined") {
       localStorage.removeItem(key);
     } else {
-      console.error("localStorage is not available");
+      // console.error("localStorage is not available");
     }
   } else {
     await AsyncStorage.removeItem(key);
@@ -61,6 +61,7 @@ const removeData = async (key) => {
 const SignIn = () => {
   const [formValues, setFormValues] = useState({ username: "", password: "" });
   const [formErrors, setFormErrors] = useState({ username: "", password: "" });
+  const [errorMessage, setErrorMessage] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const setUser = useStore((state) => state.setShippingInfo);
   const addUser = useUserDataStore((state) => state.addUser);
@@ -90,6 +91,7 @@ const SignIn = () => {
     if (formErrors[name]) {
       setFormErrors({ ...formErrors, [name]: "" });
     }
+    setErrorMessage(""); // Clear error message on input change
   };
 
   const handleSubmit = async () => {
@@ -100,35 +102,35 @@ const SignIn = () => {
       try {
         // Make the login API call
         const response = await login(formValues.username, formValues.password);
-
+  
         // Get the JWT and user data from response
         const { jwt, user } = response;
-
+  
         // Store token and user data
         await saveData("token", jwt);
         await saveData("userId", user.id.toString());
-
+  
         // Update both stores with user data
         const userData = {
           id: user.id,
           username: user.username,
           email: user.email,
         };
-
+  
         addUser(userData);
         setUser(userData);
-
+  
         // Navigate to home screen
         router.replace("/home");
       } catch (error) {
-        console.error("Login error:", error);
-        Alert.alert(
-          "Login Error",
-          "An error occurred during login. Please try again."
-        );
+        // Only display an error message to the user without logging to console
+        setErrorMessage("Wrong username or password. Please try again.");
+        // Remove the line below if it exists, as it may be logging errors to the console.
+        // console.error(error);
       }
     }
   };
+  
 
 
 
@@ -181,6 +183,10 @@ const SignIn = () => {
       {formErrors.password && (
         <Text style={styles.errorText}>{formErrors.password}</Text>
       )}
+
+{errorMessage ? (
+        <Text style={styles.errorText}>{errorMessage}</Text>
+      ) : null}
 
       <TouchableOpacity style={styles.forgotPasswordContainer} onPress={handlePassword}>
         <Text style={styles.forgotPasswordText}>Forgot password?</Text>

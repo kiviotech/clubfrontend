@@ -21,13 +21,13 @@ const DesignRequestCart = () => {
 
   useEffect(() => {
     if (!userId) {
-      console.log("User ID is not available.");
+      // console.log("User ID is not available.");
       return;
     }
 
     const fetchDesignRequests = async () => {
       try {
-        console.log("Fetching design requests for userId:", userId);
+        // console.log("Fetching design requests for userId:", userId);
         const response = await getUserWithDesignRequests(userId);
 
         // Extract and deduplicate design requests
@@ -48,7 +48,7 @@ const DesignRequestCart = () => {
       } catch (error) {
         rese
         setError("Error fetching design requests");
-        console.error(error);
+        // console.error(error);
       } finally {
         setLoading(false);
       }
@@ -57,7 +57,7 @@ const DesignRequestCart = () => {
     fetchDesignRequests();
   }, [userId]);
 
-  console.log(designRequests)
+  // console.log(designRequests)
   return (
     <ScrollView style={styles.container}>
       <View style={styles.logo}>

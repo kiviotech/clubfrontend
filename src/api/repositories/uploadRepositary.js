@@ -6,7 +6,7 @@ export const uploadNewFile = async (formData) => {
     const response = await apiClient.post(uploadEndpoints.uploadFile, formData);
     return response.data;
   } catch (error) {
-    console.error("Failed to upload image:", error);
+    // console.error("Failed to upload image:", error);
     throw error;
   }
 };

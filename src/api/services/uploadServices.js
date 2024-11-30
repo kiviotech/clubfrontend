@@ -12,7 +12,7 @@ import {
       const response = await uploadFile(file);
       return response.data;
     } catch (error) {
-      console.error("Error uploading file:", error);
+      // console.error("Error uploading file:", error);
       throw error;
     }
   };
@@ -23,7 +23,7 @@ import {
       const response = await uploadFileWithId(id, file);
       return response.data;
     } catch (error) {
-      console.error(`Error uploading file with ID ${id}:`, error);
+      // console.error(`Error uploading file with ID ${id}:`, error);
       throw error;
     }
   };
@@ -34,7 +34,7 @@ import {
       const response = await getAllFiles();
       return response.data;
     } catch (error) {
-      console.error("Error fetching all files:", error);
+      // console.error("Error fetching all files:", error);
       throw error;
     }
   };
@@ -45,7 +45,7 @@ import {
       const response = await getFileById(id);
       return response.data;
     } catch (error) {
-      console.error(`Error fetching file with ID ${id}:`, error);
+      // console.error(`Error fetching file with ID ${id}:`, error);
       throw error;
     }
   };
@@ -56,7 +56,7 @@ import {
       const response = await deleteFileById(id); // Call the repository function
       return response.data;
     } catch (error) {
-      console.error(`Error deleting file with ID ${id}:`, error);
+      // console.error(`Error deleting file with ID ${id}:`, error);
       throw error;
     }
   };

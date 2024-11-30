@@ -40,13 +40,13 @@ const ResetPasswordScreen = () => {
           password: newPassword,
           passwordConfirmation: confirmPassword,
         };
-        console.log('Sending data to API:', data);
+        // console.log('Sending data to API:', data);
         await changePassword(data);
   
-        console.log('Password reset successful');
+        // console.log('Password reset successful');
         setSuccessMessage('Your password has been successfully reset.'); // Set success message
       } catch (error) {
-        console.error('Password reset error:', error);
+        // console.error('Password reset error:', error);
         const errorMessage = error.response?.data?.message || 'Failed to reset password. Current password is incorrect.';
         setServerError(errorMessage); // Display server error
       }

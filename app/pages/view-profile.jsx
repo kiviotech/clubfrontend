@@ -38,9 +38,9 @@ const Profile = () => {
         const response = await getDesignerShowcaseById(8);
        // const response = await getDesignerShowcases();
         // setShowcases(response.data.data); // Adjust based on your API response structure
-        console.log(response.data.data)
+        // console.log(response.data.data)
       } catch (error) {
-        console.error("Error fetching designer showcases:", error);
+        // console.error("Error fetching designer showcases:", error);
       }
     };
 

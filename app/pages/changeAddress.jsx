@@ -37,7 +37,7 @@ const ChangeAddress = () => {
                 const response = await getShippingInfoByUserId(userId);
                 setShippingInfos(response.data.data); 
             } catch (error) {
-                console.error("Error fetching shipping info", error);
+                // console.error("Error fetching shipping info", error);
             }
         };
 
@@ -121,7 +121,7 @@ const ChangeAddress = () => {
             // Reset form and state
             resetForm();
         } catch (error) {
-            console.error("Error submitting shipping info:", error);
+            // console.error("Error submitting shipping info:", error);
             alert("Failed to submit shipping information.");
         }
     };
@@ -155,7 +155,7 @@ const ChangeAddress = () => {
             );
             alert("Shipping info deleted successfully!");
         } catch (error) {
-            console.error("Error deleting shipping info:", error);
+            // console.error("Error deleting shipping info:", error);
             alert("Failed to delete shipping info.");
         }
     };

@@ -29,6 +29,14 @@ import profile from "../assets/icons/profile.svg"
 // import Forgot from "../assets/icons/Forgot_password.svg"
 // import slider2 from "../assets/slidet2.png"
 import forgot from "../assets/icons/Forgot _password.svg"
+import ChatScreen from "../assets/icons/chatScreen.svg"
+import homeScreen from "../assets/icons/homeScreen.svg"
+import ProfileScreen from "../assets/icons/ProfileScreen.svg"
+import storeScreen from "../assets/icons/storeScreen.svg"
+import afterhomeScreen from "../assets/icons/afterhomeScreen.svg"
+import afterchatScreen from "../assets/icons/afterchatScreen.svg"
+import afterstoreScreen from "../assets/icons/afterstoreScreen.svg"
+import afterprofileScreen from "../assets/icons/afterprofileScreen.svg"
 export default {
   gicon,
   ficon,
@@ -60,4 +68,13 @@ export default {
   // slider2,
   profile,
   forgot,
+  ChatScreen,
+  homeScreen,
+  ProfileScreen,
+  storeScreen,
+  afterhomeScreen,
+  afterchatScreen,
+  afterstoreScreen,
+  afterprofileScreen
+
 };

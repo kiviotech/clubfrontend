@@ -27,7 +27,7 @@ const ProfileScreen = () => {
   const [profileData,setProfileData]=useState("")
   const { setProfile } = useProfileStore();
   
-  console.log('id', id, 'userid',userId)
+  // console.log('id', id, 'userid',userId)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -35,7 +35,7 @@ const ProfileScreen = () => {
         if (userId) {
           const response = await getUserProfile(userId);
           const { data } = response;
-          console.log('Fetched Profile Data:', data);
+          // console.log('Fetched Profile Data:', data);
           setProfileId(data?.profile?.documentId);
           
           const imageUrl = data?.profile?.image?.url 
@@ -54,7 +54,7 @@ const ProfileScreen = () => {
           setProfileImage(imageUrl);
         }
       } catch (error) {
-        console.error('Error fetching profile:', error);
+        // console.error('Error fetching profile:', error);
         Alert.alert('Error', 'Failed to fetch profile.');
       }
     };
@@ -68,13 +68,13 @@ const ProfileScreen = () => {
       try {
         if (id) {
           const profileData = await fetchProfileById(id);
-          console.log('Profile Data by ID:', {
-            id: id,
-            profileData: profileData
-          });
+          // console.log('Profile Data by ID:', {
+          //   id: id,
+          //   profileData: profileData
+          // });
         }
       } catch (error) {
-        console.error('Error fetching profile:', error);
+        // console.error('Error fetching profile:', error);
       }
     };
 
@@ -118,7 +118,7 @@ const ProfileScreen = () => {
           }
         );
         const uploadedImageId = uploadResponse.data[0]?.id;
-        console.log('Uploaded Image ID:', uploadedImageId);
+        // console.log('Uploaded Image ID:', uploadedImageId);
 
         if (uploadedImageId) {
           setProfileImageId(uploadedImageId);
@@ -127,7 +127,7 @@ const ProfileScreen = () => {
           throw new Error("Failed to retrieve uploaded image ID.");
         }
       } catch (error) {
-        console.error("Error uploading image:", error);
+        // console.error("Error uploading image:", error);
         Alert.alert("Upload Error", "Failed to upload the image.");
       } finally {
         setUploading(false);
@@ -147,11 +147,11 @@ const ProfileScreen = () => {
         ...(profileImageId && {image: profileImageId.toString() }),
         locale: "en"
       };
-      console.log('data', updateData)
+      // console.log('data', updateData)
 
       const response = await updateProfileById(profileId, updateData);
       Alert.alert("Success", "Profile updated successfully!");
-      console.log("Updated Profile:", response);
+      // console.log("Updated Profile:", response);
 
       useProfileStore.getState().setProfile({
         name,
@@ -161,7 +161,7 @@ const ProfileScreen = () => {
 
       navigation.goBack();
     } catch (error) {
-      console.error("Error updating profile:", error);
+      // console.error("Error updating profile:", error);
       Alert.alert("Error", "Failed to update profile: " + error.message);
     } finally {
       setUploading(false);

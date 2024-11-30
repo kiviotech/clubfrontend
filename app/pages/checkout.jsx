@@ -61,7 +61,7 @@ const Checkout = () => {
         const response = await getShippingInfoByUserId(userId);
         setShippingInfos(response.data.data);
       } catch (error) {
-        console.error("Error fetching shipping info", error);
+        // console.error("Error fetching shipping info", error);
       }
     };
 
@@ -127,7 +127,7 @@ const Checkout = () => {
           },
         });
       } catch (error) {
-        console.error("Error creating order items:", error);
+        // console.error("Error creating order items:", error);
         alert("Failed to create order items.");
       }
     } else {
@@ -150,37 +150,49 @@ const Checkout = () => {
     setErrors({ fullName: '', address: '', state: '', pincode: '', phoneNo: '' });
     let valid = true;
     const errorMessages = {};
-
+  
+    // Regular expressions for validation
+    const nameRegex = /^[A-Za-z\s]+$/; // Allows only letters and spaces
+    const stateRegex = /^[A-Za-z\s]+$/; // Allows only letters and spaces
+  
+    // Validate fullName
     if (!fullName) {
       valid = false;
       errorMessages.fullName = "Name is required";
+    } else if (!nameRegex.test(fullName)) {
+      valid = false;
+      errorMessages.fullName = "Name should only contain letters";
     }
-
+  
+    // Validate state
+    if (!state) {
+      valid = false;
+      errorMessages.state = "State is required";
+    } else if (!stateRegex.test(state)) {
+      valid = false;
+      errorMessages.state = "State should only contain letters";
+    }
+  
     if (!address) {
       valid = false;
       errorMessages.address = "Address is required";
     }
-
-    if (!state) {
-      valid = false;
-      errorMessages.state = "State is required";
-    }
-
+  
     if (!pincode || pincode.length !== 6) {
       valid = false;
       errorMessages.pincode = "Pincode should be 6 digits";
     }
-
+  
     if (!phoneNo || phoneNo.length !== 10) {
       valid = false;
       errorMessages.phoneNo = "Phone number should be 10 digits";
     }
-
+  
     if (!valid) {
       setErrors(errorMessages);
       return;
     }
-
+  
     const data = {
       Fullname: fullName,
       Address: address,
@@ -189,17 +201,17 @@ const Checkout = () => {
       phone_no: phoneNo,
       user: userId,
     };
-
+  
     try {
       const response = await createShippingInfo({ data });
       const shippingId = response.data.data.id;
       setShippingInfo(data);
       setShippingId(shippingId);
-
+  
       // Update shippingInfos instead of addresses
       setShippingInfos([...shippingInfos, { ...data, id: shippingId }]);
       setModalVisible(false);
-
+  
       // Clear form fields
       setFullName("");
       setAddress("");
@@ -207,10 +219,11 @@ const Checkout = () => {
       setPincode("");
       setPhoneNo("");
     } catch (error) {
-      console.error("Error submitting shipping info:", error);
+      // console.error("Error submitting shipping info:", error);
       alert("Failed to submit shipping information.");
     }
   };
+  
 
   const handleContinueToPayment = () => {
     handlePayment();

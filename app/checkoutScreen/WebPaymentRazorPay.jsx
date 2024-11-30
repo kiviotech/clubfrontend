@@ -57,30 +57,30 @@ const WebPaymentRazorPay = () => {
           try {
             // Send the payment details to your backend service
             const paymentDetailResponse = await createPaymentDetailService(paymentData);
-            console.log("API response:", paymentDetailResponse);
+            // console.log("API response:", paymentDetailResponse);
             router.push({ pathname: "/home" });
           } catch (error) {
             // Handle API errors gracefully
             if (error.response) {
-              console.error("Error response data:", error.response.data);
-              console.error("Error response status:", error.response.status);
-              console.error("Error response headers:", error.response.headers);
+              // console.error("Error response data:", error.response.data);
+              // console.error("Error response status:", error.response.status);
+              // console.error("Error response headers:", error.response.headers);
             } else {
-              console.error("Error message:", error.message);
+              // console.error("Error message:", error.message);
             }
             Alert.alert("Error", `Failed to save payment details: ${error.response?.data?.message || error.message}`);
           }
         },
         modal: {
           ondismiss: async function () {
-            console.log("Razorpay modal dismissed");
+            // console.log("Razorpay modal dismissed");
 
             if (orderDetailsDocumentId) {
               try {
                 await deleteOrderDetail(orderDetailsDocumentId); // Cleanup after payment
-                console.log(`Order detail ID ${orderDetailsDocumentId} deleted.`);
+                // console.log(`Order detail ID ${orderDetailsDocumentId} deleted.`);
               } catch (error) {
-                console.error("Error deleting order detail:", error);
+                // console.error("Error deleting order detail:", error);
               }
             }
 
@@ -88,9 +88,9 @@ const WebPaymentRazorPay = () => {
             if (orderItemIds.length) {
               try {
                 await Promise.all(orderItemIds.map((id) => deleteOrderItem(id))); // Cleanup order items
-                console.log("Order items deleted.");
+                // console.log("Order items deleted.");
               } catch (error) {
-                console.error("Error deleting order items:", error);
+                // console.error("Error deleting order items:", error);
               }
             }
 

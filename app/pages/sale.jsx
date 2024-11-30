@@ -39,7 +39,7 @@ const FlashSaleComponent = () => {
           });
           setProductDetails(products);
         } catch (error) {
-          console.error("Error fetching products:", error);
+          // console.error("Error fetching products:", error);
         }
       };
       fetchProducts();
@@ -47,7 +47,7 @@ const FlashSaleComponent = () => {
   }, []);
 
   const handleItemPress = (item) => {
-    console.log("Product Details:", item);
+    // console.log("Product Details:", item);
   };
 
   const renderItem = ({ item }) => (
@@ -61,7 +61,7 @@ const FlashSaleComponent = () => {
       <Image
         source={{ uri: item.mainImage  ||'https://example.com/fallback.png'}}
         style={styles.image}
-        onError={() => console.log("Error loading image:", item.image)}
+        // onError={() => console.log("Error loading image:", item.image)}
       />
       <View style={styles.discountBadge}>
         <Text style={styles.discountText}>-30%</Text>
@@ -106,7 +106,7 @@ const getRandomColor = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 5,
     backgroundColor: "#000",
   },
   header: {

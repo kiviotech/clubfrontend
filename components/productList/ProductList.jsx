@@ -94,6 +94,7 @@ const ProductList = ({ limit }) => {
 
 
   const handleWishlistAdd = (product) => {
+    // console.log(product)
     const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
     const item = {
       id: product.id,
@@ -101,8 +102,11 @@ const ProductList = ({ limit }) => {
       price: product.price,
       quantity: quantity,
       image: imageUrl,
+      in_stock: product.in_stock,
+      
     };
-
+    
+    // console.log("Item to be added to wishlist:", item);
     if (wishlist.some((wishItem) => wishItem.id === product.id)) {
       removeFromWishlist(product.id);
       // setPopupMessage("Removed from wishlist! ❌");

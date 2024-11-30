@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const useStore = create(
   persist(
@@ -39,7 +40,8 @@ const useStore = create(
         })),
     }),
     {
-      name: "user-storage", // Persist the store in localStorage
+      name: "user-storage", // Key for AsyncStorage
+      storage: createJSONStorage(() => AsyncStorage), // Use AsyncStorage for persistence
     }
   )
 );

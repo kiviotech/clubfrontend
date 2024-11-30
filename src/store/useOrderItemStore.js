@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const useOrderStore = create(
   persist(
@@ -22,8 +23,8 @@ const useOrderStore = create(
       clearOrderItems: () => set({ orderItems: [] }),
     }),
     {
-      name: "order-items-storage", // Key for local storage
-      storage: createJSONStorage(() => localStorage), // Use localStorage for persistence
+      name: "order-items-storage", // Key for AsyncStorage
+      storage: createJSONStorage(() => AsyncStorage), // Use AsyncStorage for persistence
     }
   )
 );

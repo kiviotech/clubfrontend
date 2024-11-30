@@ -49,7 +49,7 @@ export default function Payment() {
         setSelectedAddress(parsedAddress);
       }
     } catch (err) {
-      console.error("Error parsing data:", err);
+      // console.error("Error parsing data:", err);
       setError("Error parsing data. Please try again.");
     }
   }, [searchParams]); // Only depend on searchParams
@@ -112,7 +112,7 @@ export default function Payment() {
         });
       }
     } catch (err) {
-      console.error("Payment error:", err);
+      // console.error("Payment error:", err);
       setError("Error processing payment");
       Alert.alert("Error", "Failed to process payment");
     }

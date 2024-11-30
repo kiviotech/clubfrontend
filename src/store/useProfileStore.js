@@ -7,7 +7,7 @@ const useProfileStore = create((set) => ({
     image: '',
   },
   setProfile: (profileData) => {
-    console.log('Updating profile store:', profileData); // Add logging here
+    // console.log('Updating profile store:', profileData); // Add logging here
     set({ profile: profileData });
   },
 }));

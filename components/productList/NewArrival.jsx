@@ -77,7 +77,7 @@ const NewArrival = ({ limit }) => {
 
   const handleWishlistAdd = (product) => {
     const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
-    console.log("Is product in wishlist:", isInWishlist);
+    // console.log("Is product in wishlist:", isInWishlist);
     const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
     const item = {
       id: product.id,
@@ -88,11 +88,11 @@ const NewArrival = ({ limit }) => {
 
     if (isInWishlist) {
       removeFromWishlist(product.id);
-      console.log("Removed from wishlist");
+      // console.log("Removed from wishlist");
       setPopupMessage("Removed from wishlist! ❌");
     } else {
       addToWishlist(item);
-      console.log("Added to wishlist");
+      // console.log("Added to wishlist");
       setPopupMessage("Added to wishlist! ✔️");
     }
 
@@ -183,23 +183,25 @@ const NewArrival = ({ limit }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 10,
-    paddingBottom: 20,
+    // No padding here to eliminate space on the left
+    paddingLeft: 5,
+    paddingBottom: 15,
   },
   listContainer: {
-    paddingHorizontal: 10,
+    // Removed horizontal padding to remove space on the left
+    // No extra padding
   },
   card: {
     width: width * 0.50,  // Keep the width the same
-    height: 250,  // Reduced height for the card
+    height: 250,  // Adjust the card height
     backgroundColor: '#333',
     borderRadius: 10,
-    marginHorizontal: 10,
+    marginRight: 10,  // Only keep margin on the right for spacing
     padding: 10,
     position: 'relative',
   },
   cardContent: {
-    flex: 1, // ensures TouchableOpacity covers the whole card area
+    flex: 1,
   },
   favoriteIcon: {
     position: 'absolute',
@@ -211,26 +213,22 @@ const styles = StyleSheet.create({
   },
   productImage: {
     width: '100%',
-    height: 150,  // Reduced height for the image
+    height: 150,  // Image height
     resizeMode: 'contain',
-    // marginBottom: 5,
   },
   productName: {
     color: '#fff',
-    fontSize: 14,  // Font size remains the same
+    fontSize: 14,
     fontWeight: 'bold',
-    // marginBottom: 2,
   },
   productBrand: {
     color: '#9CA3AF',
-    fontSize: 10,  // Font size remains the same
-    // marginBottom: 2,
+    fontSize: 10,
   },
   productPrice: {
     color: '#fff',
-    fontSize: 16,  // Font size remains the same
+    fontSize: 16,
     fontWeight: 'bold',
-    // marginBottom: 5,
   },
   popup: {
     position: 'absolute',
@@ -261,7 +259,7 @@ const styles = StyleSheet.create({
   },
   reviewsText: {
     color: '#999',
-    fontSize: 12,  // Font size remains the same
+    fontSize: 12,
     marginLeft: 5,
   },
   addToCartButton: {
@@ -271,18 +269,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#666',
     padding: 6,
     borderRadius: 20,
-
   },
-  favoriteIcon: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: '#444',
-    padding: 3,  // Reduced padding for smaller icon
-    borderRadius: 15,  // Smaller circular background
-  },
-
 });
+
 
 
 

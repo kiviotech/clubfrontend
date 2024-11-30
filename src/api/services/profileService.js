@@ -12,7 +12,7 @@ export const fetchProfiles = async () => {
     const response = await getProfiles();
     return response.data; // Return the profiles
   } catch (error) {
-    console.error("Error fetching profiles:", error);
+    ("Error fetching profiles:", error);
     throw error;
   }
 };
@@ -23,7 +23,7 @@ export const fetchProfileById = async (id) => {
     const response = await getProfileById(id);
     return response.data; // Return the specific profile
   } catch (error) {
-    console.error(`Error fetching profile with ID ${id}:`, error);
+    (`Error fetching profile with ID ${id}:`, error);
     throw error;
   }
 };
@@ -37,7 +37,7 @@ export const createProfileService = async (data) => {
     const response = await createProfile(jsonData);
     return response.data; // Return the newly created profile
   } catch (error) {
-    console.error("Error creating profile:", error);
+    ("Error creating profile:", error);
     throw error;
   }
 };
@@ -51,7 +51,7 @@ export const updateProfileById = async (id, data) => {
     const response = await updateProfile(id, jsonData);
     return response.data; // Return the updated profile
   } catch (error) {
-    console.error(`Error updating profile with ID ${id}:`, error);
+    (`Error updating profile with ID ${id}:`, error);
     throw error;
   }
 };
@@ -62,7 +62,7 @@ export const deleteProfileById = async (id) => {
     const response = await deleteProfile(id);
     return response.data; // Return success confirmation
   } catch (error) {
-    console.error(`Error deleting profile with ID ${id}:`, error);
+    (`Error deleting profile with ID ${id}:`, error);
     throw error;
   }
 };

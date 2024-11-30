@@ -24,7 +24,7 @@ const RequestCart = ({ title, budget, colorPreferences, deadline,image,requestId
       onDelete(requestId); // Pass the requestId to the delete function (or pass documentId if needed)
 
     } catch (error) {
-      console.error("Failed to delete the request:", error);
+      // console.error("Failed to delete the request:", error);
     }
   };
 

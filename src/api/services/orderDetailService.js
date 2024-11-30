@@ -12,7 +12,7 @@ export const fetchOrderDetails = async () => {
     const response = await getOrderDetails();
     return response.data;
   } catch (error) {
-    console.error("Error fetching order details:", error);
+    // console.error("Error fetching order details:", error);
     throw error;
   }
 };
@@ -23,7 +23,7 @@ export const fetchOrderDetailById = async (id) => {
     const response = await getOrderDetailById(id);
     return response.data;
   } catch (error) {
-    console.error(`Error fetching order detail with ID ${id}:`, error);
+    // console.error(`Error fetching order detail with ID ${id}:`, error);
     throw error;
   }
 };
@@ -34,7 +34,7 @@ export const createOrderDetailService = async (data) => {
     const response = await createOrderDetail(data);
     return response.data;
   } catch (error) {
-    console.error("Error creating order detail: ", error);
+    // console.error("Error creating order detail: ", error);
     throw error;
   }
 };
@@ -45,7 +45,7 @@ export const updateOrderDetailById = async (id, data) => {
     const response = await updateOrderDetail(id, { data }); // Correctly pass the ID and payload
     return response.data;
   } catch (error) {
-    console.error(`Error updating order detail with ID ${id}:`, error);
+    // console.error(`Error updating order detail with ID ${id}:`, error);
     throw error;
   }
 };
@@ -57,7 +57,7 @@ export const deleteOrderDetailById = async (id) => {
     const response = await deleteOrderDetail(id);
     return response.data;
   } catch (error) {
-    console.error(`Error deleting order detail with ID ${id}:`, error);
+    // console.error(`Error deleting order detail with ID ${id}:`, error);
     throw error;
   }
 };

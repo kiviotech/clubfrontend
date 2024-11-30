@@ -24,7 +24,7 @@ const Profile = () => {
   const userId = useUserDataStore((state) => state.users[0]?.id);
   const [profile, setProfile] = useState(null);
   const { name, username, image } = useProfileStore((state) => state.profile);
-  console.log('Profile from Zustand:', { name, username, image });
+  // console.log('Profile from Zustand:', { name, username, image });
   const removeItem = useCartStore((state)=> state.removeItem)
   const removeUser = useUserDataStore((state)=> state.removeUser)
   const clearShippingInfo = useStore((state) => state.clearShippingInfo);
@@ -53,7 +53,7 @@ const Profile = () => {
         }
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      // console.error('Error fetching profile:', error);
       Alert.alert('Error', 'Failed to fetch profile.');
     } finally {
       setLoading(false);
@@ -99,7 +99,7 @@ const Profile = () => {
       logout();
       router.push("sign-in");
     } catch (error) {
-      console.error("Error during logout:", error);
+      // console.error("Error during logout:", error);
     }
   };
 

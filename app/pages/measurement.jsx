@@ -34,7 +34,7 @@ const measurement = () => {
   };
 
   const handleMeasurementsChange = (key, value) => {
-    console.log(`${key}:`, value);
+    // console.log(`${key}:`, value);
     setMeasurements({ [key]: value }); // Update global state
   };
 

@@ -10,101 +10,71 @@ import {
   Modal,
   Alert,
 } from "react-native";
+// Import AsyncStorage
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import { getOrderDetailById, updateOrderDetailById } from "../../src/api/services/orderDetailService"; // Fetch & update services
-import { fetchOrderDetailById } from "../../src/api/services/orderDetailService";
+import { updateOrderDetailById, fetchOrderDetailById } from "../../src/api/services/orderDetailService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const TrackOrderScreen = () => {
   const trackingProgress = useRef(new Animated.Value(0)).current;
-  const { imageUrl, productName, productPrice, id, documentId } =
-    useLocalSearchParams();
+  const { imageUrl, productName, productPrice, id, documentId } = useLocalSearchParams();
 
   const [steps, setSteps] = useState([
-    {
-      status: "Order placed",
-      description: "Your order has been placed",
-      icon: "check-circle",
-    },
-    {
-      status: "Order confirmed",
-      description: "Your order has been confirmed",
-      icon: "check-circle",
-    },
-    {
-      status: "Order processed",
-      description: "Your order has been processed and ready for shipping",
-      icon: "check-circle",
-    },
-    {
-      status: "Shipped",
-      description: "Your order has been shipped",
-      icon: "local-shipping",
-    },
-    {
-      status: "Out for delivery",
-      description: "Your order is out for delivery",
-      icon: "directions-bike",
-    },
-    {
-      status: "Delivered",
-      description: "Your order has been successfully delivered",
-      icon: "home",
-    },
+    { status: "Order placed", description: "Your order has been placed", icon: "check-circle" },
+    { status: "Order confirmed", description: "Your order has been confirmed", icon: "check-circle" },
+    { status: "Order processed", description: "Your order has been processed and ready for shipping", icon: "check-circle" },
+    { status: "Shipped", description: "Your order has been shipped", icon: "local-shipping" },
+    { status: "Out for delivery", description: "Your order is out for delivery", icon: "directions-bike" },
+    { status: "Delivered", description: "Your order has been successfully delivered", icon: "home" },
   ]);
-  const [currentStep, setCurrentStep] = useState(1); // Track current step
-  const [isCanceled, setIsCanceled] = useState(false); // Track order cancellation
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isCanceled, setIsCanceled] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
 
-  // Map order levels to currentStep indices
   const levelMapping = {
-    pending: 1, // Order confirmed
-    processing: 2, // Order processed
-    shipped: 3, // Shipped
-    delivered: 4, // Out for delivery
-    cancelled: -1, // Order cancelled
+    pending: 1,
+    processing: 2,
+    shipped: 3,
+    delivered: 4,
+    cancelled: -1,
   };
 
-  // Fetch the order details from the backend on mount
   useEffect(() => {
     const fetchOrderStatus = async () => {
       try {
-        const cachedStatus = localStorage.getItem(`order_${documentId}_status`);
+        // Get cached status from AsyncStorage
+        const cachedStatus = await AsyncStorage.getItem(`order_${documentId}_status`);
         if (cachedStatus) {
           setCurrentStep(levelMapping[cachedStatus]);
           setIsCanceled(cachedStatus === "cancelled");
         }
-  
+
+        // Fetch order details from backend
         const orderDetail = await fetchOrderDetailById(documentId);
-        console.log(orderDetail.data.level)
         const backendLevel = orderDetail?.data?.level || "pending";
-        localStorage.setItem(`order_${documentId}_status`, backendLevel); // Cache status
+
+        // Save status to AsyncStorage
+        await AsyncStorage.setItem(`order_${documentId}_status`, backendLevel);
+
         const stepIndex = levelMapping[backendLevel];
-  
         if (backendLevel === "cancelled") {
           setSteps([
             steps[0],
-            {
-              status: "Order Cancelled",
-              description: "Your order has been canceled.",
-              icon: "cancel",
-            },
+            { status: "Order Cancelled", description: "Your order has been canceled.", icon: "cancel" },
           ]);
           setIsCanceled(true);
         } else {
           setCurrentStep(stepIndex);
         }
       } catch (error) {
-        console.error("Error fetching order status:", error);
-        Alert.alert("Error", "Failed to fetch order status.");
+        // console.error("Error fetching order status:", error);
       }
     };
-  
+
     fetchOrderStatus();
   }, []);
-  
 
-  // Animate the progress bar
   useEffect(() => {
     Animated.timing(trackingProgress, {
       toValue: currentStep,
@@ -113,31 +83,27 @@ const TrackOrderScreen = () => {
     }).start();
   }, [currentStep]);
 
-  // Handle order cancellation
   const handleCancelOrder = async () => {
     try {
-      const updatedStatus = { level: "cancelled" }; // Correctly set the status to "cancelled"
-  
-      await updateOrderDetailById(documentId, updatedStatus); // Update the backend
-  
+      const updatedStatus = { level: "cancelled" };
+      await updateOrderDetailById(documentId, updatedStatus);
+
       setSteps([
         steps[0],
-        {
-          status: "Order Cancelled",
-          description: "Your order has been canceled.",
-          icon: "cancel",
-        },
+        { status: "Order Cancelled", description: "Your order has been canceled.", icon: "cancel" },
       ]);
       setIsCanceled(true);
       setShowCancelModal(false);
+
+      // Update AsyncStorage
+      await AsyncStorage.setItem(`order_${documentId}_status`, "cancelled");
+
       Alert.alert("Order Canceled", "Your order has been successfully canceled.");
     } catch (error) {
-      console.error("Error cancelling the order:", error);
+      // console.error("Error cancelling the order:", error);
       Alert.alert("Error", "Failed to cancel the order. Please try again.");
     }
   };
-  
-
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>Track Your Order</Text>

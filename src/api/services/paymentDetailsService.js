@@ -14,7 +14,7 @@ import {
       const response = await getPaymentDetails();
       return response.data;
     } catch (error) {
-      console.error("Error fetching payment details:", error);
+      // console.error("Error fetching payment details:", error);
       throw error;
     }
   };
@@ -25,7 +25,7 @@ import {
       const response = await getPaymentDetailById(id);
       return response.data;
     } catch (error) {
-      console.error(`Error fetching payment detail with ID ${id}:`, error);
+      // console.error(`Error fetching payment detail with ID ${id}:`, error);
       throw error;
     }
   };
@@ -36,7 +36,7 @@ import {
       const response = await createPaymentDetail(data);
       return response.data;
     } catch (error) {
-      console.error("Error creating payment detail: ", error);
+      // console.error("Error creating payment detail: ", error);
       throw error;
     }
   };
@@ -47,7 +47,7 @@ import {
       const response = await updatePaymentDetail(id, data);
       return response.data;
     } catch (error) {
-      console.error(`Error updating payment detail with ID ${id}:`, error);
+      // console.error(`Error updating payment detail with ID ${id}:`, error);
       throw error;
     }
   };
@@ -58,7 +58,7 @@ import {
       const response = await deletePaymentDetail(id);
       return response.data;
     } catch (error) {
-      console.error(`Error deleting payment detail with ID ${id}:`, error);
+      (`Error deleting payment detail with ID ${id}:`, error);
       throw error;
     }
   };

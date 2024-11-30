@@ -15,31 +15,31 @@ const MobilePaymentRazorPay = () => {
     // Function to delete the order detail
     const handleDeleteOrderDetail = async () => {
       if (!orderDetailsDocumentId) {
-        console.warn("No order detail ID provided.");
+        // console.warn("No order detail ID provided.");
         return;
       }
   
       try {
-        console.log(`Deleting order detail ID: ${orderDetailsDocumentId}`);
+        // console.log(`Deleting order detail ID: ${orderDetailsDocumentId}`);
         const response = await deleteOrderDetail(orderDetailsDocumentId);
-        console.log(`Delete response for order detail ID ${orderDetailsDocumentId}:`, response);
+        // console.log(`Delete response for order detail ID ${orderDetailsDocumentId}:`, response);
   
         if (response?.status !== 204) {
-          console.error("Failed to delete order detail document.");
+        //   console.error("Failed to delete order detail document.");
           Alert.alert("Error", "Failed to delete order detail document.");
         }
       } catch (error) {
-        console.error(`Error deleting order detail ID ${orderDetailsDocumentId}:`, error);
+        // console.error(`Error deleting order detail ID ${orderDetailsDocumentId}:`, error);
       }
     };
   
     // Function to delete the order items
     const handleDeleteOrderItems = async () => {
       const orderItemIds = documentIds ? JSON.parse(documentIds) : [];
-      console.log("Order item IDs to delete:", orderItemIds);
+    //   console.log("Order item IDs to delete:", orderItemIds);
   
       if (orderItemIds.length === 0) {
-        console.warn("No order items to delete.");
+        // console.warn("No order items to delete.");
         return;
       }
   
@@ -47,12 +47,12 @@ const MobilePaymentRazorPay = () => {
         // Attempt to delete all order items
         const deletePromises = orderItemIds.map(async (orderItemId) => {
           try {
-            console.log(`Deleting order item ID: ${orderItemId}`);
+            // console.log(`Deleting order item ID: ${orderItemId}`);
             const response = await deleteOrderItem(orderItemId);
-            console.log(`Delete response for ID ${orderItemId}:`, response);
+            // console.log(`Delete response for ID ${orderItemId}:`, response);
             return response;
           } catch (error) {
-            console.error(`Error deleting order item ID ${orderItemId}:`, error);
+            // console.error(`Error deleting order item ID ${orderItemId}:`, error);
             return null;
           }
         });
@@ -60,13 +60,13 @@ const MobilePaymentRazorPay = () => {
         const orderItemsResponse = await Promise.all(deletePromises);
   
         if (orderItemsResponse.every((res) => res?.status === 204)) {
-          console.log("All order items deleted successfully.");
+        //   console.log("All order items deleted successfully.");
         } else {
-          console.error("Some order items could not be deleted.");
+        //   console.error("Some order items could not be deleted.");
           Alert.alert("Error", "Failed to delete some order items.");
         }
       } catch (error) {
-        console.error("Error deleting order items:", error);
+        // console.error("Error deleting order items:", error);
         Alert.alert("Error", "An error occurred while deleting order items.");
       }
     };
@@ -134,13 +134,13 @@ const MobilePaymentRazorPay = () => {
                 onMessage={async (event) => {
                     try {
                         const paymentData = JSON.parse(event.nativeEvent.data);
-                        console.log("Received Payment Data:", paymentData);
+                        // console.log("Received Payment Data:", paymentData);
 
                         if (paymentData?.status === "success") {
                             try {
                                 // Get the signature from the correct property
                                 const signature = paymentData.razorpay_signature || paymentData.signature;
-                                console.log("Payment signature:", signature);
+                                // console.log("Payment signature:", signature);
 
                                 const requestBody = {
                                     data: {
@@ -155,13 +155,13 @@ const MobilePaymentRazorPay = () => {
                                     }
                                 };
 
-                                console.log("Attempting to save payment with data:", JSON.stringify(requestBody, null, 2));
+                                // console.log("Attempting to save payment with data:", JSON.stringify(requestBody, null, 2));
 
                                 const response = await createPaymentDetailService(requestBody);
-                                console.log("Backend Response:", response);
+                                // console.log("Backend Response:", response);
 
                                 if (response?.status === 201 || response?.status === 200) {
-                                    console.log("Payment saved successfully:", response.data);
+                                    // console.log("Payment saved successfully:", response.data);
                                     Alert.alert(
                                         "Success",
                                         "Payment processed and saved successfully!",
@@ -171,12 +171,12 @@ const MobilePaymentRazorPay = () => {
                                     throw new Error(`Unexpected response status: ${response?.status}`);
                                 }
                             } catch (serviceError) {
-                                console.error("Error creating payment detail: ", serviceError);
-                                console.error("Payment Service Error:", {
-                                    message: serviceError.message,
-                                    response: serviceError.response?.data,
-                                    status: serviceError.response?.status
-                                });
+                                // console.error("Error creating payment detail: ", serviceError);
+                                // console.error("Payment Service Error:", {
+                                //     message: serviceError.message,
+                                //     response: serviceError.response?.data,
+                                //     status: serviceError.response?.status
+                                // });
 
                                 Alert.alert(
                                     "Payment Recorded",
@@ -189,7 +189,7 @@ const MobilePaymentRazorPay = () => {
                                 );
                             }
                         } else if (paymentData?.status === "cancelled" || paymentData?.status === "error") {
-                            console.log("Payment cancelled or failed:", paymentData);
+                            // console.log("Payment cancelled or failed:", paymentData);
                             Alert.alert(
                                 "Payment Not Completed",
                                 "The payment was not completed. Your order will be cancelled.",
@@ -206,7 +206,7 @@ const MobilePaymentRazorPay = () => {
                             );
                         }
                     } catch (error) {
-                        console.error("Payment Processing Error:", error);
+                        // console.error("Payment Processing Error:", error);
                         Alert.alert(
                             "Error",
                             "There was an error processing your payment. Please try again.",
@@ -216,7 +216,7 @@ const MobilePaymentRazorPay = () => {
                 }}
                 onError={(syntheticEvent) => {
                     const { nativeEvent } = syntheticEvent;
-                    console.error("WebView Error:", nativeEvent);
+                    // console.error("WebView Error:", nativeEvent);
                     Alert.alert("WebView Error", nativeEvent.description);
                     navigateToHome();
                 }}

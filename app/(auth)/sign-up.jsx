@@ -25,7 +25,7 @@ export const saveData = async (key, value) => {
   try {
     await AsyncStorage.setItem(key, value);
   } catch (error) {
-    console.error("Error saving to AsyncStorage:", error);
+    // console.error("Error saving to AsyncStorage:", error);
     throw new Error("Failed to save data");
   }
 };
@@ -90,13 +90,13 @@ const SignUp = () => {
 
     try {
       const profileResponse = await createProfileService(data);
-      console.log("Profile created successfully:", profileResponse);
+      // console.log("Profile created successfully:", profileResponse);
 
       useProfileStore.getState().setProfile(profileResponse);
 
       return profileResponse;
     } catch (error) {
-      console.error("Profile creation error:", error);
+      // console.error("Profile creation error:", error);
       throw new Error("Failed to create user profile");
     }
   };
@@ -112,11 +112,11 @@ const SignUp = () => {
 
     try {
       const response = await signup(username, email, password);
-      console.log("Signup successful:", response.user);
-      console.log("Signup successful:", response.user.username);
+      // console.log("Signup successful:", response.user);
+      // console.log("Signup successful:", response.user.username);
 
      const user = response.user;  // Extract the user from the response
-     console.log(user)
+    //  console.log(user)
 
       // Proceed to create the user profile
       await createUserProfile(user);
@@ -128,7 +128,7 @@ const SignUp = () => {
       // Navigate to the sign-in page after successful signup
       
     } catch (error) {
-      console.error("Signup error:", error);
+      // console.error("Signup error:", error);
       Alert.alert(
         "Signup Error",
         error.message || "There was an issue with signup. Please try again."

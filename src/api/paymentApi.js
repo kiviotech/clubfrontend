@@ -7,7 +7,7 @@ export const createOrder = async (orderData) => {
       return response.data.data;
 
     } catch (error) {
-      console.error("Error creating order:", error);
+      // console.error("Error creating order:", error);
       throw error;
     }
   };
@@ -17,7 +17,7 @@ export const createOrder = async (orderData) => {
       const response = await apiClient.post(`/payment-initiate/${orderId}`, paymentDetails);
       return response.data;
     } catch (error) {
-      console.error("Error initiating payment:", error);
+      // console.error("Error initiating payment:", error);
       throw error;
     }
   };
@@ -27,7 +27,7 @@ export const createOrder = async (orderData) => {
       const response = await apiClient.put(`/orders/${orderId}/payment-status`, paymentStatus);
       return response.data;
     } catch (error) {
-      console.error("Error updating payment status:", error);
+      // console.error("Error updating payment status:", error);
       throw error;
     }
   };

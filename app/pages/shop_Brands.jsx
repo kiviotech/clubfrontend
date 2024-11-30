@@ -42,7 +42,7 @@ const ShopByBrands = () => {
 
         setProductDetails(products);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        // console.error("Error fetching products:", error);
       }
     };
 
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
-    padding: 20,
+    padding: 5,
   },
   cardContainer: {
     width: 150,

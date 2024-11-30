@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const useCartStore = create(
   persist(
@@ -7,6 +8,7 @@ const useCartStore = create(
       items: [],
       subtotal: 0,
 
+      // Add item to cart
       addItem: (item) =>
         set((state) => {
           const existingItemIndex = state.items.findIndex(
@@ -35,6 +37,7 @@ const useCartStore = create(
           return { items: newItems, subtotal: newSubtotal };
         }),
 
+      // Update quantity of an item
       updateQuantity: (id, quantity) =>
         set((state) => {
           const newItems = state.items.map((item) =>
@@ -47,6 +50,7 @@ const useCartStore = create(
           return { items: newItems, subtotal: newSubtotal };
         }),
 
+      // Remove item from cart
       removeItem: (id) =>
         set((state) => {
           const newItems = state.items.filter((item) => item.id !== id);
@@ -57,11 +61,12 @@ const useCartStore = create(
           return { items: newItems, subtotal: newSubtotal };
         }),
 
+      // Clear all items in the cart
       clearCart: () => set({ items: [], subtotal: 0 }),
     }),
     {
-      name: "cart-storage",
-      storage: createJSONStorage(() => localStorage),
+      name: "cart-storage", // Key for AsyncStorage
+      storage: createJSONStorage(() => AsyncStorage), // Use AsyncStorage for persistence
     }
   )
 );

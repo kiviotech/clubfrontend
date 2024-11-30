@@ -55,13 +55,13 @@ const ChangePasswordScreen = () => {
           // router.push('/pages/passwordChangedNotification'); // Navigate to the notification screen
         }
       } catch (error) {
-        console.error('Error:', error.message);
+        // console.error('Error:', error.message);
         Alert.alert('Error', 'Failed to send reset link. Please try again.');
       } finally {
         setLoader(false);
       }
     } else {
-      console.log('Form is not valid', errors);
+      // console.log('Form is not valid', errors);
     }
   };
 

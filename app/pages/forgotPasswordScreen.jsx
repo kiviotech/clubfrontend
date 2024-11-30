@@ -69,7 +69,7 @@ const forgotPasswordScreen = () => {
         Alert.alert('Success', 'Password reset successfully!');
         router.push('/pages/passwordChangedNotification');
       } catch (error) {
-        console.error('Error:', error.message);
+        // console.error('Error:', error.message);
         Alert.alert('Error', 'An error occurred. Please try again.');
       }
     }

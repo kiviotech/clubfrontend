@@ -33,7 +33,7 @@ const RequestDesign = () => {
   };
 
   const handleDesignDetailsChange = (key, value) => {
-    console.log(`${key}:`, value);
+    // console.log(`${key}:`, value);
     setDesignDetails({ [key]: value });
   };
 

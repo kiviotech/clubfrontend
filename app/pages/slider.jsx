@@ -1,9 +1,8 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   Image,
   Animated,
   Dimensions,
@@ -12,20 +11,33 @@ import useBrandCollabStore from "../../src/store/useBrandCollabStore";
 import { getBrandCollabs } from "../../src/api/repositories/brandCollabRepository";
 import { MEDIA_BASE_URL } from "../../src/api/apiClient";
 
+// Shuffle function to randomize the array
+const shuffleArray = (array) => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
 const { width } = Dimensions.get("window");
-const ITEM_WIDTH = 270;
+const ITEM_WIDTH = 365;
 const ITEM_SPACING = 10;
 
-const HorizontalCarousel = () => {
+const HorizontalCarousel = ({ direction = "left-to-right" }) => {
   const { brandCollabs, setBrandCollabs } = useBrandCollabStore();
   const scrollX = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef(null);
+  const [shuffledBrandCollabs, setShuffledBrandCollabs] = useState([]);
 
   useEffect(() => {
     const fetchBrandCollabs = async () => {
       try {
         const response = await getBrandCollabs();
-        setBrandCollabs(response.data.data);
+        const shuffledData = shuffleArray(response.data.data);
+        setBrandCollabs(shuffledData);
+        setShuffledBrandCollabs(shuffledData);
       } catch (error) {
         console.error("Failed to fetch brand collabs:", error);
       }
@@ -38,17 +50,17 @@ const HorizontalCarousel = () => {
   useEffect(() => {
     let currentIndex = 0;
     const interval = setInterval(() => {
-      if (scrollRef.current && brandCollabs.length > 0) {
-        currentIndex = (currentIndex + 1) % brandCollabs.length; // Loop back to the start
+      if (scrollRef.current && shuffledBrandCollabs.length > 0) {
+        currentIndex = (currentIndex + 1) % shuffledBrandCollabs.length;
         scrollRef.current.scrollToOffset({
           offset: currentIndex * (ITEM_WIDTH + ITEM_SPACING),
           animated: true,
         });
       }
-    }, 2000); // Slide every 3 seconds
+    }, 4000);
 
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, [brandCollabs]);
+    return () => clearInterval(interval);
+  }, [shuffledBrandCollabs]);
 
   const renderItem = ({ item, index }) => {
     const inputRange = [
@@ -76,7 +88,7 @@ const HorizontalCarousel = () => {
     return (
       <Animated.View style={[styles.card, { transform: [{ scale }], opacity }]}>
         {imageUrl ? (
-          <Image source={{ uri: imageUrl  ||'https://example.com/fallback.png'}} style={styles.image} />
+          <Image source={{ uri: imageUrl || 'https://example.com/fallback.png' }} style={styles.image} />
         ) : (
           <Text style={{ color: "#fff" }}>Image not available</Text>
         )}
@@ -86,8 +98,8 @@ const HorizontalCarousel = () => {
 
   return (
     <Animated.FlatList
-      ref={scrollRef} // Reference to FlatList
-      data={brandCollabs}
+      ref={scrollRef}
+      data={shuffledBrandCollabs}
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
       horizontal
@@ -100,20 +112,25 @@ const HorizontalCarousel = () => {
         [{ nativeEvent: { contentOffset: { x: scrollX } } }],
         { useNativeDriver: true }
       )}
+      // Adjust the scroll direction based on the `direction` prop
+      scrollEventThrottle={16}
+      inverted={direction === "right-to-left"} // Inverts the scroll direction for right to left
     />
   );
 };
 
 const styles = StyleSheet.create({
   carouselContainer: {
-    paddingHorizontal: (width - ITEM_WIDTH) / 2,
+    justifyContent: "center",
+    alignItems: "flex-start",
+    // paddingLeft: 5,
   },
   card: {
     width: ITEM_WIDTH,
-    height: 170,
+    height: 190,
     borderRadius: 10,
     marginRight: ITEM_SPACING,
-    justifyContent: "space-between",
+    justifyContent: "center",
     position: "relative",
   },
   image: {
