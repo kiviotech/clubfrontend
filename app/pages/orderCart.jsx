@@ -31,7 +31,7 @@ const OrderCart = ({ imageUrl, productName, productPrice ,level,id,documentId}) 
         />
         <View style={styles.details}>
         <Text style={styles.productName}>{productName}</Text>
-          <Text style={styles.orderId}>Order #123456</Text>
+          <Text style={styles.orderId}>Order#{documentId}</Text>
           <Text style={styles.deliveryDate}>Delivering on 28 Nov, 2024</Text>
         </View>
         <Text style={styles.price}>${productPrice}</Text>
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   orderId: {
-    fontSize: 14,
+    fontSize: 10,
     color: '#AAAAAA',
     marginBottom: 3,
   },

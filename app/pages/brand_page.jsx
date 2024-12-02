@@ -27,6 +27,8 @@ const BrandPage = () => {
   }, []);
 
   const handleInfo = (brand) => {
+   
+    setSelectedBrand(brand.brand_name);
     router.push({
       pathname: "/pages/brand_info",
       params: {
@@ -37,7 +39,7 @@ const BrandPage = () => {
       },
     });
   };
-
+  
 
 
   const handleIconPress = (brandName) => {
@@ -45,11 +47,11 @@ const BrandPage = () => {
     setSelectedBrand(brandName);
     router.push('pages/brand');
   };
-  const handleIconBrand = (brandName) => {
+  // const handleIconBrand = (brandName) => {
 
-    setSelectedBrand(brandName);
-    router.push('pages/brand_info');
-  };
+  //   setSelectedBrand(brandName);
+  //   router.push('pages/brand_info');
+  // };
   
 
   const renderBrand = ({ item }) => {
@@ -62,7 +64,7 @@ const BrandPage = () => {
       <View style={styles.container}>
         <TouchableOpacity
           onPress={() => {
-            handleIconBrand(item.brand_name);
+            // handleIconBrand(item.brand_name);
             handleInfo(item);
             // handleIconBrand(item.brand_name);
           }}

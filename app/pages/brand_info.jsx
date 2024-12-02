@@ -15,6 +15,7 @@ import { MEDIA_BASE_URL } from '../../src/api/apiClient';
 import useProductStore from '../../src/store/useProductStore';
 import useCartStore from '../../src/store/useCartStore';
 import useWishlistStore from '../../src/store/useWishlistStore';
+import Header from './header';
 
 const brand_info = ({ limit }) => {
   const { brandName, brandImage, brandDescription } = useLocalSearchParams();
@@ -31,6 +32,7 @@ const brand_info = ({ limit }) => {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupProductId, setPopupProductId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  // console.log("brandpage ",brandName,brandImage,brandDescription)
 
 
   useEffect(() => {
@@ -144,7 +146,7 @@ const brand_info = ({ limit }) => {
   return (
     <ScrollView>
       <View style={styles.container}>
-        <Image source={logo} />
+        <Header/>
         <View style={styles.searchContainer}>
           <FontAwesome name="search" size={25} color="#424646" />
           <TextInput

@@ -23,7 +23,7 @@ const shuffleArray = (array) => {
 
 const { width } = Dimensions.get("window");
 const ITEM_WIDTH = 365;
-const ITEM_SPACING = 10;
+const ITEM_SPACING = 5;
 
 const HorizontalCarousel = ({ direction = "left-to-right" }) => {
   const { brandCollabs, setBrandCollabs } = useBrandCollabStore();
@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     width: ITEM_WIDTH,
     height: 190,
     borderRadius: 10,
+    
     marginRight: ITEM_SPACING,
     justifyContent: "center",
     position: "relative",

@@ -4,14 +4,38 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import ProductList from '../../components/productList';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FilteredProductList from './filteredProductList';
+import { useNavigation } from 'expo-router';
+import { Ionicons } from "@expo/vector-icons";
+import Svgs from '../../constants/svgs';
+import { useRouter } from 'expo-router';
 
 const FlashSaleSelector = () => {
   const [selectedDiscount, setSelectedDiscount] = useState('All'); // Default selected discount
-
+  const navigation = useNavigation();
   const discounts = ['All', '10%', '20%', '30%', '40%', '50%'];
+
+  const router = useRouter();
+
+  const handleRequest = () => {
+    router.push("/pages/cart"); 
+  };
 
   return (
     <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Ionicons name="arrow-back" color="white" size={30} />
+        </TouchableOpacity>
+        <View style={styles.leftIcons}>
+        <TouchableOpacity onPress={handleRequest}>
+            <Svgs.cartIcon width={18} height={18} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/pages/wishlist")}>
+            <Svgs.wishlistIcon width={18} height={18} />
+          </TouchableOpacity>
+        </View>
+      </View>
       <Text style={styles.title}>Flash Sale</Text>
       <Text style={styles.subtitle}>Choose your discount</Text>
       <View style={styles.selectorContainer}>
@@ -42,7 +66,7 @@ const FlashSaleSelector = () => {
         </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.scrollView}>
-        <FilteredProductList selectedDiscount={selectedDiscount}/>
+        <FilteredProductList selectedDiscount={selectedDiscount} />
       </ScrollView>
     </View>
   );
@@ -55,6 +79,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     flex: 1,
+  },
+  header: {
+    display: "flex",
+    flexDirection: "row",
+    gap:280,
+    padding:10,
+
+  },
+  leftIcons: {
+    display: "flex",
+    flexDirection: "row",
+    gap:20,
+
   },
   title: {
     fontSize: 24,
@@ -101,7 +138,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 15,
-    gap:150
+    gap: 150
   },
   resultText: {
     fontSize: 24,

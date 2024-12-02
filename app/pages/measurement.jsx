@@ -140,65 +140,71 @@ const measurement = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
-    paddingHorizontal: 16, // Equivalent to px-4
+    backgroundColor: "black",
+    paddingHorizontal: 14, // Reduced padding
   },
   measurementContainer: {
-    marginBottom: 64, // Equivalent to mb-16
-    borderRadius: 16, // Equivalent to rounded-2xl
-    backgroundColor: '#181818',
-    paddingVertical: 32, // Equivalent to py-8
-    paddingHorizontal: 20, // Equivalent to px-5
-    marginTop: 8, // Equivalent to mt-2
+    marginBottom: 32, // Reduced spacing
+    borderRadius: 12, // Slightly smaller radius
+    // backgroundColor: "#181818",
+    paddingVertical: 16, // Reduced padding
+    paddingHorizontal: 14, // Reduced padding
+    marginTop: 8,
   },
   title: {
-    color: 'white',
-    fontSize: 24, // Equivalent to text-2xl
-    marginBottom: 24, // Equivalent to mb-6
-    fontFamily: 'Poppins-SemiBold', // Replace with your font
+    color: "white",
+    fontSize: 18, // Smaller font size
+    marginBottom: 16,
+    fontFamily: "Poppins-SemiBold",
   },
   input: {
-    marginBottom: 16, // Equivalent to mb-4
-    backgroundColor: '#919EAB29',
-    color: 'white',
-    padding: 12, // Equivalent to p-3
-    borderRadius: 8, // Equivalent to rounded-md
+    marginBottom: 12, // Reduced spacing
+    backgroundColor: "#919EAB29",
+    color: "white",
+    paddingVertical: 8, // Reduced padding
+    paddingHorizontal: 10,
+    borderRadius: 6, // Slightly smaller radius
+    fontSize: 14, // Smaller font size
   },
   multilineInput: {
-    height: 144, // Adjust height for multiline input
+    height: 100, // Reduced height
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 8, // Reduced spacing
   },
   goBackButton: {
-    backgroundColor: 'white',
-    borderRadius: 8, // Equivalent to rounded-lg
-    padding: 12, // Equivalent to p-3
+    backgroundColor: "white",
+    borderRadius: 6, // Slightly smaller radius
+    paddingVertical: 8, // Reduced padding
+    paddingHorizontal: 10,
     flex: 1,
-    marginRight: 8, // Equivalent to mr-2
+    marginRight: 8,
   },
   nextSectionButton: {
-    backgroundColor: '#8FFA09', // Replace with your primary color
-    borderRadius: 8, // Equivalent to rounded-lg
-    padding: 12, // Equivalent to p-3
+    backgroundColor: "#8FFA09",
+    borderRadius: 6, // Slightly smaller radius
+    paddingVertical: 8, // Reduced padding
+    paddingHorizontal: 10,
     flex: 1,
   },
   buttonText: {
-    color: 'black',
-    fontSize: 16, // Equivalent to text-base
-    fontFamily: 'Poppins-SemiBold', // Replace with your font
-    textAlign: 'center',
+    color: "black",
+    fontSize: 14, // Smaller font size
+    fontFamily: "Poppins-SemiBold",
+    textAlign: "center",
   },
   errorText: {
     color: "red",
-    fontSize: 12,
-    marginBottom: 8,
+    fontSize: 10, // Smaller error text
+    marginBottom: 6, // Reduced spacing
   },
   errorInput: {
     borderColor: "red",
     borderWidth: 1,
   },
 });
+
 
 export default measurement;

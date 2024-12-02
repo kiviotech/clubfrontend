@@ -24,7 +24,9 @@ const BrandIcons = () => {
       try {
         const response = await getBrands(); 
         setBrands(response.data.data); 
-        
+        // console.log(response.data.data[0].brand_name)
+        // console.log(response.data.data[0].description)
+        // console.log(response.data.data[0].brand_logo.url)
        
       } catch (error) {
         setError("Failed to load brands"); 
@@ -36,10 +38,18 @@ const BrandIcons = () => {
     fetchBrands();
   }, []);
 
-  const handleIconPress = (brandName) => {
+  const handleIconPress = (brand) => {
     
-    setSelectedBrand(brandName); 
-    router.push('pages/brand');
+    setSelectedBrand(brand.brand_name);
+    router.push({
+      pathname: "/pages/brand_info",
+      params: {
+        brandName: brand.brand_name,
+        brandId: brand.id,
+        brandImage: `${MEDIA_BASE_URL}${brand.brand_logo.url}`,
+        brandDescription: brand.description,
+      },
+    });
   };
 
   if (loading) {
@@ -58,7 +68,7 @@ const BrandIcons = () => {
         {brands.map((brand, index) => {
           const imageUrl = `${MEDIA_BASE_URL}${brand.brand_logo.url}`;
           return (
-          <TouchableOpacity key={index} onPress={() => handleIconPress(brand.brand_name)}>
+          <TouchableOpacity key={index} onPress={() => handleIconPress(brand)}>
             <View style={styles.brandItem}>
             <Image 
                 source={{ uri: imageUrl}} 

@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   uploadsContainer: {
     marginBottom: 16, // Equivalent to mb-4
     borderRadius: 16, // Equivalent to rounded-2xl
-    backgroundColor: '#181818',
+    // backgroundColor: '#181818',
     paddingHorizontal: 20, // Equivalent to px-5
     paddingVertical: 32, // Equivalent to py-8
   },

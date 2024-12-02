@@ -18,6 +18,8 @@ import { MEDIA_BASE_URL } from "../../src/api/apiClient";
 import useCartStore from "../../src/store/useCartStore";
 import useWishlistStore from "../../src/store/useWishlistStore";
 import { Modal } from "react-native-web";
+import Header from "./header";
+import Svgs from "../../constants/svgs";
 
 const { width } = Dimensions.get("window");
 
@@ -129,16 +131,25 @@ const ProductDetails = () => {
     const newIndex = Math.floor(contentOffsetX / (width * 0.8));
     setActiveIndex(newIndex);
   };
+  const handleRequest = () => {
+    router.push("/pages/cart"); 
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" color="white" size={30} />
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Ionicons name="arrow-back" color="white" size={20} />
         </TouchableOpacity>
-        <Image style={styles.logo} source={logo} />
+        <View style={styles.leftIcons}>
+        <TouchableOpacity onPress={handleRequest}>
+            <Svgs.cartIcon width={18} height={18} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/pages/wishlist")}>
+            <Svgs.wishlistIcon width={18} height={18} />
+          </TouchableOpacity>
+        </View>
       </View>
-
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.imageSection}>
           {/* Custom Carousel */}
@@ -359,15 +370,19 @@ const styles = StyleSheet.create({
   },
 
   // Header
+  
   header: {
+    display: "flex",
     flexDirection: "row",
-    height: 48,
-    width: "100%",
-    padding: 8,
-    alignItems: "center",
+    gap:260,
+    padding:10,
+
   },
-  logo: {
-    marginLeft: 8,
+  leftIcons: {
+    display: "flex",
+    flexDirection: "row",
+    gap:20,
+
   },
 
   // Image Section

@@ -37,6 +37,8 @@ import afterhomeScreen from "../assets/icons/afterhomeScreen.svg"
 import afterchatScreen from "../assets/icons/afterchatScreen.svg"
 import afterstoreScreen from "../assets/icons/afterstoreScreen.svg"
 import afterprofileScreen from "../assets/icons/afterprofileScreen.svg"
+import cartIcon from "../assets/icons/cartIcon.svg"
+import wishlistIcon from "../assets/icons/wishlistIcon.svg"
 export default {
   gicon,
   ficon,
@@ -75,6 +77,8 @@ export default {
   afterhomeScreen,
   afterchatScreen,
   afterstoreScreen,
-  afterprofileScreen
+  afterprofileScreen,
+  cartIcon,
+  wishlistIcon
 
 };
