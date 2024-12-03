@@ -131,7 +131,7 @@ paddingHorizontal: 16, // Equivalent to px-4
 reviewContainer: {
 marginBottom: 160, // Equivalent to mb-40
 borderRadius: 16, // Equivalent to rounded-2xl
-backgroundColor: '#181818',
+// backgroundColor: '#181818',
 paddingHorizontal: 20, // Equivalent to px-5
 paddingVertical: 32, // Equivalent to py-8
 },

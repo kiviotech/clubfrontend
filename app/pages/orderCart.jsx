@@ -1,9 +1,15 @@
 import React,{useState,useEffect} from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-const OrderCart = ({ imageUrl, productName, productPrice ,level,id,documentId}) => {
+const OrderCart = ({ imageUrl, productName, productPrice ,level,id,documentId,total,quantity,updatedAt}) => {
   const router = useRouter();
-  // console.log(id,documentId)
+  // console.log(total,quantity,updatedAt)
+
+  const formattedDate = new Date(updatedAt).toLocaleDateString('en-GB', {
+    day: '2-digit', // Two-digit day (e.g., 03)
+    month: '2-digit', // Two-digit month (e.g., 12)
+    year: '2-digit', // Two-digit year (e.g., 24)
+  });
 
   
   const handleTrack = () => {
@@ -15,7 +21,10 @@ const OrderCart = ({ imageUrl, productName, productPrice ,level,id,documentId}) 
         productPrice,
         level,
         id,
-        documentId
+        documentId,
+        total,
+        formattedDate,
+        quantity
       },
     });
   };
@@ -31,10 +40,14 @@ const OrderCart = ({ imageUrl, productName, productPrice ,level,id,documentId}) 
         />
         <View style={styles.details}>
         <Text style={styles.productName}>{productName}</Text>
-          <Text style={styles.orderId}>Order #123456</Text>
-          <Text style={styles.deliveryDate}>Delivering on 28 Nov, 2024</Text>
+          <Text style={styles.orderId}>Order#{documentId}</Text>
+          <Text style={styles.deliveryDate}>Quantity: {quantity}</Text>
+          <Text style={styles.deliveryDate}>Updated At: {formattedDate}</Text>
+          
+
         </View>
-        <Text style={styles.price}>${productPrice}</Text>
+        <Text style={styles.price}>${total}</Text>
+        
       </View>
       <View style={styles.buttonRow}>
         <TouchableOpacity style={[styles.trackButton, styles.trackButtonCurved]} onPress={handleTrack}>
@@ -83,13 +96,13 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   orderId: {
-    fontSize: 14,
+    fontSize: 10,
     color: '#AAAAAA',
     marginBottom: 3,
   },
   deliveryDate: {
     fontSize: 14,
-    color: '#AAAAAA',
+    color: '#8FFA09',
   },
   price: {
     fontSize: 20,

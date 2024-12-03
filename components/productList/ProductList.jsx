@@ -52,8 +52,7 @@ const ProductList = ({ limit }) => {
       try {
         const response = await getProducts();
         setProducts(response.data.data);
-        // console.log(response.data.data[0].in_stock)
-
+        
       } catch (error) {
         setError("Failed to load products");
       } finally {
@@ -66,23 +65,25 @@ const ProductList = ({ limit }) => {
 
 
 
-
   const displayedProducts = limit ? products.slice(0, limit) : products;
 
 
   const handleProductDetails = (product) => {
+    // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
+  // console.log(sizes)
     setProductDetails({
       id: product.id,
       images: product.product_image.url,
       name: product.name,
       price: product.price,
       in_stock: product.in_stock,
-      products,
-
+      sizes: product.sizes, // Include sizes in the details
+      documentId:product.documentId
     });
-
+  
     router.push("../../pages/productDetails");
   };
+  
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput,Alert } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownPicker from "react-native-dropdown-picker";
 import StepIndicator from "../../components/StepIndicator";
@@ -7,6 +7,7 @@ import { router } from "expo-router";
 import svgs from "../../constants/svgs";
 import CrossPlatformDatePicker from "./CrossPlatformDatePicker";
 import useFormStore from "../../src/store/useFormStore";
+import { Ionicons } from "@expo/vector-icons";
 
 const RequestDesign = () => {
   const [fabricOpen, setFabricOpen] = useState(false);
@@ -110,8 +111,24 @@ const RequestDesign = () => {
             placeholderStyle={styles.placeholderStyle}
             style={styles.dropdown}
             dropDownContainerStyle={styles.dropdownContainer}
+            textStyle={styles.dropdownText}
+            itemStyle={{
+              justifyContent: 'flex-start',
+            }}
+            listItemContainerStyle={{
+              backgroundColor: '#181818', // Set the background for items to black
+            }}
+
+            ArrowDownIconComponent={({ style }) => (
+              <Ionicons name="chevron-down" size={20} color="white" style={style} />
+            )}
+            ArrowUpIconComponent={({ style }) => (
+              <Ionicons name="chevron-up" size={20} color="white" style={style} />
+            )}
             onChangeValue={(value) => handleDesignDetailsChange("fabric", value)}
           />
+
+
           {validationErrors.fabric && <Text style={styles.errorText}>{validationErrors.fabric}</Text>}
 
 
@@ -131,7 +148,9 @@ const RequestDesign = () => {
               setStartDate(date);
               handleDesignDetailsChange("deadline", date);
             }}
+            icon={<Ionicons name="calendar" size={20} color="white" />} // Add this prop if supported
           />
+
           {validationErrors.deadline && <Text style={styles.errorText}>{validationErrors.deadline}</Text>}
 
           <TextInput
@@ -166,84 +185,54 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   detailsContainer: {
-    marginBottom: 64,
+    marginBottom: 32, // Reduced spacing
     borderRadius: 16,
-    backgroundColor: "#181818",
-    paddingVertical: 16,
-    paddingHorizontal: 20,
+    // backgroundColor: "#181818",
+    paddingVertical: 12, // Reduced padding
+    paddingHorizontal: 16, // Reduced padding
     marginTop: 12,
   },
   title: {
     color: "white",
-    fontSize: 24,
-    marginBottom: 24,
+    fontSize: 20, // Reduced font size
+    marginBottom: 16, // Reduced spacing
     fontFamily: "Poppins-SemiBold",
   },
   input: {
-    marginBottom: 16,
+    marginBottom: 12, // Reduced spacing
     backgroundColor: "#919EAB29",
     color: "white",
-    padding: 12,
-    borderRadius: 8,
+    padding: 8, // Reduced padding
+    borderRadius: 6, // Slightly smaller border radius
+    fontSize: 14, // Reduced font size
   },
   multilineInput: {
-    height: 96,
+    height: 72, // Reduced height
   },
   dropdown: {
-    marginBottom: 16,
-    backgroundColor: "#919EAB29",
-
-  },
-  dropdownContainer: {
-    backgroundColor: "white",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  goBackButton: {
-    backgroundColor: "white",
-    borderRadius: 8,
-    padding: 12,
-    flex: 1,
-    marginRight: 8,
-  },
-  nextSectionButton: {
-    backgroundColor: "#8FFA09",
-    borderRadius: 8,
-    padding: 12,
-    flex: 1,
-  },
-  buttonText: {
-    color: "black",
-    fontSize: 16,
-    fontFamily: "Poppins-SemiBold",
-    textAlign: "center",
-  },
-  backText: {
-    color: "white",
-    fontSize: 16,
-    fontFamily: "Poppins-SemiBold",
-  },
-  placeholderStyle: {
-    color: "ccc", // Set the placeholder text color to white
-  },
-  dropdown: {
-    marginBottom: 16,
+    marginBottom: 12, // Reduced spacing
     backgroundColor: "#919EAB29",
     borderColor: "transparent",
+    height: 40, // Smaller height
   },
   dropdownContainer: {
     backgroundColor: "#fff",
     borderColor: "#919EAB29",
   },
+  dropdownText: {
+    color: "white", // Dropdown text color
+    fontSize: 14, // Reduced font size
+    fontFamily: "Poppins-Regular",
+  },
   placeholderStyle: {
-    color: "white",
+    color: "white", // Placeholder text color
+    fontSize: 14, // Reduced font size
+    fontFamily: "Poppins-Regular",
   },
   label: {
-    color: "white",
-    fontSize: 16,
-    marginBottom: 8,
+    color: "#ccc",
+    fontSize: 14, // Reduced font size
+    marginBottom: 8, // Reduced spacing
   },
   buttonContainer: {
     flexDirection: "row",
@@ -251,42 +240,34 @@ const styles = StyleSheet.create({
   },
   goBackButton: {
     backgroundColor: "white",
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 6, // Slightly smaller border radius
+    padding: 10, // Reduced padding
     flex: 1,
     marginRight: 8,
   },
   nextSectionButton: {
     backgroundColor: "#8FFA09",
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 6, // Slightly smaller border radius
+    padding: 10, // Reduced padding
     flex: 1,
   },
   buttonText: {
     color: "black",
-    fontSize: 16,
+    fontSize: 14, // Reduced font size
     fontFamily: "Poppins-SemiBold",
     textAlign: "center",
   },
   backText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 14, // Reduced font size
     fontFamily: "Poppins-SemiBold",
-  },
-  placeholderStyle: {
-    color: "white", // Placeholder text color
-    fontSize: 14, // Optional: Adjust the font size if needed
-    fontFamily: "Poppins-Regular", // Optional: Match the font with the rest of the UI
   },
   errorText: {
     color: "red",
-    fontSize: 12,
+    fontSize: 10, // Smaller error text
     marginBottom: 8,
   },
-  errorInput: {
-    borderColor: "red",
-    borderWidth: 1,
-  },
 });
+
 
 export default RequestDesign;

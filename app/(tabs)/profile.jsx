@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity,ScrollView,Alert } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity,ScrollView,Alert,Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import logo from "../../assets/logo.png";
 import Svgs from '../../constants/svgs';
@@ -29,6 +29,7 @@ const Profile = () => {
   const removeUser = useUserDataStore((state)=> state.removeUser)
   const clearShippingInfo = useStore((state) => state.clearShippingInfo);
   const clearCart = useCartStore((state) => state.clearCart);
+  const [modalVisible, setModalVisible] = useState(false); 
   // Watch for changes in the profile state
 
   // Replace the navigation effect with useFocusEffect
@@ -89,6 +90,7 @@ const Profile = () => {
   //   router.push("/pages/changePasswordScreen"); 
   // };
   const handleSignOut = () => {
+    setModalVisible(false);
     try {
       if (userId) {
         removeUser(userId);
@@ -123,11 +125,42 @@ const Profile = () => {
 
   return (
     <ScrollView style={styles.container}>
+
+<Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Confirm Logout</Text>
+            <Text style={styles.modalMessage}>Are you sure you want to logout?</Text>
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.confirmButton]}
+                onPress={handleSignOut}
+              >
+                <Text style={styles.buttonText1}>Logout</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
      
       {/* Header with Logo and Logout */}
       <View style={styles.headerRow}>
         <Image source={logo} style={styles.logo} />
-        <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={() => setModalVisible(true)}
+        >
           <Text style={styles.logoutText}>Logout</Text>
           <Icon name="log-out-outline" size={20} color="#00ff00" style={styles.logoutIcon} />
         </TouchableOpacity>
@@ -203,6 +236,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#121212', // Dark background color
     paddingHorizontal: 20,
     paddingTop: 40,
+    
   },
   headerRow: {
     flexDirection: 'row',
@@ -270,6 +304,57 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)', // Semi-transparent background
+  },
+  modalContent: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: '#1e1e1e',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 10,
+  },
+  modalMessage: {
+    fontSize: 14,
+    color: '#ccc',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 10,
+    marginHorizontal: 5,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    backgroundColor: '#444',
+  },
+  confirmButton: {
+    backgroundColor: '#8FFA09',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  buttonText1:{
+    color: '#000',
+    fontWeight: 'bold',
+  }
 });
 
 export default Profile;

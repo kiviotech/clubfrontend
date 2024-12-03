@@ -54,19 +54,21 @@ const NewArrival = ({ limit }) => {
   const displayedProducts = limit ? products.slice(0, limit) : products;
 
   // Function to handle product details click
+ 
   const handleProductDetails = (product) => {
+    // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
+  // console.log(sizes)
     setProductDetails({
       id: product.id,
       images: product.product_image.url,
       name: product.name,
       price: product.price,
-      products,
+      in_stock: product.in_stock,
+      sizes: product.sizes, // Include sizes in the details
     });
-
-    // Navigate to the product details page
+  
     router.push("../../pages/productDetails");
   };
-
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }

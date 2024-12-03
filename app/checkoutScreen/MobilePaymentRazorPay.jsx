@@ -74,6 +74,9 @@ const MobilePaymentRazorPay = () => {
     const navigateToHome = () => {
       router.push("/home"); // Navigate to home
     };
+    const navigateTrack = () => {
+        router.push("/pages/orderPage"); // Navigate to home
+      };
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <WebView
@@ -165,7 +168,7 @@ const MobilePaymentRazorPay = () => {
                                     Alert.alert(
                                         "Success",
                                         "Payment processed and saved successfully!",
-                                        [{ text: "OK", onPress: () => navigateToHome() }]
+                                        [{ text: "OK", onPress: () => navigateTrack() }]
                                     );
                                 } else {
                                     throw new Error(`Unexpected response status: ${response?.status}`);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   View,
   Text,
@@ -11,14 +11,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import logo from "../../assets/logo.png";
 import ProductList from "../../components/productList";
 import useProductStore from "../../src/store/useProductStore";
 import { MEDIA_BASE_URL } from "../../src/api/apiClient";
 import useCartStore from "../../src/store/useCartStore";
 import useWishlistStore from "../../src/store/useWishlistStore";
 import { Modal } from "react-native-web";
-
+import Svgs from "../../constants/svgs";
+import { updateProduct } from "../../src/api/repositories/productRepository";
 const { width } = Dimensions.get("window");
 
 const ProductDetails = () => {
@@ -27,11 +27,8 @@ const ProductDetails = () => {
   const addItemToCart = useCartStore((state) => state.addItem);
   const addToWishlist = useWishlistStore((state) => state.addToWishlist);
   const params = useLocalSearchParams();
-  const { images, name, price, products, in_stock } = params;
+  const { images, name, price, products, in_stock, size } = params;
   const allProducts = products ? JSON.parse(products) : [];
- 
-
-  // console.log("asdfghjkl", productDetails.in_stock)
 
   const imagesArray =
     typeof productDetails.images === "string"
@@ -52,10 +49,9 @@ const ProductDetails = () => {
   const [cartPopupVisible, setCartPopupVisible] = useState(false);
   const isInCart = useCartStore((state) =>
     state.items.some(
-      (item) => item.id === productDetails.id 
+      (item) => item.id === productDetails.id
     )
   );
-  
 
 
   const increment = () => {
@@ -68,13 +64,43 @@ const ProductDetails = () => {
     }
   };
 
+  useEffect(() => {
+    // Check and update the stock status when the component mounts
+    handleUpdateStockStatus(productDetails);
+  }, [productDetails]);
+
+  const isOutOfStock = (sizes) => {
+    return sizes.every(size => size.number_of_items === 0);
+  };
+
+  const handleUpdateStockStatus = (productDetails) => {
+    if (isOutOfStock(productDetails.sizes)) {
+      // Update product data with in_stock set to false
+      const updatedProductData = {
+        data:{
+        // ...productDetails,
+        in_stock: false,
+        }
+      };
+
+      updateProduct(productDetails.documentId, updatedProductData)
+        .then(response => {
+          console.log("Product stock status updated successfully:", response);
+        })
+        .catch(error => {
+          console.error("Error updating product stock status:", error);
+        });
+    }
+  };
+
+
 
   const handleAddToCart = () => {
     // Check if the product is already in the cart
     const existingItem = useCartStore.getState().items.find(
       (cartItem) => cartItem.id === productDetails.id
     );
-  
+
     if (existingItem) {
       setCartPopupVisible(true); // Show the cart popup if the item already exists in the cart
     } else {
@@ -86,13 +112,13 @@ const ProductDetails = () => {
         size: selectedSize,
         image: imagesArray[0],
       };
-      
+
       addItemToCart(item);
       setIsAddedToCart(true);
       router.push("/pages/cart");
     }
   };
-  
+
 
 
   const handleCartPopupConfirmation = (confirm) => {
@@ -129,16 +155,25 @@ const ProductDetails = () => {
     const newIndex = Math.floor(contentOffsetX / (width * 0.8));
     setActiveIndex(newIndex);
   };
+  const handleRequest = () => {
+    router.push("/pages/cart");
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" color="white" size={30} />
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Ionicons name="arrow-back" color="white" size={20} />
         </TouchableOpacity>
-        <Image style={styles.logo} source={logo} />
+        <View style={styles.leftIcons}>
+          <TouchableOpacity onPress={handleRequest}>
+            <Svgs.cartIcon width={18} height={18} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/pages/wishlist")}>
+            <Svgs.wishlistIcon width={18} height={18} />
+          </TouchableOpacity>
+        </View>
       </View>
-
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.imageSection}>
           {/* Custom Carousel */}
@@ -203,49 +238,63 @@ const ProductDetails = () => {
           ) : (
             <Text style={styles.outOfStockText}>Out of Stock</Text>
           )}
-      </View>
-
-      <View style={styles.quantitySection}>
-        <Text style={styles.quantityLabel}>Quantity</Text>
-        <View style={styles.quantityContainer}>
-          <TouchableOpacity onPress={decrement} style={styles.quantityButton}>
-            <Text style={styles.quantityText}>-</Text>
-          </TouchableOpacity>
-          <Text style={styles.quantityText}>{quantity}</Text>
-          <TouchableOpacity onPress={increment} style={styles.quantityButton}>
-            <Text style={styles.quantityText}>+</Text>
-          </TouchableOpacity>
         </View>
-      </View>
-      <View style={styles.sizeSection}>
-        <Text style={styles.sizeLabel}>Size</Text>
-        <View style={styles.sizeContainer}>
-          {["XS", "S", "M", "L", "XL", "XXL"].map((size) => (
-            <TouchableOpacity
-              key={size}
-              onPress={() => setSelectedSize(size)}
-              style={[
-                styles.sizeButton,
-                {
-                  backgroundColor:
-                    selectedSize === size ? "#8FFA09" : "#1D2221",
-                },
-              ]}
-            >
-              <Text
-                style={{
-                  color: selectedSize === size ? "#000000" : "#ffffff", // Black for selected, white for unselected
-                }}
-              >
-                {size}
-              </Text>
+
+        <View style={styles.quantitySection}>
+          <Text style={styles.quantityLabel}>Quantity</Text>
+          <View style={styles.quantityContainer}>
+            <TouchableOpacity onPress={decrement} style={styles.quantityButton}>
+              <Text style={styles.quantityText}>-</Text>
             </TouchableOpacity>
-          ))}
+            <Text style={styles.quantityText}>{quantity}</Text>
+            <TouchableOpacity onPress={increment} style={styles.quantityButton}>
+              <Text style={styles.quantityText}>+</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+        <View style={styles.sizeSection}>
+          <Text style={styles.sizeLabel}>Size</Text>
+          <View style={styles.sizeContainer}>
+            {productDetails.sizes &&
+              productDetails.sizes.map((sizeObj, index) => (
+                <View key={index} style={styles.sizeItem}>
+                  <TouchableOpacity
+                    onPress={() => setSelectedSize(sizeObj.size)}
+                    style={[
+                      styles.sizeButton,
+                      {
+                        backgroundColor:
+                          sizeObj.number_of_items === 0
+                            ? "#4A4A4A" // Disabled color
+                            : selectedSize === sizeObj.size
+                              ? "#8FFA09" // Selected size color
+                              : "#1D2221", // Default button color
+                      },
+                    ]}
+                    disabled={sizeObj.number_of_items === 0} // Disable button if no stock
+                  >
+                    <Text
+                      style={{
+                        color: sizeObj.number_of_items === 0 ? "#A4A4AA" : "#ffffff", // Dim text color if disabled
+                      }}
+                    >
+                      {sizeObj.size}
+                    </Text>
+                  </TouchableOpacity>
 
-      <View style={styles.actionButtons}>
-      <TouchableOpacity
+                  {/* Display number of products and stock status */}
+                  <Text style={styles.sizeInfo}>{`${sizeObj.number_of_items}`}</Text>
+                  <Text style={styles.sizeInfo}>
+                    {`Stock: ${sizeObj.in_stock ? "Yes" : "No"}`}
+                  </Text>
+                </View>
+              ))}
+          </View>
+        </View>
+
+
+        <View style={styles.actionButtons}>
+          <TouchableOpacity
             onPress={handleAddToCart}
             style={[styles.addToCartButton, !productDetails.in_stock && styles.disabledButton]}
             disabled={!productDetails.in_stock}
@@ -256,96 +305,96 @@ const ProductDetails = () => {
           </TouchableOpacity>
 
           <Modal
-        visible={cartPopupVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setCartPopupVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalText}>
-            Product already in cart !! Do you want to go to your cart?
-            </Text>
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                onPress={() => handleCartPopupConfirmation(false)}
-                style={styles.modalButton}
-              >
-                <Text style={styles.modalButtonText}>No</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => handleCartPopupConfirmation(true)}
-                style={styles.modalButton}
-              >
-                <Text style={styles.modalButtonText}>Yes</Text>
-              </TouchableOpacity>
+            visible={cartPopupVisible}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setCartPopupVisible(false)}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalText}>
+                  Product already in cart !! Do you want to go to your cart?
+                </Text>
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity
+                    onPress={() => handleCartPopupConfirmation(false)}
+                    style={styles.modalButton}
+                  >
+                    <Text style={styles.modalButtonText}>No</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleCartPopupConfirmation(true)}
+                    style={styles.modalButton}
+                  >
+                    <Text style={styles.modalButtonText}>Yes</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
+          </Modal>
+          <View>
+            {/* Add to Wishlist Button */}
+            <TouchableOpacity
+              onPress={handleAddToWishlist}
+              style={styles.addToWishlistButton}
+            >
+              <Text style={styles.addToWishlistText}>Add to Wishlist</Text>
+            </TouchableOpacity>
+
+            {/* Modal for Confirmation */}
+            <Modal
+              visible={modalVisible}
+              transparent={true}
+              animationType="slide"
+              onRequestClose={() => setModalVisible(false)}
+            >
+              <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalText}>
+                    This product is already in your wishlist. Do you want to go to the wishlist page?
+                  </Text>
+                  <View style={styles.modalButtons}>
+                    <TouchableOpacity
+                      onPress={() => setModalVisible(false)}
+                      style={styles.modalButton}
+                    >
+                      <Text style={styles.modalButtonText}>No</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={handleConfirmWishlistNavigation}
+                      style={styles.modalButton}
+                    >
+                      <Text style={styles.modalButtonText}>Yes</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
           </View>
         </View>
-      </Modal>
-  <View>
-      {/* Add to Wishlist Button */}
-      <TouchableOpacity
-        onPress={handleAddToWishlist}
-        style={styles.addToWishlistButton}
-      >
-        <Text style={styles.addToWishlistText}>Add to Wishlist</Text>
-      </TouchableOpacity>
 
-      {/* Modal for Confirmation */}
-      <Modal
-        visible={modalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalText}>
-              This product is already in your wishlist. Do you want to go to the wishlist page?
-            </Text>
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                style={styles.modalButton}
-              >
-                <Text style={styles.modalButtonText}>No</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleConfirmWishlistNavigation}
-                style={styles.modalButton}
-              >
-                <Text style={styles.modalButtonText}>Yes</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+        <View style={styles.detailsSection}>
+          <Text style={styles.detailsTitle}>Product Details</Text>
+          <Text style={styles.detailsText}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus
+            felis justo, lacinia ac iaculis nec, efficitur in arcu. Suspendisse
+            posuere, elit ut tempor finibus, dolor tortor ullamcorper leo.
+          </Text>
+          <Text style={styles.detailsText}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit...
+          </Text>
+          <TouchableOpacity>
+            <Text style={styles.seeMoreText}>See More</Text>
+          </TouchableOpacity>
         </View>
-      </Modal>
-    </View>
-      </View>
 
-      <View style={styles.detailsSection}>
-        <Text style={styles.detailsTitle}>Product Details</Text>
-        <Text style={styles.detailsText}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus
-          felis justo, lacinia ac iaculis nec, efficitur in arcu. Suspendisse
-          posuere, elit ut tempor finibus, dolor tortor ullamcorper leo.
-        </Text>
-        <Text style={styles.detailsText}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit...
-        </Text>
-        <TouchableOpacity>
-          <Text style={styles.seeMoreText}>See More</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.relatedProductsSection}>
-        <Text style={styles.relatedProductsTitle}>Related Products</Text>
-        <ScrollView>
-          <ProductList products={allProducts} />
-        </ScrollView>
-      </View>
-    </ScrollView>
+        <View style={styles.relatedProductsSection}>
+          <Text style={styles.relatedProductsTitle}>Related Products</Text>
+          <ScrollView>
+            <ProductList products={allProducts} />
+          </ScrollView>
+        </View>
+      </ScrollView>
     </SafeAreaView >
   );
 };
@@ -359,15 +408,19 @@ const styles = StyleSheet.create({
   },
 
   // Header
+
   header: {
+    display: "flex",
     flexDirection: "row",
-    height: 48,
-    width: "100%",
-    padding: 8,
-    alignItems: "center",
+    gap: 260,
+    padding: 10,
+
   },
-  logo: {
-    marginLeft: 8,
+  leftIcons: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 20,
+
   },
 
   // Image Section
@@ -450,21 +503,30 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sizeLabel: {
-    fontSize: 18,
-    color: "white",
-    marginVertical: 8,
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: "#fff"
   },
   sizeContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  sizeItem: {
+    alignItems: 'center',
+    marginVertical: 5,
   },
   sizeButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    marginHorizontal: 5,
-    marginVertical: 5,
-    borderRadius: 10,
+    padding: 10,
+    borderRadius: 5,
+    // borderWidth: 1,
+    // borderColor: '#A4A4AA',
+    marginBottom: 5,
+  },
+  sizeInfo: {
+    fontSize: 12,
+    color: '#8FFA09',
   },
 
   // Action Buttons
@@ -530,12 +592,12 @@ const styles = StyleSheet.create({
     color: "#8FFA09", // Green for in stock
     marginTop: 8,
   },
-  
+
   // Disabled Button Style
   disabledButton: {
     backgroundColor: "#A4A4AA", // Gray for disabled button
   },
-  
+
   // Out of Stock Text Style
   outOfStockText: {
     fontSize: 16,

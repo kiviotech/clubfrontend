@@ -20,6 +20,7 @@ import FilterPanel from "../pages/filter";
 import svgs from "../../constants/svgs";
 import { useState } from "react";
 import ProductSearch from "../pages/ProductSearch";
+import Header from "../pages/header";
 
 
 const categories = ["All", "Men", "Women", "Kids Wear"];
@@ -28,7 +29,7 @@ const categories = ["All", "Men", "Women", "Kids Wear"];
 
 const store = () => {
 
-  
+
   const [searchTerm, setSearchTerm] = useState("");
   const [slideAnim] = useState(new Animated.Value(0));
   const [isFilterVisible, setIsFilterVisible] = useState(false);
@@ -44,9 +45,9 @@ const store = () => {
     router.push("/pages/viewProduct")
   };
 
-  
-  
-  
+
+
+
 
   const handleBrandSelect = (brandName) => {
     setSelectedBrand(brandName); // Update the selected brand when a brand icon is clicked
@@ -79,83 +80,73 @@ const store = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-  <Image source={logo} style={styles.logo} />
-  <View style={styles.headerIcons}>
-    <TouchableOpacity onPress={handleRequest} style={styles.iconButton}>
-      <Icon name="shopping-cart" size={24} color="white" />
-    </TouchableOpacity>
-    <TouchableOpacity onPress={() => router.push("/pages/wishlist")} style={styles.iconButton}>
-      <Icon name="heart" size={28} color="white" />
-    </TouchableOpacity>
-  </View>
-</View>
+      <View style={styles.container}>
+        {/* Header */}
+        <Header/>
 
-      {/* Scrollable Content */}
-      <ScrollView 
-        showsVerticalScrollIndicator={false} 
-        contentContainerStyle={styles.scrollViewContent}
-        keyboardShouldPersistTaps="handled"
-      >
-        <Text style={styles.title}>Brands Store</Text>
+        {/* Scrollable Content */}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollViewContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text style={styles.title}>Brands Store</Text>
 
-        {/* Search Bar and Filter */}
-        <View style={styles.searchContainer}>
-        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+          {/* Search Bar and Filter */}
+          <View style={styles.searchContainer}>
+            <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-            <TouchableOpacity onPress={toggleFilterPanel}>
+            {/* <TouchableOpacity onPress={toggleFilterPanel}>
               <svgs.Group width={20} height={20} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
-        {/* Top Categories */}
-        <Text style={styles.subtitle}>Top Categories</Text>
-        <CategoryButtons categories={categories} />
+          {/* Top Categories */}
+          {/* <Text style={styles.subtitle}>Top Categories</Text>
+        <CategoryButtons categories={categories} /> */}
 
-        {/* Top Brands */}
-        <View>
-        <Text style={styles.subtitle}>Top Brands</Text>
-        <BrandIcons />
-        </View>
+          {/* Top Brands */}
+          <View>
+            <Text style={styles.subtitle}>Top Brands</Text>
+            <BrandIcons />
+          </View>
 
-        <Text style={styles.subtitle}>Search Products</Text>
-        <ProductSearch limit={8} searchTerm={searchTerm}/> 
-      
-        {/* Popular Products */}
-        <View style={styles.popularProductsHeader}>
-        
-          <Text style={styles.popularProductsTitle}>Popular Products</Text>
-          <TouchableOpacity onPress={handleViewAll}>
-            <Text style={styles.viewAll}>View All</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.products}>
-        <ProductList limit={4} searchTerm={searchTerm} />
-        </View>
-      </ScrollView>
+          <Text style={styles.subtitle}>Search Products</Text>
+          <ProductSearch limit={8} searchTerm={searchTerm} />
 
-      {/* Filter Panel */}
-      {isFilterVisible && (
-        <Animated.View
-          style={{
-            ...styles.filterPanel,
-            transform: [
-              {
-                translateY: slideAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [500, 0], // Adjust sliding range as needed
-                }),
-              },
-            ],
-          }}
-        >
-          <FilterPanel />
-        </Animated.View>
-      )}
-    </View>
-  </SafeAreaView>
+          {/* Popular Products */}
+          <View style={styles.popularProductsHeader}>
+
+            <Text style={styles.popularProductsTitle}>Popular Products</Text>
+            <TouchableOpacity onPress={handleViewAll}>
+              <Text style={styles.viewAll}>View All</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.products}>
+            <ProductList limit={4} searchTerm={searchTerm} />
+          </View>
+        </ScrollView>
+
+        {/* Filter Panel */}
+        {isFilterVisible && (
+          <Animated.View
+            style={{
+              ...styles.filterPanel,
+              transform: [
+                {
+                  translateY: slideAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [500, 0], // Adjust sliding range as needed
+                  }),
+                },
+              ],
+            }}
+          >
+            <FilterPanel />
+          </Animated.View>
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -187,7 +178,7 @@ const styles = StyleSheet.create({
   iconButton: {
     marginLeft: 10, // Optional: Adjust spacing between icons
   },
-  
+
   title: {
     fontSize: 24,
     color: "white",
@@ -199,7 +190,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-evenly",
-    paddingHorizontal: 30,
+    // paddingHorizontal: 30,
   },
   subtitle: {
     fontSize: 20,
@@ -213,21 +204,23 @@ const styles = StyleSheet.create({
   },
   popularProductsHeader: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly", // Ensures space between the title and "View All"
     alignItems: "center",
+    gap:100,
+    // paddingLeft: 10, 
   },
   popularProductsTitle: {
-    fontSize: 24,
+    fontSize: 20,
     color: "white",
     fontWeight: "bold",
-    marginVertical: 8,
-    paddingLeft: 10,
+    // marginVertical: 8,
+    // paddingLeft: 10,
   },
   viewAll: {
     fontSize: 14,
     color: "white",
     fontWeight: "500",
-    marginVertical: 12,
+    marginLeft: 20,
   },
   filterPanel: {
     position: "absolute",
@@ -239,9 +232,9 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   products: {
-    padding: 10,
+    // padding: 10,
   },
-  
+
 
 });
 

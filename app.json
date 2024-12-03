@@ -35,6 +35,9 @@
     "plugins": [
       "expo-router"
     ],
-    "scheme": "clubunplugged"
+    "scheme": "clubunplugged",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
   }
 }

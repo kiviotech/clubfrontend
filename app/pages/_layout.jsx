@@ -32,7 +32,7 @@ export default function Layout() {
       <Stack.Screen name="passwordChangedNotification" options={{ headerShown: false }} />
       <Stack.Screen name="designRequestCart" options={{ headerShown: false }} />
       <Stack.Screen name="viewProduct" options={{ headerShown: false }} />
-      
+      <Stack.Screen name="header" options={{ headerShown: false }} />
     </Stack>
   );
 }

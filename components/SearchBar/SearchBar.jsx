@@ -1,19 +1,18 @@
 import React from "react";
-import { View, TextInput, StyleSheet } from "react-native";
-import { FontAwesome } from "@expo/vector-icons"; // You can use any icon library like react-native-vector-icons
+import { View, TextInput, StyleSheet, Dimensions } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 
 const SearchBar = ({ searchTerm, setSearchTerm }) => {
   return (
     <View style={styles.container}>
-      {/* Add Search Icon */}
-      <FontAwesome name="search" size={30} color="gray" />
-      {/* Search Input */}
+      <FontAwesome name="search" size={20} color="#6B7280" />
       <TextInput
         style={styles.input}
         placeholder="Search"
-        placeholderTextColor="gray"
+        placeholderTextColor="#9CA3AF"
         onChangeText={(text) => setSearchTerm(text)}
-        
+        value={searchTerm}
+        underlineColorAndroid="transparent" 
       />
     </View>
   );
@@ -21,19 +20,24 @@ const SearchBar = ({ searchTerm, setSearchTerm }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",        // Equivalent to flex-row
-    alignItems: "center",        // Equivalent to items-center
-    backgroundColor: "#4B5563",  // Equivalent to bg-gray-800
-    borderRadius: 6,             // Equivalent to rounded-md (md = 6px)
-    marginRight: 20, 
-    marginLeft: -15,              // Equivalent to mr-2
-    padding: 8,                  // Equivalent to p-2
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#919eab29",
+    borderRadius: 20,           
+    padding: 10,                 
+    marginVertical: 10,         
+    width: Dimensions.get("window").width - 20, 
+    alignSelf: "center",         
+    shadowColor: "#000",        
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,                
   },
   input: {
-    flex: 1,                     // Equivalent to flex-1
-    marginLeft: 8,               // Equivalent to ml-2
-    color: "white",              // Equivalent to text-white
-    fontSize: 16,                // Optionally added for a more refined look
+    flex: 1,
+    marginLeft: 10,              
+    color: "#F9FAFB",            
+    fontSize: 16,
   },
 });
 

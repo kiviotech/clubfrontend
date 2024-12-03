@@ -9,11 +9,8 @@ import {
   StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import logo from "../../assets/logo.png";
 import svgs from "../../constants/svgs";
-import DesignerCard from "../../components/DesignerCard";
 import { useRouter } from "expo-router";
-import { AntDesign } from "@expo/vector-icons";
 import fonts from "../../constants/fonts";
 import Slider from "../pages/slider";
 import BrandIcons from "../../components/BrandIcons";
@@ -22,9 +19,11 @@ import Sale from "../pages/sale";
 import NewArrival from "../../components/productList/NewArrival";
 import Shop_Brands from "../pages/shop_Brands";
 import Brand_page from "../pages/brand_page";
-import { getProfileByUserId } from "../../src/api/repositories/profileRepository";
 import useUserDataStore from "../../src/store/userData";
 import { getUserById } from "../../src/api/repositories/userRepository";
+import Header from "../pages/header";
+import Icon from 'react-native-vector-icons/Ionicons';
+
 
 
 const Home = () => {
@@ -40,7 +39,7 @@ const Home = () => {
         const response = await getUserById(userId); // Fetch user data by ID
         // console.log(response.data.username);
         setUser(response.data); // Set the fetched user data to the state
-        
+
       } catch (error) {
         // console.error("Failed to fetch user data", error);
       } finally {
@@ -88,12 +87,13 @@ const Home = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Image source={logo} />
         <TouchableOpacity onPress={handleNotify}>
           <Nicon />
         </TouchableOpacity>
-      </View>
+      </View> */}
+      <Header />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.welcomeBox}>
           <Text style={styles.welcomeText}>Welcome back 👋</Text>
@@ -107,10 +107,10 @@ const Home = () => {
         </View>
 
         <View style={styles.mostRatedDesigners}>
-          <Text style={styles.sectionTitle}>Most Rated Designers</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <BrandIcons />
-          </ScrollView>
+          <Text style={styles.sectionTitle}>Most Rated Creator Clothing lines</Text>
+          {/* <ScrollView horizontal showsHorizontalScrollIndicator={false}> */}
+          <BrandIcons />
+          {/* </ScrollView> */}
         </View>
 
         <View style={styles.collaboration}>
@@ -118,9 +118,20 @@ const Home = () => {
           <Slider />
         </View>
 
-        <TouchableOpacity style={styles.requestDesignButton} onPress={handleRequest}>
+        <View style={styles.card}>
+          <Text style={styles.title}>Premium custom clothing 🛎️</Text>
+          <Text style={styles.description}>
+            Create your own custom design and stand out from the crowd. Our expert designers are ready to bring your vision to life.
+          </Text>
+          <TouchableOpacity style={styles.button} onPress={handleRequest}>
+            <Icon name="cut-outline" size={18} color="#000" style={styles.icon} />
+            <Text style={styles.buttonText}>Request Design</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* <TouchableOpacity style={styles.requestDesignButton} onPress={handleRequest}>
           <Text style={styles.requestDesignButtonText}>Request Design</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <View style={styles.popularProductsHeader}>
           <Text style={styles.popularProductsTitle}>Popular Products</Text>
@@ -130,7 +141,7 @@ const Home = () => {
         </View>
         <View>
           <ProductList limit={4} />
-        
+
         </View>
 
         <View style={styles.sale}>
@@ -174,7 +185,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     height: 48,
     width: "100%",
-    padding: 8,
+    // padding: 8,
   },
   welcomeBox: {
     marginBottom: 20,
@@ -183,13 +194,14 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     color: "white",
-    fontSize: 24,
-    marginBottom: 8,
+    fontSize: 16,
+    // marginBottom: 8,
     fontFamily: fonts["Poppins-SemiBold"],
+
   },
   userName: {
-    color: "white",
-    fontSize: 24,
+    color: "#8FFA09",
+    fontSize: 26,
     fontWeight: "bold",
     fontFamily: fonts["Poppins-Bold"],
   },
@@ -198,7 +210,7 @@ const styles = StyleSheet.create({
   },
   explore: {
     color: "white",
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
     marginBottom: 16,
     fontFamily: fonts["Poppins-Bold"],
@@ -226,7 +238,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: "white",
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
     marginBottom: 16,
     fontFamily: fonts["Poppins-Bold"],
@@ -250,9 +262,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontFamily: fonts["Poppins-Bold"],
   },
-  sale:{
-    margin:0,
-    padding:0
+  sale: {
+    margin: 0,
+    padding: 0
   },
   exploreText2: {
     position: "absolute",
@@ -307,7 +319,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   popularProductsTitle: {
-    fontSize: 24,
+    fontSize: 20,
     color: "white",
     fontWeight: "bold",
     marginVertical: 12,
@@ -318,28 +330,49 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "500",
     marginVertical: 12,
-    marginRight:8,
+    marginRight: 8,
   },
-  requestDesignButton: {
-    backgroundColor: "#8FFA09", // Bright green
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 8, // Rounded corners
-    alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: 12,
-    marginTop: 16,
-    shadowColor: "#8FFA09", // Subtle shadow for the button
+  card: {
+    backgroundColor: '#121212', // Card background color
+    borderRadius: 10,
+    padding: 15,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.3,
     shadowRadius: 6,
-    elevation: 4, // Shadow for Android
+    elevation: 5,
+    borderWidth:0.2,
+    borderColor:"#8FFA09"
+    // marginHorizontal: 20,
   },
-  requestDesignButtonText: {
-    color: "black", // Contrast text
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 10,
+  },
+  description: {
+    fontSize: 14,
+    color: '#CCCCCC',
+    marginBottom: 20,
+    lineHeight: 20,
+  },
+  button: {
+    backgroundColor: '#8FFA09', // Neon green
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 5,
+  },
+  buttonText: {
     fontSize: 16,
-    fontWeight: "bold",
-    fontFamily: fonts["Poppins-SemiBold"],
+    fontWeight: 'bold',
+    color: '#000000', // Black text
+    marginLeft: 8,
+  },
+  icon: {
+    marginLeft: -5,
   },
 });
 

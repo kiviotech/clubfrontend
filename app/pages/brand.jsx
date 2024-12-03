@@ -2,12 +2,14 @@ import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Image, Saf
 import React, { useState, useEffect } from 'react';
 import ProductList from '../../components/productList/ProductList';
 import { useBrandStore } from "../../src/store/brandStore";
-import { useRouter } from 'expo-router'; 
+import { useRouter,useNavigation } from 'expo-router'; 
 import { getProducts } from '../../src/api/repositories/productRepository';
 import { MEDIA_BASE_URL } from '../../src/api/apiClient';
 import useProductStore from '../../src/store/useProductStore';
 import useCartStore from '../../src/store/useCartStore';
 import useWishlistStore from '../../src/store/useWishlistStore';
+import Svgs from '../../constants/svgs';
+import { Ionicons } from "@expo/vector-icons";
 
 const Brand = ({ limit }) => {
   const [products, setProducts] = useState([]);
@@ -22,6 +24,7 @@ const Brand = ({ limit }) => {
   const { wishlist, removeFromWishlist } = useWishlistStore();
   const [popupMessage, setPopupMessage] = useState("");
   const [popupProductId, setPopupProductId] = useState(null);
+  const navigation = useNavigation();
   
   const imagesArray =
     typeof products.images === "string"
@@ -36,6 +39,9 @@ const Brand = ({ limit }) => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
     }
+  };
+  const handleRequest = () => {
+    router.push("/pages/cart"); 
   };
 
   useEffect(() => {
@@ -139,6 +145,29 @@ const Brand = ({ limit }) => {
 
   return (
     <SafeAreaView style={styles.area}>
+      <View style={styles.header}>
+        <View style={styles.backSection}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Ionicons name="arrow-back" color="white" size={20} />
+          </TouchableOpacity>
+          <Text style={styles.brandTitle}>
+          {selectedBrand ? `${selectedBrand} Products` : "All Products"}
+        </Text>
+        </View>
+        <View style={styles.rightIcons}>
+          <TouchableOpacity onPress={handleRequest}>
+            <Svgs.cartIcon width={18} height={18} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/pages/wishlist")}>
+            <Svgs.wishlistIcon width={18} height={18} />
+          </TouchableOpacity>
+        </View>
+      </View>
+      {/* <View style={styles.titleContainer}>
+        <Text style={styles.brandTitle}>
+          {selectedBrand ? `${selectedBrand} Products` : "All Products"}
+        </Text>
+      </View> */}
     <View style={styles.container}>
     {/* {popupMessage ? (
       <View style={styles.popup}>
@@ -206,6 +235,15 @@ const styles = StyleSheet.create({
   area:{
     flex: 1,
     backgroundColor:"#000"
+  },
+  titleContainer: {
+    padding: 16,
+    alignItems: "center",
+  },
+  brandTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#8FFA09",
   },
   container: {
     // flex: 1,
@@ -319,6 +357,30 @@ const styles = StyleSheet.create({
   disabledButton: {
     backgroundColor: "#D3D3D3",
     opacity: 0.6,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    paddingTop:20,
+  },
+  backSection: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  backButton: {
+    marginRight: 10, // Space between the arrow and the text
+  },
+  headerText: {
+    fontSize: 16, // Adjust size as needed
+    fontWeight: 'bold', // Make the text bold
+    color: '#8FFA09', // Set text color to white
+  },
+  rightIcons: {
+    flexDirection: "row",
+    gap: 20, // Space between the cart and wishlist icons
   },
 });
 
