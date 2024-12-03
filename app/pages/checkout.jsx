@@ -83,6 +83,7 @@ const Checkout = () => {
 
         // Map over cartItems and process each asynchronously
         const promises = cartItems.map(async (item) => {
+          console.log(item.size)
           const orderItemData = {
             data: {
               quantity: item.quantity || 1,
@@ -90,6 +91,7 @@ const Checkout = () => {
               subtotal: (item.quantity || 1) * (item.price || 1),
               product: item.id,
               locale: "en",
+              size:item.size
             },
           };
 

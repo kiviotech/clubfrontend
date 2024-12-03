@@ -85,10 +85,10 @@ const ProductDetails = () => {
 
       updateProduct(productDetails.documentId, updatedProductData)
         .then(response => {
-          console.log("Product stock status updated successfully:", response);
+          // console.log("Product stock status updated successfully:", response);
         })
         .catch(error => {
-          console.error("Error updating product stock status:", error);
+          // console.error("Error updating product stock status:", error);
         });
     }
   };
@@ -506,28 +506,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: "#fff"
+    color: "#ffffff",
   },
   sizeContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
+    flexWrap: 'wrap', // Allows wrapping to the next line
+    justifyContent: 'center', // Centers the buttons
+    gap: 10, // Even spacing between buttons
   },
   sizeItem: {
+    flexDirection: 'column',
     alignItems: 'center',
-    marginVertical: 5,
   },
   sizeButton: {
-    padding: 10,
-    borderRadius: 5,
-    // borderWidth: 1,
-    // borderColor: '#A4A4AA',
-    marginBottom: 5,
+    width: 50, // Fixed width for uniform buttons
+    height: 35, // Fixed height for uniform buttons
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    backgroundColor: '#1D2221', // Default button color
   },
   sizeInfo: {
     fontSize: 12,
     color: '#8FFA09',
+    marginTop: 5, // Adds spacing below the button
   },
+  
+
 
   // Action Buttons
   actionButtons: {

@@ -41,6 +41,7 @@ export default function CartList({
         <View style={styles.productDetails}>
           <Text style={styles.productName}>{productname}</Text>
           <Text style={styles.productPrice}>${price}</Text>
+          <Text style={styles.subtotal}>Size : {size}</Text>
 
 
           {!isWishlist && (
@@ -60,6 +61,7 @@ export default function CartList({
                 >
                   <Text style={styles.quantityText}>+</Text>
                 </TouchableOpacity>
+                
               </View>
             </View>
           )}

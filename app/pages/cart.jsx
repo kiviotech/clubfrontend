@@ -18,7 +18,7 @@ import Totalamount from "./totalamount";
 const Cart = () => {
   const router = useRouter();
   const cartItems = useCartStore((state) => state.items);
-  // console.log("data",cartItems)
+  console.log("data",cartItems)
   const subtotal = useCartStore((state) => state.subtotal);
   const [deliveryCharge, setDeliveryCharge] = useState(0);
   
