@@ -27,7 +27,9 @@ const OrderPage = () => {
         setLoading(true);
         const response = await getUserWithOrderDetails(userId); // Fetch data
         setOrderDetails(response?.data); // Save the fetched order details
-        // console.log(response.data)
+        // console.log(response.data.order_details[0].updatedAt)
+        // console.log(response.data.order_details[0].total)
+        // console.log(response.data.order_details[0].orderItems[0].quantity)
         // console.log(response.data.order_details[0].documentId)
         // console.log(response.data.order_details[0].level)
         setLoading(false);
@@ -77,6 +79,9 @@ const OrderPage = () => {
               const level = order.level;
               const id = order.id; // Extract order id
               const documentId = order.documentId;
+              const updatedAt = order.updatedAt; // Get updatedAt from order
+            const total = order.total; // Get total from order
+            const quantity = item.quantity;
               
 
               return (
@@ -88,6 +93,9 @@ const OrderPage = () => {
                   level={level}
                   id={id} // Pass id
                   documentId={documentId}
+                  updatedAt={updatedAt} // Pass updatedAt
+                  total={total} // Pass total
+                  quantity={quantity} // Pass quantity
                 />
               );
             })

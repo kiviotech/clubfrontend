@@ -18,7 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const TrackOrderScreen = () => {
   const trackingProgress = useRef(new Animated.Value(0)).current;
-  const { imageUrl, productName, productPrice, id, documentId } = useLocalSearchParams();
+  const { imageUrl, productName, productPrice, id, documentId,total,quantity,formattedDate } = useLocalSearchParams();
 
   const [steps, setSteps] = useState([
     { status: "Order placed", description: "Your order has been placed", icon: "check-circle" },
@@ -107,7 +107,7 @@ const TrackOrderScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>Track Your Order</Text>
-      <Text style={styles.orderId}>Order #123456</Text>
+      <Text style={styles.orderId}>Order {documentId}</Text>
 
       {/* Product Information */}
       <View style={styles.productContainer}>
@@ -117,8 +117,9 @@ const TrackOrderScreen = () => {
         />
         <View style={styles.productDetails}>
           <Text style={styles.productName}>{productName}</Text>
-          <Text style={styles.productPrice}>${productPrice}</Text>
-          <Text style={styles.deliveryDate}>Delivering on 28 Nov, 2024</Text>
+          <Text style={styles.productPrice}>${total}</Text>
+          <Text style={styles.deliveryDate}>Order date : {formattedDate}</Text>
+          <Text style={styles.deliveryDate}>Quantity : {quantity}</Text>
           <View style={styles.ratingContainer}>
             {Array.from({ length: 5 }).map((_, index) => (
               <FontAwesome key={index} name="star" size={16} color="#FFD700" />

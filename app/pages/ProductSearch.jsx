@@ -38,6 +38,7 @@ const ProductSearch = ({ limit,searchTerm }) => {
       try {
         const response = await getProducts();
         setProducts(response.data.data);
+        // console.log(response.data.data[0].documentId)
       } catch (error) {
         setError("Failed to load products");
       } finally {
@@ -54,16 +55,20 @@ const ProductSearch = ({ limit,searchTerm }) => {
 
   const displayedProducts = limit ? filteredProducts.slice(0, limit) : filteredProducts;
 
+  
   const handleProductDetails = (product) => {
+    // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
+  // console.log(sizes)
     setProductDetails({
       id: product.id,
       images: product.product_image.url,
       name: product.name,
       price: product.price,
       in_stock: product.in_stock,
-      products,
+      sizes: product.sizes, // Include sizes in the details
+      documentId:product.documentId
     });
-
+  
     router.push("../../pages/productDetails");
   };
 

@@ -16,7 +16,7 @@ export default function App() {
       // Set a timeout to hide the splash after the video loads
       const timer = setTimeout(() => {
         setShowSplash(false);
-      }, 4000);
+      }, 3500);
       return () => clearTimeout(timer);
     }
   }, [isVideoLoaded]);
