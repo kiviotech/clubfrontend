@@ -239,7 +239,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     color: "white",
     padding: 12,
-    borderRadius: 8, // Tailwind: bg-black border border-[#919EAB] text-white p-3 rounded-lg
+    borderRadius: 8,
+    WebkitTextFillColor: "white",
+    WebkitBoxShadow: "0 0 0 30px black inset",
   },
   errorText: {
     color: "red", // Tailwind: text-red-500
@@ -256,7 +258,9 @@ const styles = StyleSheet.create({
   },
   passwordInput: {
     flex: 1,
-    color: "white", // Tailwind: flex-1 text-white
+    color: "white",
+    WebkitTextFillColor: "white",
+    WebkitBoxShadow: "0 0 0 30px black inset",
   },
   forgotPasswordContainer: {
     marginBottom: 16,

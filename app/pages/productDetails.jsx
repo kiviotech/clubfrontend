@@ -16,10 +16,11 @@ import useProductStore from "../../src/store/useProductStore";
 import { MEDIA_BASE_URL } from "../../src/api/apiClient";
 import useCartStore from "../../src/store/useCartStore";
 import useWishlistStore from "../../src/store/useWishlistStore";
-import { Modal } from "react-native-web";
+// import { Modal } from "react-native-web";
 import Svgs from "../../constants/svgs";
 import { updateProduct } from "../../src/api/repositories/productRepository";
 const { width } = Dimensions.get("window");
+import { Modal } from "react-native";
 
 const ProductDetails = () => {
 
@@ -52,7 +53,7 @@ const ProductDetails = () => {
       (item) => item.id === productDetails.id
     )
   );
-
+  const totalCartItems = useCartStore((state) => state.getTotalItems());
 
   const increment = () => {
     setQuantity(quantity + 1);
@@ -96,14 +97,15 @@ const ProductDetails = () => {
 
 
   const handleAddToCart = () => {
-    // Check if the product is already in the cart
+    // Check if the same product with the same size is already in the cart
     const existingItem = useCartStore.getState().items.find(
-      (cartItem) => cartItem.id === productDetails.id
+      (cartItem) => cartItem.id === productDetails.id && cartItem.size === selectedSize
     );
-
+  
     if (existingItem) {
-      setCartPopupVisible(true); // Show the cart popup if the item already exists in the cart
+      setCartPopupVisible(true); // Show the cart popup if the same product with the same size exists
     } else {
+      // Add the product with the selected size to the cart
       const item = {
         id: productDetails.id,
         name: productDetails.name,
@@ -112,13 +114,13 @@ const ProductDetails = () => {
         size: selectedSize,
         image: imagesArray[0],
       };
-
-      addItemToCart(item);
+  
+      addItemToCart(item); // Add the new item to the cart
       setIsAddedToCart(true);
       router.push("/pages/cart");
     }
   };
-
+  
 
 
   const handleCartPopupConfirmation = (confirm) => {
@@ -166,9 +168,16 @@ const ProductDetails = () => {
           <Ionicons name="arrow-back" color="white" size={20} />
         </TouchableOpacity>
         <View style={styles.leftIcons}>
-          <TouchableOpacity onPress={handleRequest}>
-            <Svgs.cartIcon width={18} height={18} />
-          </TouchableOpacity>
+        <View style={styles.iconContainer}>
+            <TouchableOpacity onPress={handleRequest} style={styles.iconButton}>
+              <Svgs.cartIcon width={18} height={18} />
+            </TouchableOpacity>
+            {totalCartItems > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{totalCartItems}</Text>
+              </View>
+            )}
+          </View>
           <TouchableOpacity onPress={() => router.push("/pages/wishlist")}>
             <Svgs.wishlistIcon width={18} height={18} />
           </TouchableOpacity>
@@ -305,33 +314,34 @@ const ProductDetails = () => {
           </TouchableOpacity>
 
           <Modal
-            visible={cartPopupVisible}
-            transparent={true}
-            animationType="slide"
-            onRequestClose={() => setCartPopupVisible(false)}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalText}>
-                  Product already in cart !! Do you want to go to your cart?
-                </Text>
-                <View style={styles.modalButtons}>
-                  <TouchableOpacity
-                    onPress={() => handleCartPopupConfirmation(false)}
-                    style={styles.modalButton}
-                  >
-                    <Text style={styles.modalButtonText}>No</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleCartPopupConfirmation(true)}
-                    style={styles.modalButton}
-                  >
-                    <Text style={styles.modalButtonText}>Yes</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </Modal>
+  visible={cartPopupVisible}
+  transparent={true}
+  animationType="fade" // Better for a mobile experience
+  onRequestClose={() => setCartPopupVisible(false)}
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalText}>
+        Product already in cart! Do you want to go to your cart?
+      </Text>
+      <View style={styles.modalButtons}>
+        <TouchableOpacity
+          onPress={() => handleCartPopupConfirmation(false)}
+          style={styles.modalButton}
+        >
+          <Text style={styles.modalButtonText}>No</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handleCartPopupConfirmation(true)}
+          style={styles.modalButton}
+        >
+          <Text style={styles.modalButtonText}>Yes</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+</Modal>
+
           <View>
             {/* Add to Wishlist Button */}
             <TouchableOpacity
@@ -421,6 +431,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 20,
 
+  },
+  iconContainer: {
+    position: "relative", // To position badge on top of the icon
+  },
+  badge: {
+    position: "absolute",
+    top: -3,
+    right: -9,
+    backgroundColor: "#FF0000", // Badge color
+    borderRadius: 10,
+    width: 14,
+    height: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1, // Ensure badge is on top of the cart icon
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
   },
 
   // Image Section

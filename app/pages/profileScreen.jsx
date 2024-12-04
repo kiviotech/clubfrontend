@@ -101,10 +101,13 @@ const ProfileScreen = () => {
       try {
         setUploading(true);
 
-        // Convert URI to Blob for upload
-        const imageBlob = await (await fetch(uri)).blob();
+        // Create FormData
         const formData = new FormData();
-        formData.append("files", imageBlob, uri.split("/").pop());
+        formData.append('files', {
+          uri: uri,
+          type: 'image/jpeg', // You might want to detect this dynamically
+          name: 'profile-image.jpg'
+        });
 
         // Upload file with bearer token
         const uploadResponse = await axios.post(
@@ -114,12 +117,12 @@ const ProfileScreen = () => {
             headers: {
               'Authorization': 'Bearer e243b33014fab23926d9b9079d6c90018b288b84740bb443eb910febdec1b93b6563c2b091a18081788c2bb2eb950ad15bead95e14029283ab2bfd0f4ea563eb590955e3cbbfdc100e9ef8a565993c6bd8e02985ef14df8f83123689c5f139ac50263be891842c8522877b7b73fe5136c56e0ae9823d1e9d96743ebcff502780',
               'Content-Type': 'multipart/form-data',
+              'Accept': 'application/json',
             },
           }
         );
+        
         const uploadedImageId = uploadResponse.data[0]?.id;
-        // console.log('Uploaded Image ID:', uploadedImageId);
-
         if (uploadedImageId) {
           setProfileImageId(uploadedImageId);
           Alert.alert("Upload Successful", "Profile image uploaded successfully!");
@@ -127,12 +130,12 @@ const ProfileScreen = () => {
           throw new Error("Failed to retrieve uploaded image ID.");
         }
       } catch (error) {
-        // console.error("Error uploading image:", error);
+        console.error("Error uploading image:", error.response?.data || error.message);
         Alert.alert("Upload Error", "Failed to upload the image.");
       } finally {
         setUploading(false);
       }
-    } 
+    }
   };
 
   const handleUpdateProfile = async () => {

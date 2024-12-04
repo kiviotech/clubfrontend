@@ -102,7 +102,7 @@ const Home = () => {
           ) : (
             <Text style={styles.userName}>User</Text> // Fallback for undefined username
           )}
-          <Text style={styles.explore}>Explore Brands</Text>
+          <Text style={styles.exploreBrand}>Club Features</Text>
           <Slider />
         </View>
 
@@ -113,20 +113,20 @@ const Home = () => {
           {/* </ScrollView> */}
         </View>
 
-        <View style={styles.collaboration}>
-          <Text style={styles.explore}>Brand Collaborations</Text>
-          <Slider />
-        </View>
-
         <View style={styles.card}>
-          <Text style={styles.title}>Premium custom clothing 🛎️</Text>
+          <Text style={styles.title}>PREMIUM CUSTOM CLOTHING 🛎️</Text>
           <Text style={styles.description}>
-            Create your own custom design and stand out from the crowd. Our expert designers are ready to bring your vision to life.
+           Design your unique, one-off pieces with this button here 👇
           </Text>
           <TouchableOpacity style={styles.button} onPress={handleRequest}>
             <Icon name="cut-outline" size={18} color="#000" style={styles.icon} />
             <Text style={styles.buttonText}>Request Design</Text>
           </TouchableOpacity>
+        </View>
+
+        <View style={styles.collaboration}>
+          <Text style={styles.explore}>BRANDS</Text>
+          <Slider />
         </View>
 
         {/* <TouchableOpacity style={styles.requestDesignButton} onPress={handleRequest}>
@@ -208,7 +208,15 @@ const styles = StyleSheet.create({
   collaboration: {
     marginBottom: 26,
   },
+  exploreBrand:{
+    color: "white",
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 16,
+    fontFamily: fonts["Poppins-Bold"],
+  },
   explore: {
+    marginTop:15,
     color: "white",
     fontSize: 20,
     fontWeight: "bold",
@@ -346,7 +354,7 @@ const styles = StyleSheet.create({
     // marginHorizontal: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: 10,

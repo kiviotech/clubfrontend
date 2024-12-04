@@ -67,9 +67,13 @@ export default function CartList({
           )}
         </View>
 
-        <TouchableOpacity style={styles.deleteButton}  onPress={() => removeItem(id)}>
-          <svgs.TrashSimple />
-        </TouchableOpacity>
+        <TouchableOpacity 
+  style={styles.deleteButton} 
+  onPress={() => removeItem(id, size)} // Pass both id and size
+>
+  <svgs.TrashSimple />
+</TouchableOpacity>
+
       </View>
     </View>
   );

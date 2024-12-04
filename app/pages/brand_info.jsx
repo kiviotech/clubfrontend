@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
     marginBottom: 9,
   },
   cartText: {
-    color: "#ffffff",
+    color: "#000",
     fontSize: 14, // Font size
     fontWeight: "bold",
   },

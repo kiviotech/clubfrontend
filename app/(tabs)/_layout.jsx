@@ -57,7 +57,7 @@ const TabsLayout = () => {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: "#B0FF00", // Bright green
+        tabBarActiveTintColor: "#8FFA09", // Bright green
         tabBarInactiveTintColor: "#B0B0B0", // Light gray
         tabBarStyle: {
           backgroundColor: "black",
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     flexDirection: "row", // Icon and label side by side
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#B0FF00", // Bright green background for active tab
+    backgroundColor: "#8FFA09", // Bright green background for active tab
     borderRadius: 25, // Fully rounded background
     paddingHorizontal: 20, // Adjust for label and icon spacing
     height: 50, // Increase height to ensure proper vertical alignment
