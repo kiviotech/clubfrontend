@@ -25,15 +25,16 @@
     },
     "web": {
       "favicon": "./assets/favicon.png",
-      "head":[
+      "head": [
         {
-          "tag":"script",
-          "src":"https://checkout.razorpay.com/v1/checkout.js"
+          "tag": "script",
+          "src": "https://checkout.razorpay.com/v1/checkout.js"
         }
       ]
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-asset"
     ],
     "scheme": "clubunplugged",
     "assetBundlePatterns": [

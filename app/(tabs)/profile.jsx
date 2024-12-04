@@ -162,7 +162,7 @@ const Profile = () => {
           onPress={() => setModalVisible(true)}
         >
           <Text style={styles.logoutText}>Logout</Text>
-          <Icon name="log-out-outline" size={20} color="#00ff00" style={styles.logoutIcon} />
+          <Icon name="log-out-outline" size={20} color="#8FFA09" style={styles.logoutIcon} />
         </TouchableOpacity>
       </View>
 
@@ -181,29 +181,29 @@ const Profile = () => {
       <Text style={styles.sectionTitle}>Account</Text>
       <View style={styles.section}>
       <TouchableOpacity onPress={Profile} style={styles.menuItem}>
-          <Icon name="person" size={20} color="#00ff00" style={styles.icon} />
+          <Icon name="person" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Profile</Text>
-          <Icon name="chevron-forward" size={20} color="#00ff00" />
+          <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={handlePassword}>
-          <Icon name="lock-closed" size={20} color="#00ff00" style={styles.icon} />
+          <Icon name="lock-closed" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Change password</Text>
-          <Icon name="chevron-forward" size={20} color="#00ff00" />
+          <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem}  onPress={handleAddress}>
-          <Icon name="location" size={20} color="#00ff00" style={styles.icon}/>
+          <Icon name="location" size={20} color="#8FFA09" style={styles.icon}/>
           <Text style={styles.menuText}>Change address</Text>
-          <Icon name="chevron-forward" size={20} color="#00ff00" />
+          <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={handleCart}>
-          <Icon name="bag" size={20} color="#00ff00" style={styles.icon} />
+          <Icon name="bag" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Orders</Text>
-          <Icon name="chevron-forward" size={20} color="#00ff00" />
+          <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={handleLanguage }>
-          <Icon name="language" size={20} color="#00ff00" style={styles.icon} />
+          <Icon name="language" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Design Request</Text>
-          <Icon name="chevron-forward" size={20} color="#00ff00" />
+          <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
       </View>
 
@@ -211,19 +211,19 @@ const Profile = () => {
       <Text style={styles.sectionTitle}>Feedback & Information</Text>
       <View style={styles.section}>
         <TouchableOpacity style={styles.menuItem}>
-          <Icon name="help-circle" size={20} color="#00ff00" style={styles.icon} />
+          <Icon name="help-circle" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>FAQ's</Text>
-          <Icon name="chevron-forward" size={20} color="#00ff00" />
+          <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem}>
-          <Icon name="document-text" size={20} color="#00ff00" style={styles.icon} />
+          <Icon name="document-text" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Term of Service</Text>
-          <Icon name="chevron-forward" size={20} color="#00ff00" />
+          <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem}>
-          <Icon name="shield-checkmark" size={20} color="#00ff00" style={styles.icon} />
+          <Icon name="shield-checkmark" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Privacy Policy</Text>
-          <Icon name="chevron-forward" size={20} color="#00ff00" />
+          <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
       </View>
     </ScrollView>

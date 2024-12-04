@@ -29,7 +29,8 @@ const Measurement = () => {
     // Launch the image library for selection
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: false,
+      allowsMultipleSelection: true,
+      aspect: [1, 1],
       quality: 1,
     });
 
@@ -41,11 +42,12 @@ const Measurement = () => {
         setUploading(true);
 
         // Convert URI to Blob for upload
-        const imageBlob = await (await fetch(uri)).blob();
+        // const imageBlob = await (await fetch(uri)).blob();
         const formData = new FormData();
-        formData.append("files", imageBlob, {
-          name: uri.split("/").pop() || "image.jpg",
-          type: imageBlob.type || "image/jpeg",
+        formData.append("files",{
+         uri:uri,
+         type:"image/jpeg",
+         name: "custom-image.jpg"
         });
 
 
@@ -54,7 +56,9 @@ const Measurement = () => {
           formData,
           {
             headers: {
-              Authorization: `d52d17664c1b99486004f8cf9aca564b7696f0422229ab8ccd6c7aa4fa1c42aaad566097c1d87ed2487880e6b7c961ea57838c964a3a225fa6c713afab850e4b5bd3c5e1261e3fe5d45712e26dccb313da5f2c26f92a8101c74c4814ad3a0ace9cf9ca7b548082640741f96ce67ea60f00dd3a442fb948300f75e3a22dab556c`, // Replace with a valid JWT token
+              'Authorization': 'Bearer e243b33014fab23926d9b9079d6c90018b288b84740bb443eb910febdec1b93b6563c2b091a18081788c2bb2eb950ad15bead95e14029283ab2bfd0f4ea563eb590955e3cbbfdc100e9ef8a565993c6bd8e02985ef14df8f83123689c5f139ac50263be891842c8522877b7b73fe5136c56e0ae9823d1e9d96743ebcff502780',
+              'Content-Type': 'multipart/form-data',
+              'Accept': 'application/json',
             },
           }
         )
