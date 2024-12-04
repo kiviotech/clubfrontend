@@ -8,11 +8,13 @@ import { useNavigation } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons";
 import Svgs from '../../constants/svgs';
 import { useRouter } from 'expo-router';
+import useCartStore from '../../src/store/useCartStore';
 
 const FlashSaleSelector = () => {
   const [selectedDiscount, setSelectedDiscount] = useState('All'); // Default selected discount
   const navigation = useNavigation();
   const discounts = ['All', '10%', '20%', '30%', '40%', '50%'];
+  const totalCartItems = useCartStore((state) => state.getTotalItems());
 
   const router = useRouter();
 
@@ -28,9 +30,16 @@ const FlashSaleSelector = () => {
           <Ionicons name="arrow-back" color="white" size={30} />
         </TouchableOpacity>
         <View style={styles.leftIcons}>
-        <TouchableOpacity onPress={handleRequest}>
-            <Svgs.cartIcon width={18} height={18} />
-          </TouchableOpacity>
+        <View style={styles.iconContainer}>
+            <TouchableOpacity onPress={handleRequest} style={styles.iconButton}>
+              <Svgs.cartIcon width={18} height={18} />
+            </TouchableOpacity>
+            {totalCartItems > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{totalCartItems}</Text>
+              </View>
+            )}
+          </View>
           <TouchableOpacity onPress={() => router.push("/pages/wishlist")}>
             <Svgs.wishlistIcon width={18} height={18} />
           </TouchableOpacity>
@@ -62,7 +71,7 @@ const FlashSaleSelector = () => {
       <View style={styles.resultContainer}>
         <Text style={styles.resultText}>{selectedDiscount} Discount</Text>
         <TouchableOpacity style={styles.iconButton}>
-          <Icon name="sliders" size={18} color="#0F0" />
+          {/* <Icon name="sliders" size={18} color="#0F0" /> */}
         </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.scrollView}>
@@ -83,15 +92,13 @@ const styles = StyleSheet.create({
   header: {
     display: "flex",
     flexDirection: "row",
-    gap:280,
-    padding:10,
-
+    gap: 280,
+    padding: 10,
   },
   leftIcons: {
     display: "flex",
     flexDirection: "row",
-    gap:20,
-
+    gap: 20,
   },
   title: {
     fontSize: 24,
@@ -105,17 +112,22 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   selectorContainer: {
+    width:"99%",
     flexDirection: 'row',
     backgroundColor: '#333333',
-    borderRadius: 10,
-    padding: 5,
+    borderRadius: 30, // Border radius for rounded corners
+    paddingVertical: 5, // Vertical padding
+    paddingHorizontal: 15, // Horizontal padding inside the container (for left and right space)
+    // marginHorizontal: 15, // Margin on left and right of container
+    // justifyContent: 'flex-start', // Align buttons to the left side, keeping space in between
+    // alignItems: 'center', // Center the items vertically
   },
   discountButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingVertical: 5,
+    paddingHorizontal: 9,
     borderRadius: 5,
     backgroundColor: '#555555',
-    marginHorizontal: 2,
+    marginHorizontal: 2, // Space between buttons
   },
   selectedButton: {
     backgroundColor: '#FFFFFF',
@@ -132,24 +144,39 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flexGrow: 1,
-
   },
   resultContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 15,
-    gap: 150
+    gap: 150,
+    marginBottom:10
   },
   resultText: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#FFF',
-    marginRight: 10,
+    marginRight: 60,
   },
-  iconButton: {
-    padding: 10,
-    backgroundColor: '#333',
-    borderRadius: 20,
+  iconContainer: {
+    position: "relative", // To position badge on top of the icon
+  },
+  badge: {
+    position: "absolute",
+    top: -3,
+    right: -9,
+    backgroundColor: "#FF0000", // Badge color
+    borderRadius: 10,
+    width: 14,
+    height: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1, // Ensure badge is on top of the cart icon
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
   },
 });
 

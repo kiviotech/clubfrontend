@@ -191,7 +191,7 @@ const FilteredProductList = ({ selectedDiscount }) => {
                  {product.description}
                </Text>
                <Text style={styles.productPrice}>{product.price}</Text>
-               {isOutOfStock && <Text style={styles.stockText}></Text>}
+               {/* {isOutOfStock && <Text style={styles.stockText}></Text>} */}
              </View>
            </TouchableOpacity>
            <TouchableOpacity
@@ -293,6 +293,7 @@ const styles = StyleSheet.create({
       alignItems: "center",
       marginHorizontal: 16,
       marginTop: 4, // Reduced margin for less height
+      marginBottom:10
     },
     cartText: {
       color: "#ffffff",

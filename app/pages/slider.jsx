@@ -36,6 +36,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
       try {
         const response = await getBrandCollabs();
         const shuffledData = shuffleArray(response.data.data);
+        // console.log(response.data.data)
         setBrandCollabs(shuffledData);
         setShuffledBrandCollabs(shuffledData);
       } catch (error) {

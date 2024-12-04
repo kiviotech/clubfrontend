@@ -1,30 +1,44 @@
-import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import React from 'react';
 import Svgs from '../../constants/svgs';
 import logo from "../../assets/logo.png";
 import { useRouter } from 'expo-router';
+import useCartStore from '../../src/store/useCartStore';
 
 const Header = () => {
   const router = useRouter();
+  const totalCartItems = useCartStore((state) => state.getTotalItems());
 
   const handleRequest = () => {
-    router.push("/pages/cart"); 
+    router.push("/pages/cart");
   };
-  const handlehome =()=> {
+  const handlehome = () => {
     router.push("/home")
-  }
+  };
 
   return (
     <View>
       <View style={styles.header}>
         <TouchableOpacity onPress={handlehome}>
-        <Image source={logo} style={styles.logo} />
+          <Image source={logo} style={styles.logo} />
         </TouchableOpacity>
+        
         <View style={styles.headerIcons}>
-          <TouchableOpacity onPress={handleRequest} style={styles.iconButton}>
-            <Svgs.cartIcon width={18} height={18} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("/pages/wishlist")} style={[styles.iconButton, styles.wishlistIcon]}>
+          <View style={styles.iconContainer}>
+            <TouchableOpacity onPress={handleRequest} style={styles.iconButton}>
+              <Svgs.cartIcon width={18} height={18} />
+            </TouchableOpacity>
+            {totalCartItems > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{totalCartItems}</Text>
+              </View>
+            )}
+          </View>
+
+          <TouchableOpacity
+            onPress={() => router.push("/pages/wishlist")}
+            style={[styles.iconButton, styles.wishlistIcon]}
+          >
             <Svgs.wishlistIcon width={18} height={18} />
           </TouchableOpacity>
         </View>
@@ -38,26 +52,45 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#000', // Adjust color based on your theme
-    // padding: 7,
-    paddingBottom:7,
-    paddingRight:0
+    backgroundColor: '#000',
+    paddingBottom: 7,
+    paddingRight: 0,
   },
   logo: {
-    width: 120, // Adjust size to fit your logo
+    width: 120,
     height: 30,
-    resizeMode: 'contain', // Ensure the logo doesn't stretch
+    resizeMode: 'contain',
   },
   headerIcons: {
     flexDirection: 'row',
-    gap: 10, // Reduce the gap between icons
+    gap: 10,
   },
   iconButton: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   wishlistIcon: {
-    paddingLeft: 8, // Add padding to the left of the wishlist icon
+    paddingLeft: 8,
+  },
+  iconContainer: {
+    position: "relative", // To position badge on top of the icon
+  },
+  badge: {
+    position: "absolute",
+    top: -3,
+    right: -9,
+    backgroundColor: "#FF0000", // Badge color
+    borderRadius: 10,
+    width: 14,
+    height: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1, // Ensure badge is on top of the cart icon
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
   },
 });
 

@@ -53,7 +53,7 @@ const ProductDetails = () => {
       (item) => item.id === productDetails.id
     )
   );
-
+  const totalCartItems = useCartStore((state) => state.getTotalItems());
 
   const increment = () => {
     setQuantity(quantity + 1);
@@ -168,9 +168,16 @@ const ProductDetails = () => {
           <Ionicons name="arrow-back" color="white" size={20} />
         </TouchableOpacity>
         <View style={styles.leftIcons}>
-          <TouchableOpacity onPress={handleRequest}>
-            <Svgs.cartIcon width={18} height={18} />
-          </TouchableOpacity>
+        <View style={styles.iconContainer}>
+            <TouchableOpacity onPress={handleRequest} style={styles.iconButton}>
+              <Svgs.cartIcon width={18} height={18} />
+            </TouchableOpacity>
+            {totalCartItems > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{totalCartItems}</Text>
+              </View>
+            )}
+          </View>
           <TouchableOpacity onPress={() => router.push("/pages/wishlist")}>
             <Svgs.wishlistIcon width={18} height={18} />
           </TouchableOpacity>
@@ -424,6 +431,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 20,
 
+  },
+  iconContainer: {
+    position: "relative", // To position badge on top of the icon
+  },
+  badge: {
+    position: "absolute",
+    top: -3,
+    right: -9,
+    backgroundColor: "#FF0000", // Badge color
+    borderRadius: 10,
+    width: 14,
+    height: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1, // Ensure badge is on top of the cart icon
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
   },
 
   // Image Section
