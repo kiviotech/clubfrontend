@@ -16,10 +16,11 @@ import useProductStore from "../../src/store/useProductStore";
 import { MEDIA_BASE_URL } from "../../src/api/apiClient";
 import useCartStore from "../../src/store/useCartStore";
 import useWishlistStore from "../../src/store/useWishlistStore";
-import { Modal } from "react-native-web";
+// import { Modal } from "react-native-web";
 import Svgs from "../../constants/svgs";
 import { updateProduct } from "../../src/api/repositories/productRepository";
 const { width } = Dimensions.get("window");
+import { Modal } from "react-native";
 
 const ProductDetails = () => {
 
@@ -306,33 +307,34 @@ const ProductDetails = () => {
           </TouchableOpacity>
 
           <Modal
-            visible={cartPopupVisible}
-            transparent={true}
-            animationType="slide"
-            onRequestClose={() => setCartPopupVisible(false)}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalText}>
-                  Product already in cart !! Do you want to go to your cart?
-                </Text>
-                <View style={styles.modalButtons}>
-                  <TouchableOpacity
-                    onPress={() => handleCartPopupConfirmation(false)}
-                    style={styles.modalButton}
-                  >
-                    <Text style={styles.modalButtonText}>No</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleCartPopupConfirmation(true)}
-                    style={styles.modalButton}
-                  >
-                    <Text style={styles.modalButtonText}>Yes</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </Modal>
+  visible={cartPopupVisible}
+  transparent={true}
+  animationType="fade" // Better for a mobile experience
+  onRequestClose={() => setCartPopupVisible(false)}
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalText}>
+        Product already in cart! Do you want to go to your cart?
+      </Text>
+      <View style={styles.modalButtons}>
+        <TouchableOpacity
+          onPress={() => handleCartPopupConfirmation(false)}
+          style={styles.modalButton}
+        >
+          <Text style={styles.modalButtonText}>No</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handleCartPopupConfirmation(true)}
+          style={styles.modalButton}
+        >
+          <Text style={styles.modalButtonText}>Yes</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+</Modal>
+
           <View>
             {/* Add to Wishlist Button */}
             <TouchableOpacity

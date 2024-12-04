@@ -95,7 +95,6 @@ const ProductList = ({ limit }) => {
 
 
   const handleWishlistAdd = (product) => {
-    // console.log(product)
     const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
     const item = {
       id: product.id,
@@ -103,20 +102,13 @@ const ProductList = ({ limit }) => {
       price: product.price,
       quantity: quantity,
       image: imageUrl,
-      in_stock: product.in_stock,
-      
     };
-    
-    // console.log("Item to be added to wishlist:", item);
+
     if (wishlist.some((wishItem) => wishItem.id === product.id)) {
       removeFromWishlist(product.id);
-      // setPopupMessage("Removed from wishlist! ❌");
-      setPopupProductId(product.id); // Show popup for this product
       setPopupMessage("Removed from wishlist! ❌");
     } else {
       addToWishlist(item);
-      // setPopupMessage("Added to wishlist!✔️");
-      setPopupProductId(product.id); // Show popup for this product
       setPopupMessage("Added to wishlist!✔️");
     }
 
@@ -135,24 +127,12 @@ const ProductList = ({ limit }) => {
       image: imageUrl,
     };
 
-    // Check if the product is already in the cart
-    const isProductInCart = useCartStore.getState().items.some(
-      (cartItem) => cartItem.id === product.id
-    );
+    addItemToCart(item);
+    setPopupMessage("Added to cart! 🛒");
 
-    if (isProductInCart) {
-      setPopupProductId(product.id); // Show popup for this product
-      setPopupMessage("Product is already in the cart! 🛒");
-    } else {
-      addItemToCart(item);
-      setPopupProductId(product.id); // Show popup for this product
-      setPopupMessage("Added to cart! 🛒");
-    }
-
-    // Automatically clear the popup message after 2 seconds
+   
     setTimeout(() => {
-      setPopupProductId(null); // Hide popup
-      setPopupMessage(""); // Clear the message
+      setPopupMessage("");
     }, 2000);
   };
 

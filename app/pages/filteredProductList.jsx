@@ -22,12 +22,13 @@ const FilteredProductList = ({ selectedDiscount }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const setProductDetails = useProductStore((state) => state.setProductDetails);
-//   const addItemToCart = useCartStore((state) => state.addItem);
+  // const addItemToCart = useCartStore((state) => state.addItem);
   const [quantity, setQuantity] = useState(1);
   const selectedBrand = useBrandStore((state) => state.selectedBrand);
   const addToWishlist = useWishlistStore((state) => state.addToWishlist);
   const { wishlist, removeFromWishlist } = useWishlistStore();
   const [popupMessage, setPopupMessage] = useState("");
+  const [popupProductId, setPopupProductId] = useState(null);
 
   // console.log("Selected Discount:", selectedDiscount);
 
@@ -89,17 +90,20 @@ const FilteredProductList = ({ selectedDiscount }) => {
 
   
   const handleProductDetails = (product) => {
+    // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
+  // console.log(sizes)
     setProductDetails({
       id: product.id,
       images: product.product_image.url,
       name: product.name,
       price: product.price,
-      products,
+      in_stock: product.in_stock,
+      sizes: product.sizes, // Include sizes in the details
+      documentId:product.documentId
     });
-
+  
     router.push("../../pages/productDetails");
   };
-
 
   const handleWishlistAdd = (product) => {
     const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
@@ -148,54 +152,64 @@ const FilteredProductList = ({ selectedDiscount }) => {
   
   return (
     <View style={styles.container}>
-      {popupMessage ? (
+      {/* {popupMessage ? (
         <View style={styles.popup}>
           <Text style={styles.popupText}>{popupMessage}</Text>
         </View>
-      ) : null}
+      ) : null} */}
       {displayedProducts.map((product, index) => {
-        const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
-        const isOutOfStock = !product.in_stock;
-        const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
-
-        return (
-          <View key={index} style={styles.productCard}>
-            <Image
-              source={{ uri: imageUrl  ||'https://example.com/fallback.png' }}
-              style={styles.productimage}
-              resizeMode="contain"
-            />
-            <View style={styles.buttonContainer}>
-              {/* Wishlist Button */}
-              <TouchableOpacity style={styles.wishlistButton} onPress={() => handleWishlistAdd(product)}>
-                <Text style={styles.heartIcon}>{isInWishlist ? '❤️' : '🤍'}</Text>
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity onPress={() => handleProductDetails(product)}>
-              <View style={styles.imageWrapper}>
-                <Text style={styles.productName}>{product.name}</Text>
-                <Text style={styles.productdiscount}>{product.discount}% discount</Text>
-                <Text style={styles.productBrand}>
-                  {product.brand.brand_name}
-                </Text>
-                <Text style={styles.productDescription}>
-                  {product.description}
-                </Text>
-                <Text style={styles.productPrice}>{product.price}</Text>
-                {isOutOfStock && <Text style={styles.stockText}></Text>}
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.addToCartButton, isOutOfStock && styles.disabledButton]}
-              onPress={() => !isOutOfStock && handleCartAdd(product)}
-              disabled={isOutOfStock}
-            >
-              <Text style={styles.cartText}>{isOutOfStock ? 'Out of Stock' : 'Add to Cart'}</Text>
-            </TouchableOpacity>
-          </View>
-        );
-      })}
-    </View>
+       const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+       const isOutOfStock = !product.in_stock;
+       const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
+       const isPopupVisible = popupProductId === product.id;
+       return (
+         <View key={index} style={styles.productCard}>
+           {isPopupVisible && popupMessage !== ""  && (
+             <View style={styles.popup}>
+               <Text style={styles.popupText}>{popupMessage}</Text>
+             </View>
+           )}
+           <Image
+             source={{ uri: imageUrl }}
+             style={styles.productimage}
+             resizeMode="contain"
+           />
+           <View style={styles.buttonContainer}>
+             {/* Wishlist Button */}
+             <TouchableOpacity style={styles.wishlistButton} onPress={() => handleWishlistAdd(product)}>
+               <Text style={styles.heartIcon}>{isInWishlist ? '❤️' : '🤍'}</Text>
+             </TouchableOpacity>
+           </View>
+           <TouchableOpacity onPress={() => handleProductDetails(product)}>
+             <View style={styles.imageWrapper}>
+               <Text style={styles.productName}>{product.name}</Text>
+               <Text style={styles.productdiscount}>{product.discount}% discount</Text>
+               <Text style={styles.productBrand}>
+                 {product.brand.brand_name}
+               </Text>
+               <Text style={styles.productDescription}>
+                 {product.description}
+               </Text>
+               <Text style={styles.productPrice}>{product.price}</Text>
+               {isOutOfStock && <Text style={styles.stockText}></Text>}
+             </View>
+           </TouchableOpacity>
+           <TouchableOpacity
+             style={[
+               styles.addToCartButton,
+               isOutOfStock && styles.disabledButton,
+             ]}
+             onPress={() => !isOutOfStock && handleCartAdd(product)}
+             disabled={isOutOfStock}
+           >
+             <Text style={styles.cartText}>
+               {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+             </Text>
+           </TouchableOpacity>
+         </View>
+       );
+     })}
+   </View>
   );
 };
 const styles = StyleSheet.create({
@@ -211,7 +225,7 @@ const styles = StyleSheet.create({
     productCard: {
       width: "48%", 
       marginBottom: 16,
-      backgroundColor: "#1F2937",
+      backgroundColor: "#1D2221",
       borderRadius: 10,
       overflow: "hidden",
       elevation: 5,
