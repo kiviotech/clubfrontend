@@ -96,14 +96,15 @@ const ProductDetails = () => {
 
 
   const handleAddToCart = () => {
-    // Check if the product is already in the cart
+    // Check if the same product with the same size is already in the cart
     const existingItem = useCartStore.getState().items.find(
-      (cartItem) => cartItem.id === productDetails.id
+      (cartItem) => cartItem.id === productDetails.id && cartItem.size === selectedSize
     );
-
+  
     if (existingItem) {
-      setCartPopupVisible(true); // Show the cart popup if the item already exists in the cart
+      setCartPopupVisible(true); // Show the cart popup if the same product with the same size exists
     } else {
+      // Add the product with the selected size to the cart
       const item = {
         id: productDetails.id,
         name: productDetails.name,
@@ -112,13 +113,13 @@ const ProductDetails = () => {
         size: selectedSize,
         image: imagesArray[0],
       };
-
-      addItemToCart(item);
+  
+      addItemToCart(item); // Add the new item to the cart
       setIsAddedToCart(true);
       router.push("/pages/cart");
     }
   };
-
+  
 
 
   const handleCartPopupConfirmation = (confirm) => {

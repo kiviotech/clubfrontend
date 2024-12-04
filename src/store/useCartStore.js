@@ -11,24 +11,28 @@ const useCartStore = create(
       // Add item to cart
       addItem: (item) =>
         set((state) => {
+          // Check if the same product with the same size exists
           const existingItemIndex = state.items.findIndex(
-            (cartItem) => cartItem.id === item.id
+            (cartItem) => cartItem.id === item.id && cartItem.size === item.size
           );
 
           let newItems;
           if (existingItemIndex !== -1) {
+            // Update the quantity of the existing item
             newItems = state.items.map((cartItem, index) =>
               index === existingItemIndex
                 ? {
                     ...cartItem,
-                    quantity: item.quantity || cartItem.quantity,
+                    quantity: cartItem.quantity + (item.quantity || 1), // Increment quantity
                   }
                 : cartItem
             );
           } else {
+            // Add a new item
             newItems = [...state.items, { ...item, quantity: item.quantity || 1 }];
           }
 
+          // Recalculate the subtotal
           const newSubtotal = newItems.reduce(
             (total, cartItem) => total + cartItem.price * cartItem.quantity,
             0
@@ -38,10 +42,12 @@ const useCartStore = create(
         }),
 
       // Update quantity of an item
-      updateQuantity: (id, quantity) =>
+      updateQuantity: (id, size, quantity) =>
         set((state) => {
           const newItems = state.items.map((item) =>
-            item.id === id ? { ...item, quantity } : item
+            item.id === id && item.size === size
+              ? { ...item, quantity }
+              : item
           );
           const newSubtotal = newItems.reduce(
             (total, item) => total + item.price * item.quantity,
@@ -51,9 +57,11 @@ const useCartStore = create(
         }),
 
       // Remove item from cart
-      removeItem: (id) =>
+      removeItem: (id, size) =>
         set((state) => {
-          const newItems = state.items.filter((item) => item.id !== id);
+          const newItems = state.items.filter(
+            (item) => !(item.id === id && item.size === size)
+          );
           const newSubtotal = newItems.reduce(
             (total, item) => total + item.price * item.quantity,
             0
