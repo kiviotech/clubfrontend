@@ -144,7 +144,6 @@
 
 // export default HorizontalCarousel;
 
-
 import React, { useRef, useEffect, useState } from "react";
 import {
   View,
@@ -154,7 +153,8 @@ import {
   Animated,
   Dimensions,
   TouchableOpacity,
-  Linking, // Import Linking for external URL navigation
+  Linking,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import useBrandCollabStore from "../../src/store/useBrandCollabStore";
@@ -163,9 +163,9 @@ import { MEDIA_BASE_URL } from "../../src/api/apiClient";
 import { getBrandById } from "../../src/api/repositories/brandRepository";
 import { useBrandStore } from "../../src/store/brandStore";
 
-const { width } = Dimensions.get("window");
-const ITEM_WIDTH = 365;
-const ITEM_SPACING = 5;
+const { width } = Dimensions.get("window"); // Fetch the screen width
+const ITEM_SPACING = 5; // Spacing between items
+const ITEM_WIDTH = width * 0.93; 
 
 const HorizontalCarousel = ({ direction = "left-to-right" }) => {
   const { brandCollabs, setBrandCollabs } = useBrandCollabStore();
@@ -180,7 +180,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
     const fetchBrandCollabs = async () => {
       try {
         const response = await getBrandCollabs();
-        const data = response.data.data; // Use data as it is, no shuffling
+        const data = response.data.data;
         setBrandCollabs(data);
         setFetchedBrandCollabs(data);
       } catch (error) {
@@ -207,18 +207,34 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
     return () => clearInterval(interval);
   }, [fetchedBrandCollabs]);
 
+  const openWhatsApp = () => {
+    const phoneNumber = "+917788920072"; // Replace with your WhatsApp phone number
+    const message = "Hello, I am interested in your brand collaborations.";
+    const url = `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(
+      message
+    )}`;
+
+    Linking.openURL(url).catch(() => {
+      Alert.alert(
+        "Error",
+        "WhatsApp is not installed on your device. Please install it to proceed."
+      );
+    });
+  };
+
+
   const handleImagePress = async (index) => {
-    // For index 0, navigate to the external URL
     if (index === 0) {
       const url = "https://new.express.adobe.com/webpage/cv645dfNQJYKt";
       try {
-        await Linking.openURL(url); // Opens the URL in the default browser
+        await Linking.openURL(url);
       } catch (error) {
         console.error("Failed to open URL:", error);
       }
-    } else if (index === 3 || index === 2 || index === 4|| index === 5) {
-      // Existing code for index 3 (brand info)
-      const brandId = "lagbzfc1r1ltzf7pobf893q4";
+    } else if (index === 1) {
+      router.push("/pages/request-design");
+    } else if (index === 2 || index === 3 || index === 4 || index === 5) {
+      const brandId = "zibjzd1wx8h8ynvj6zt6dlx2";
       if (brandId) {
         try {
           const response = await getBrandById(brandId);
@@ -228,7 +244,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
           const brandImage = `${MEDIA_BASE_URL}${brandData.brand_logo.url}`;
           const id = brandData.id;
 
-          setBrandById(brandData); // Store the fetched brand details in state
+          setBrandById(brandData);
           setSelectedBrand(brandName);
           router.push({
             pathname: "/pages/brand_info",
@@ -242,20 +258,9 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
         } catch (error) {
           console.error("Failed to fetch brand details:", error);
         }
-      } else {
-        console.warn("No brand ID found for this item");
       }
-    }else if (index === 1) {
-      // If index is 1, navigate to /pages/request-design
-      router.push("/pages/request-design");
-    }  else {
-      // For other indices, use the route map to navigate
-      const route = routeMap[index]; // Get the route from the map based on the index
-      if (route) {
-        router.push(route); // Navigate to the specific route
-      } else {
-        console.warn("No route defined for this item");
-      }
+    } else {
+      console.warn("No action defined for this item");
     }
   };
 
@@ -287,15 +292,10 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
         style={[styles.card, { transform: [{ scale }], opacity }]}
       >
         <TouchableOpacity
-          onPress={() => handleImagePress(index)} // Use the index to determine the route
+          onPress={() => handleImagePress(index)}
           style={{ flex: 1 }}
           activeOpacity={0.9}
         >
-           {index === 1 && (
-          <Text style={[styles.textAboveImage, styles.textBackground]}>
-          Contact us on WhatsApp: 1234567890
-        </Text>
-        )}
           {imageUrl ? (
             <Image
               source={{ uri: imageUrl || "https://example.com/fallback.png" }}
@@ -305,6 +305,15 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
             <Text style={{ color: "#fff" }}>Image not available</Text>
           )}
         </TouchableOpacity>
+        {index === 1 && (
+          <TouchableOpacity style={styles.whatsappButton} onPress={openWhatsApp}>
+            <Text>Contact us</Text>
+            <Image
+              source={require("../../assets/whatsappIcon.png")} // Replace with your WhatsApp icon path
+              style={styles.whatsappIcon}
+            />
+          </TouchableOpacity>
+        )}
       </Animated.View>
     );
   };
@@ -312,7 +321,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
   return (
     <Animated.FlatList
       ref={scrollRef}
-      data={fetchedBrandCollabs} // Use the fetched data
+      data={fetchedBrandCollabs}
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
       horizontal
@@ -326,7 +335,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
         { useNativeDriver: true }
       )}
       scrollEventThrottle={16}
-      inverted={direction === "right-to-left"} // Inverts the scroll direction for right to left
+      inverted={direction === "right-to-left"}
     />
   );
 };
@@ -350,20 +359,32 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     resizeMode: "cover",
   },
-  textAboveImage: {
+  whatsappButton: {
     position: "absolute",
-    top: 120,
-    left: 10,
-    color: "black",
-    fontSize: 16,
-    fontWeight: "bold",
-    zIndex: 1, // Ensure the text appears above the image
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 5, // Optional: For rounded corners
+    bottom: 20,
+    right: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#8FFA09", // WhatsApp green color
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    elevation: 5, // Adds shadow for depth
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
-  textBackground: {
-    backgroundColor: "#8FFA09", // Light green background
+  whatsappIcon: {
+    width: 24,
+    height: 24,
+    marginLeft: 8,
+    resizeMode: "contain", // Ensures the icon retains its aspect ratio
+  },
+  whatsappText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });
 

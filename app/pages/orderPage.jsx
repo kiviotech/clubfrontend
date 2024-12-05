@@ -27,11 +27,7 @@ const OrderPage = () => {
         setLoading(true);
         const response = await getUserWithOrderDetails(userId); // Fetch data
         setOrderDetails(response?.data); // Save the fetched order details
-        // console.log(response.data.order_details[0].updatedAt)
-        // console.log(response.data.order_details[0].total)
-        // console.log(response.data.order_details[0].orderItems[0].quantity)
-        // console.log(response.data.order_details[0].documentId)
-        // console.log(response.data.order_details[0].level)
+        
         setLoading(false);
       } catch (err) {
         // console.error("Error fetching order details:", err);

@@ -15,10 +15,12 @@ import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { updateOrderDetailById, fetchOrderDetailById } from "../../src/api/services/orderDetailService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import useOrderStorelevel from "../../src/store/useOrderStorelevel"
 
 const TrackOrderScreen = () => {
   const trackingProgress = useRef(new Animated.Value(0)).current;
   const { imageUrl, productName, productPrice, id, documentId,total,quantity,formattedDate } = useLocalSearchParams();
+  const { setOrderLevel } = useOrderStore();
 
   const [steps, setSteps] = useState([
     { status: "Order placed", description: "Your order has been placed", icon: "check-circle" },
@@ -67,6 +69,7 @@ const TrackOrderScreen = () => {
         } else {
           setCurrentStep(stepIndex);
         }
+        setOrderLevel(backendLevel);
       } catch (error) {
         // console.error("Error fetching order status:", error);
       }
@@ -99,6 +102,7 @@ const TrackOrderScreen = () => {
       await AsyncStorage.setItem(`order_${documentId}_status`, "cancelled");
 
       Alert.alert("Order Canceled", "Your order has been successfully canceled.");
+      setOrderLevel("cancelled");
     } catch (error) {
       // console.error("Error cancelling the order:", error);
       Alert.alert("Error", "Failed to cancel the order. Please try again.");
@@ -190,9 +194,9 @@ const TrackOrderScreen = () => {
 
       {/* Action Buttons */}
       <View style={[styles.buttonContainer, styles.buttonSpacing]}>
-        <TouchableOpacity style={styles.trackButton}>
+        {/* <TouchableOpacity style={styles.trackButton}>
           <Text style={styles.buttonText}>Track Order</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         {!isCanceled && (
           <TouchableOpacity
             style={styles.cancelButton}
@@ -244,6 +248,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#000",
     padding: 20,
+    // marginBottom:40
+
   },
   header: {
     fontSize: 26,
@@ -333,9 +339,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
+    // flexDirection: "row",
+    // justifyContent: "space-between",
+    // marginTop: 20,
+    marginBottom:40
   },
   buttonSpacing: {
     justifyContent: "space-evenly",

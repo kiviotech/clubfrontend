@@ -258,8 +258,8 @@ const brand_info = ({ limit }) => {
           <Slider />
         </View>
 
-        <Text style={styles.popularProductsTitle}>Shop by Category</Text>
-        <Category />
+        {/* <Text style={styles.popularProductsTitle}>Shop by Category</Text>
+        <Category /> */}
 
         <View>
           <Text style={styles.popularProductsTitle}>Most Selling</Text>

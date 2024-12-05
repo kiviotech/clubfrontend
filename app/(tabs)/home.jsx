@@ -160,7 +160,7 @@ const Home = () => {
 
         <View>
           <Text style={styles.popularProductsTitle}>Just For You</Text>
-          <ProductList />
+          <ProductList limit={4}/>
         </View>
         <View>
           <Brand_page />
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   card: {
-    backgroundColor: '#121212', // Card background color
+    // backgroundColor: '#121212', // Card background color
     borderRadius: 10,
     padding: 15,
     shadowColor: '#000',
