@@ -96,7 +96,7 @@ const Profile = () => {
         removeUser(userId);
       }
       removeItem();
-      clearCart();
+      // clearCart();
       clearShippingInfo();
       logout();
       router.push("sign-in");

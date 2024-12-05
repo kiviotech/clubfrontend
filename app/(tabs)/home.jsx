@@ -153,10 +153,10 @@ const Home = () => {
           <NewArrival />
         </View>
 
-        <View>
+        {/* <View>
           <Text style={styles.popularProductsTitle}>Shop by Brands</Text>
           <Shop_Brands />
-        </View>
+        </View> */}
 
         <View>
           <Text style={styles.popularProductsTitle}>Just For You</Text>
