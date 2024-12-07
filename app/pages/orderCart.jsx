@@ -1,9 +1,12 @@
 import React,{useState,useEffect} from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import useOrderStorelevel from "../../src/store/useOrderStorelevel"
+
 const OrderCart = ({ imageUrl, productName, productPrice ,level,id,documentId,total,quantity,updatedAt}) => {
   const router = useRouter();
-  // console.log(total,quantity,updatedAt)
+  const orderLevel = useOrderStorelevel((state) => state.orderLevel);
+  console.log(orderLevel)
 
   const formattedDate = new Date(updatedAt).toLocaleDateString('en-GB', {
     day: '2-digit', // Two-digit day (e.g., 03)

@@ -1,19 +1,22 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Dimensions, useWindowDimensions } from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
 import Svgs from "../../constants/svgs";
 
-const TabIcon = ({ SvgIcon, AfterSvgIcon, color, name, focused }) => {
+const TabIcon = ({ SvgIcon, AfterSvgIcon, color, name, focused, screenWidth }) => {
+  const iconSize = screenWidth > 400 ? 28 : 22; // Adjust icon size based on screen width
+  const fontSize = screenWidth > 400 ? 16 : 12; // Adjust font size based on screen width
+
   return (
     <View style={styles.tabItem}>
       {focused ? (
-        <View style={styles.focusedTabContainer}>
-          <AfterSvgIcon width={22} height={22} fill={"black"} />
-          <Text style={styles.focusedTabLabel}>{name}</Text>
+        <View style={[styles.focusedTabContainer, { paddingHorizontal: screenWidth > 400 ? 25 : 15 }]}>
+          <AfterSvgIcon width={iconSize} height={iconSize} fill={"black"} />
+          <Text style={[styles.focusedTabLabel, { fontSize, lineHeight: fontSize + 4 }]}>{name}</Text>
         </View>
       ) : (
         <View style={styles.iconContainer}>
-          <SvgIcon width={22} height={22} fill={"black"} />
+          <SvgIcon width={iconSize} height={iconSize} fill={"black"} />
         </View>
       )}
     </View>
@@ -21,6 +24,8 @@ const TabIcon = ({ SvgIcon, AfterSvgIcon, color, name, focused }) => {
 };
 
 const TabsLayout = () => {
+  const { width: screenWidth } = useWindowDimensions();
+
   const tabScreens = [
     {
       name: "home",
@@ -61,12 +66,12 @@ const TabsLayout = () => {
         tabBarInactiveTintColor: "#B0B0B0", // Light gray
         tabBarStyle: {
           backgroundColor: "black",
-          height: 80,
+          height: screenWidth > 400 ? 80 : 60, // Adjust height based on screen width
           position: "absolute",
           borderTopWidth: 0,
           overflow: "hidden",
-          paddingLeft: 10, // Add padding to the left of the tab bar
-          paddingRight: 10, // Add padding to the right of the tab bar
+          paddingLeft: 10,
+          paddingRight: 10,
         },
       }}
     >
@@ -79,10 +84,11 @@ const TabsLayout = () => {
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 SvgIcon={screen.SvgIcon}
-                AfterSvgIcon={screen.AfterSvgIcon} // Pass the "after" icon
+                AfterSvgIcon={screen.AfterSvgIcon}
                 color={color}
                 name={screen.label}
                 focused={focused}
+                screenWidth={screenWidth}
               />
             ),
           }}
@@ -100,26 +106,23 @@ const styles = StyleSheet.create({
   iconContainer: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "transparent", // No background for inactive tabs
+    backgroundColor: "transparent",
     borderRadius: 25,
     width: 50,
     height: 50,
   },
   focusedTabContainer: {
-    flexDirection: "row", // Icon and label side by side
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#8FFA09", // Bright green background for active tab
-    borderRadius: 25, // Fully rounded background
-    paddingHorizontal: 20, // Adjust for label and icon spacing
-    height: 50, // Increase height to ensure proper vertical alignment
+    backgroundColor: "#8FFA09",
+    borderRadius: 25,
+    height: 50,
   },
   focusedTabLabel: {
-    fontSize: 14, // Text size proportional to the image
     fontWeight: "bold",
     color: "black",
-    marginLeft: 8, // Space between the icon and text
-    lineHeight: 18, // Adjust line height to keep the label centered
+    marginLeft: 8,
   },
 });
 

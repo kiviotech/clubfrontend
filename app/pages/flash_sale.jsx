@@ -83,7 +83,7 @@ const FlashSaleSelector = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 10,
     backgroundColor: '#121212',
     borderRadius: 10,
     alignItems: 'center',
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   selectorContainer: {
     width:"99%",
     flexDirection: 'row',
-    backgroundColor: '#333333',
+    // backgroundColor: '#333333',
     borderRadius: 30, // Border radius for rounded corners
     paddingVertical: 5, // Vertical padding
     paddingHorizontal: 15, // Horizontal padding inside the container (for left and right space)

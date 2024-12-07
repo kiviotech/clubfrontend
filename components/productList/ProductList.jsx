@@ -106,9 +106,13 @@ const ProductList = ({ limit }) => {
 
     if (wishlist.some((wishItem) => wishItem.id === product.id)) {
       removeFromWishlist(product.id);
+      // setPopupMessage("Removed from wishlist! ❌");
+      setPopupProductId(product.id); // Show popup for this product
       setPopupMessage("Removed from wishlist! ❌");
     } else {
       addToWishlist(item);
+      // setPopupMessage("Added to wishlist!✔️");
+      setPopupProductId(product.id); // Show popup for this product
       setPopupMessage("Added to wishlist!✔️");
     }
 
@@ -127,23 +131,30 @@ const ProductList = ({ limit }) => {
       image: imageUrl,
     };
 
-    addItemToCart(item);
-    setPopupMessage("Added to cart! 🛒");
+    // Check if the product is already in the cart
+    const isProductInCart = useCartStore.getState().items.some(
+      (cartItem) => cartItem.id === product.id
+    );
 
-   
+    if (isProductInCart) {
+      setPopupProductId(product.id); // Show popup for this product
+      setPopupMessage("Product is already in the cart! 🛒");
+    } else {
+      addItemToCart(item);
+      setPopupProductId(product.id); // Show popup for this product
+      setPopupMessage("Added to cart! 🛒");
+    }
+
+    // Automatically clear the popup message after 2 seconds
     setTimeout(() => {
-      setPopupMessage("");
+      setPopupProductId(null); // Hide popup
+      setPopupMessage(""); // Clear the message
     }, 2000);
   };
 
 
   return (
     <View style={styles.container}>
-      {/* {popupMessage ? (
-        <View style={styles.popup}>
-          <Text style={styles.popupText}>{popupMessage}</Text>
-        </View>
-      ) : null} */}
       {displayedProducts.map((product, index) => {
         const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
         const isOutOfStock = !product.in_stock;
@@ -288,9 +299,9 @@ const styles = StyleSheet.create({
   },
   popup: {
     position: 'absolute',
-    top: '10%',
+    top: '50%',
     left: '50%',
-    transform: [{ translateX: -50 }],
+    transform: [{ translateX: -50 }, { translateY: -50 }],
     backgroundColor: '#000',
     padding: 12, // Padding for popup
     borderRadius: 8,
@@ -303,6 +314,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
+    width: '80%', // Adjust width as needed
   },
   popupText: {
     color: '#fff',
