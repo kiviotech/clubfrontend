@@ -20,7 +20,7 @@ import useOrderStorelevel from "../../src/store/useOrderStorelevel"
 const TrackOrderScreen = () => {
   const trackingProgress = useRef(new Animated.Value(0)).current;
   const { imageUrl, productName, productPrice, id, documentId,total,quantity,formattedDate } = useLocalSearchParams();
-  const { setOrderLevel } = useOrderStore();
+  const { setOrderLevel } = useOrderStorelevel();
 
   const [steps, setSteps] = useState([
     { status: "Order placed", description: "Your order has been placed", icon: "check-circle" },

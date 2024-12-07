@@ -202,7 +202,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
           animated: true,
         });
       }
-    }, 4000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [fetchedBrandCollabs]);

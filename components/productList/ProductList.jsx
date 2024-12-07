@@ -299,9 +299,9 @@ const styles = StyleSheet.create({
   },
   popup: {
     position: 'absolute',
-    top: '10%',
+    top: '50%',
     left: '50%',
-    transform: [{ translateX: -50 }],
+    transform: [{ translateX: -50 }, { translateY: -50 }],
     backgroundColor: '#000',
     padding: 12, // Padding for popup
     borderRadius: 8,
@@ -314,6 +314,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
+    width: '80%', // Adjust width as needed
   },
   popupText: {
     color: '#fff',

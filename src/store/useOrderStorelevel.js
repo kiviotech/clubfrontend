@@ -1,9 +1,14 @@
-// src/store/useOrderStore.js
-import {create} from 'zustand';
+// src/store/useOrderStorelevel.js
+import { create } from 'zustand';
 
-const useOrderStore = create((set) => ({
-  orderLevel: null,
-  setOrderLevel: (level) => set({ orderLevel: level }),
-}));
+const useOrderStorelevel = create((set) => ({
+  orders: {}, // Stores order states by order ID
+  setOrderLevel: (orderId, level) => set((state) => ({
+    orders: {
+      ...state.orders,
+      [orderId]: level, // Update the state for the specific order ID
+    },
+  })),
+}))
 
-export default useOrderStore;
+export default useOrderStorelevel;
