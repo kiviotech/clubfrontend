@@ -54,10 +54,10 @@ const NewArrival = ({ limit }) => {
   const displayedProducts = limit ? products.slice(0, limit) : products;
 
   // Function to handle product details click
- 
+
   const handleProductDetails = (product) => {
     // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
-  // console.log(sizes)
+    // console.log(sizes)
     setProductDetails({
       id: product.id,
       images: product.product_image.url,
@@ -66,7 +66,7 @@ const NewArrival = ({ limit }) => {
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
     });
-  
+
     router.push("../../pages/productDetails");
   };
   if (loading) {
@@ -152,15 +152,16 @@ const NewArrival = ({ limit }) => {
                 style={styles.cardDetails}
               >
                 <Text style={styles.productName}>{item.name}</Text>
-                <Text style={styles.productBrand}>{item.brand.brand_name}</Text>
-                <View style={styles.ratingContainer}>
+                {/* {console.log('name', item.brand)} */}
+                <Text style={styles.productBrand}>{item.brand?.brand_name}</Text>
+                {/* <View style={styles.ratingContainer}>
                   <Icon name="star" size={18} color="#FFD700" />
                   <Icon name="star" size={18} color="#FFD700" />
                   <Icon name="star" size={18} color="#FFD700" />
                   <Icon name="star" size={18} color="#FFD700" />
                   <Icon name="star-half" size={18} color="#FFD700" />
                   <Text style={styles.reviewsText}>({item.reviews} Ratings)</Text>
-                </View>
+                </View> */}
                 <Text style={styles.productPrice}>${item.price}</Text>
               </TouchableOpacity>
             </View>

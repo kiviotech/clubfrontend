@@ -18,7 +18,7 @@ import useWishlistStore from '../../src/store/useWishlistStore';
 import Header from './header';
 
 const brand_info = ({ limit }) => {
-  const { brandName, brandImage, brandDescription } = useLocalSearchParams();
+  const { brandName, brandImage, brandDescription, brandPoster} = useLocalSearchParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,8 +32,10 @@ const brand_info = ({ limit }) => {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupProductId, setPopupProductId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  // console.log("brandpage ",brandName,brandImage,brandDescription)
+  
+ 
 
+console.log("brand poster is", brandPoster)
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -50,15 +52,18 @@ const brand_info = ({ limit }) => {
     fetchProducts();
   }, [selectedBrand]);
 
+
   const filteredProducts = selectedBrand
   ? products
-      .filter((product) => product.brand.brand_name === selectedBrand) // Filter by selectedBrand
+      .filter((product) => product.brand?.brand_name === selectedBrand) // Filter by selectedBrand
       .filter((product) =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) // Case-insensitive search
       )
   : products.filter((product) =>
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) // Case-insensitive search
     );
+
+    // console.log('filtered', selectedBrand)
     
   const displayedProducts = limit ? filteredProducts.slice(0, limit) : filteredProducts;
 
@@ -163,7 +168,7 @@ const brand_info = ({ limit }) => {
         {/* Main image with logo overlay */}
         <View style={styles.imageContainer}>
           <Image
-            source={{ uri: brandImage }}
+            source={{ uri: brandPoster }}
             style={styles.mainImage}
           />
           <View style={styles.logoContainer}>
@@ -195,8 +200,10 @@ const brand_info = ({ limit }) => {
         <Text style={styles.popupText}>{popupMessage}</Text>
       </View>
     ) : null} */}
+    
               {displayedProducts.map((product, index) => {
                 const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+                // console.log(imageUrl)
                 const isOutOfStock = !product.in_stock;
                 const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
                 const isPopupVisible = popupProductId === product.id;
@@ -221,9 +228,9 @@ const brand_info = ({ limit }) => {
                     <TouchableOpacity onPress={() => handleProductDetails(product)}>
                       <View style={styles.imageWrapper}>
                         <Text style={styles.productName}>{product.name}</Text>
-                        <Text style={styles.productdiscount}>{product.discount}% discount</Text>
+                        {/* <Text style={styles.productdiscount}>{product.discount}% discount</Text> */}
                         <Text style={styles.productBrand}>
-                          {product.brand.brand_name}
+                          {product.brand?.brand_name}
                         </Text>
                         <Text style={styles.productDescription}>
                           {product.description}

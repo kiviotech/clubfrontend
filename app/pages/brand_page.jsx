@@ -16,7 +16,9 @@ const BrandPage = () => {
   const fetchBrands = async () => {
     try {
       const response = await getBrands();
-      setBrands(response.data.data); // Store all brand data in state
+      const brandData = response.data.data; // Store fetched data in a variable
+      // console.log(response.data.data[0].brand_poster[0].url)
+    setBrands(brandData); // Store all brand data in state
     } catch (error) {
       // console.error("Error fetching brands:", error);
     }
@@ -26,9 +28,20 @@ const BrandPage = () => {
     fetchBrands(); // Fetch brands when component mounts
   }, []);
 
+  
   const handleInfo = (brand) => {
-   
+    // Check if brand_poster is available and use fallback if missing
+    const brandPosterUrl = brand.brand_poster?.[0]?.url
+      ? `${MEDIA_BASE_URL}${brand.brand_poster[0].url}`
+      : 'https://example.com/fallback-image.jpg';  // Fallback URL if brand poster is missing
+  
+    // Log the URL being passed to ensure it's correct
+    // console.log("Passing brandPoster:", brandPosterUrl);
+  
+    // Set selected brand
     setSelectedBrand(brand.brand_name);
+  
+    // Navigate to the brand_info page with the brand details
     router.push({
       pathname: "/pages/brand_info",
       params: {
@@ -36,11 +49,12 @@ const BrandPage = () => {
         brandId: brand.id,
         brandImage: `${MEDIA_BASE_URL}${brand.brand_logo.url}`,
         brandDescription: brand.description,
+        brandPoster: brandPosterUrl, // Pass the constructed URL
       },
     });
   };
   
-
+  
 
   const handleIconPress = (brandName) => {
 
