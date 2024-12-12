@@ -53,20 +53,28 @@ const NewArrival = ({ limit }) => {
 
   const displayedProducts = limit ? products.slice(0, limit) : products;
 
+  const getImageUrl = (images) => {
+    if (Array.isArray(images) && images.length > 0) {
+      return `${MEDIA_BASE_URL}${images[0].url}`; // Display only the first image
+    }
+    return null; // Fallback if no images
+  };
+
   // Function to handle product details click
- 
+
   const handleProductDetails = (product) => {
     // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
-  // console.log(sizes)
+    const images = product.product_image.map(img => `${MEDIA_BASE_URL}${img.url}`);
+    // console.log(sizes)
     setProductDetails({
       id: product.id,
-      images: product.product_image.url,
+      images: images,
       name: product.name,
       price: product.price,
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
     });
-  
+
     router.push("../../pages/productDetails");
   };
   if (loading) {
@@ -110,78 +118,65 @@ const NewArrival = ({ limit }) => {
 
   return (
     <View style={styles.container}>
-      {popupMessage ? (
-        <View style={styles.popup}>
-          <Text style={styles.popupText}>{popupMessage}</Text>
-        </View>
-      ) : null}
-      <FlatList
-        data={displayedProducts}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            {/* Wrap the entire card in a TouchableOpacity to call handleProductDetails on press */}
-            <View
-              // onPress={() => handleProductDetails(item)} // Call handleProductDetails with product data
-              style={styles.cardContent}
+    {popupMessage ? (
+      <View style={styles.popup}>
+        <Text style={styles.popupText}>{popupMessage}</Text>
+      </View>
+    ) : null}
+    <FlatList
+      data={displayedProducts}
+      renderItem={({ item }) => (
+        <View style={styles.card}>
+          <View style={styles.cardContent}>
+            <TouchableOpacity
+              onPress={() => handleWishlistAdd(item)}
+              style={styles.favoriteIcon}
             >
-              <TouchableOpacity
-                onPress={() => handleWishlistAdd(item)}
-                style={styles.favoriteIcon}
-              >
-                <MaterialIcons
-                  name={
-                    wishlist.some((wishItem) => wishItem.id === item.id)
-                      ? "favorite"
-                      : "favorite-border"
-                  }
-                  size={18}
-                  color={
-                    wishlist.some((wishItem) => wishItem.id === item.id)
-                      ? "red"
-                      : "#fff"
-                  }
-                />
-              </TouchableOpacity>
-              <Image
-                source={{ uri: `${MEDIA_BASE_URL}${item.product_image.url}` }}
-                style={styles.productImage}
-                resizeMode="contain"
+              <MaterialIcons
+                name={wishlist.some((wishItem) => wishItem.id === item.id)
+                  ? "favorite"
+                  : "favorite-border"}
+                size={18}
+                color={wishlist.some((wishItem) => wishItem.id === item.id)
+                  ? "red"
+                  : "#fff"}
               />
-              <TouchableOpacity
-                onPress={() => handleProductDetails(item)} // Call handleProductDetails on clicking the details
-                style={styles.cardDetails}
-              >
-                <Text style={styles.productName}>{item.name}</Text>
-                <Text style={styles.productBrand}>{item.brand.brand_name}</Text>
-                <View style={styles.ratingContainer}>
-                  <Icon name="star" size={18} color="#FFD700" />
-                  <Icon name="star" size={18} color="#FFD700" />
-                  <Icon name="star" size={18} color="#FFD700" />
-                  <Icon name="star" size={18} color="#FFD700" />
-                  <Icon name="star-half" size={18} color="#FFD700" />
-                  <Text style={styles.reviewsText}>({item.reviews} Ratings)</Text>
-                </View>
-                <Text style={styles.productPrice}>${item.price}</Text>
-              </TouchableOpacity>
-            </View>
+            </TouchableOpacity>
 
-            {/* Add to cart button */}
-            <TouchableOpacity onPress={handleNotify}>
-              <View style={styles.addToCartButton}>
-                <Icon name="add" size={18} color="#fff" />
-              </View>
+            {/* Display only the first image of each product */}
+            <Image
+              source={{ uri: getImageUrl(item.product_image) }}
+              style={styles.productImage}
+              resizeMode="contain"
+            />
+
+            <TouchableOpacity
+              onPress={() => handleProductDetails(item)}
+              style={styles.cardDetails}
+            >
+              <Text style={styles.productName}>{item.name}</Text>
+              <Text style={styles.productBrand}>{item.brand?.brand_name}</Text>
+              <Text style={styles.productPrice}>${item.price}</Text>
             </TouchableOpacity>
           </View>
-        )
-        }
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.listContainer}
-      />
-    </View >
+
+          {/* Add to cart button */}
+          <TouchableOpacity onPress={handleNotify}>
+            <View style={styles.addToCartButton}>
+              <Icon name="add" size={18} color="#fff" />
+            </View>
+          </TouchableOpacity>
+        </View>
+      )}
+      keyExtractor={(item) => item.id.toString()}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.listContainer}
+    />
+  </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

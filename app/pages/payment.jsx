@@ -6,6 +6,8 @@ import {
   View,
   Alert,
   Platform,
+  TextInput,
+  Image
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState, useEffect } from "react";
@@ -18,6 +20,8 @@ import Svgs from "../../constants/svgs";
 import useCartStore from "../../src/store/useCartStore";
 import { createOrderDetailService } from "../../src/api/services/orderDetailService";
 import useUserDataStore from "../../src/store/userData";
+import Subtract from "../../assets/icons/Subtract.png"
+import { getCoupons } from "../../src/api/repositories/couponRepository";
 
 export default function Payment() {
   const [totalAmount, setTotalAmount] = useState(0);
@@ -28,8 +32,55 @@ export default function Payment() {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const cartItems = useCartStore((state) => state.items);
   const [error, setError] = useState(null);
-  const {documentIds} = useLocalSearchParams();
+  const { documentIds } = useLocalSearchParams();
   const userId = useUserDataStore((state) => state.users[0]?.id);
+  const [couponCode, setCouponCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [isApplied, setIsApplied] = useState(false);
+  const [coupons, setCoupons] = useState([]);
+
+  // logic for calculating discount
+  // const couponCodes = {
+  //   DISCOUNT10: 10,
+  //   DISCOUNT20: 20,
+  //   DISCOUNT30: 30, // Add more dynamic codes as needed
+  // };
+
+  useEffect(() => {
+    const fetchCouponsData = async () => {
+      try {
+        const couponsData = await getCoupons(); // Fetch the coupons using the service
+        setCoupons(couponsData.data.data); // Store coupons in the state
+        console.log(couponsData.data.data[0].code)
+        console.log(couponsData.data.data[0].discount_percentage)
+      } catch (error) {
+        console.error("Error fetching coupons:", error);
+        setError("Failed to load coupons");
+      }
+    };
+
+    fetchCouponsData();
+  }, []);
+
+
+  const handleCouponChange = (code) => {
+    console.log("Coupon input changed:", code);
+    setCouponCode(code);
+
+    try {
+      const appliedCoupon = coupons.find((coupon) => coupon.code === code.toUpperCase());
+
+      if (appliedCoupon) {
+        setDiscount(appliedCoupon.discount_percentage);
+        setIsApplied(true);
+      } else {
+        setDiscount(0);
+        setIsApplied(false);
+      }
+    } catch (error) {
+      console.error("Error applying coupon:", error);
+    }
+  };
 
 
   useEffect(() => {
@@ -61,11 +112,16 @@ export default function Payment() {
     }
 
     try {
+      // Calculate the final total amount based on the coupon
+      const finalAmount = isApplied
+        ? totalAmount - (totalAmount * discount) / 100
+        : totalAmount; // If coupon applied, subtract discount, else keep original totalAmount
+
       // Create order detail first
       const orderDetailData = {
         data: {
           orderItems: orderItem, // Assuming orderItem is the ID
-          total: totalAmount,
+          total: finalAmount, // Use the final amount here after applying coupon
           level: "pending",
           shipping_info: selectedAddress?.id, // Assuming selectedAddress has an id
           user: userId, //  now change dynamic user id
@@ -79,7 +135,7 @@ export default function Payment() {
       const response = await createOrderDetailService(orderDetailData);
       const razorpayOrderId = response?.data?.razorpayOrderId;
       const orderDetailsDocumentId = response?.data?.documentId;
-      const orderdetailId =  response?.data?.id; 
+      const orderdetailId = response?.data?.id;
 
       // console.log("Order Detail Response:", response.data.id);
 
@@ -88,12 +144,12 @@ export default function Payment() {
         router.push({
           pathname: '/checkoutScreen/WebPaymentRazorPay',
           params: {
-            totalAmount: totalAmount,
+            totalAmount: finalAmount,
             razorpayOrderId: razorpayOrderId,
-            orderItem:orderItem,
-            documentIds:documentIds,
+            orderItem: orderItem,
+            documentIds: documentIds,
             orderDetailsDocumentId: orderdetailId, // Add the new documentId here
-            orderdetailId:orderdetailId,
+            orderdetailId: orderdetailId,
           },
         });
 
@@ -101,12 +157,12 @@ export default function Payment() {
         router.push({
           pathname: '/checkoutScreen/MobilePaymentRazorPay',
           params: {
-            totalAmount: totalAmount,
+            totalAmount: finalAmount,
             razorpayOrderId: razorpayOrderId,
-            orderItem:orderItem,
-            documentIds:documentIds,
-            orderDetailsDocumentId: orderDetailsDocumentId ,
-            orderdetailId:orderdetailId,
+            orderItem: orderItem,
+            documentIds: documentIds,
+            orderDetailsDocumentId: orderDetailsDocumentId,
+            orderdetailId: orderdetailId,
 
           },
         });
@@ -139,6 +195,10 @@ export default function Payment() {
     );
   }
 
+
+
+
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -147,9 +207,73 @@ export default function Payment() {
         </TouchableOpacity>
         <Text style={styles.headerText}>Payment</Text>
       </View>
+
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.innerContainer}>
           <CheckoutStep currentPosition={1} />
+
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter coupon code"
+              value={couponCode}
+              onChangeText={handleCouponChange}
+              keyboardType="default" // Ensure the right keyboard is used
+              onFocus={() => console.log("Input Focused")} // Debug focus events
+            />
+
+            <Text style={styles.applyText}>{isApplied ? "Applied" : "Apply Code"}</Text>
+            {isApplied && <Image source={Subtract} style={styles.checkmarkImage} />}
+          </View>
+
+          {isApplied && <Text style={styles.discountText}>{couponCode.toUpperCase()} has been applied.</Text>}
+
+          <View style={styles.discountBox}>
+            {coupons.length > 0 ? (
+              coupons.map((coupon) => (
+                <Text key={coupon.id} style={styles.discountText}>
+                  <Text style={[styles.coupon, { color: 'white' }]}>Apply </Text>
+                  <Text style={styles.coupon}>{coupon.code}</Text>
+                  <Text style={styles.discountPercentage}> for {coupon.discount_percentage}% discount</Text>
+                </Text>
+              ))
+            ) : (
+              <Text style={styles.discountText}>No coupons available</Text>
+            )}
+          </View>
+
+
+
+
+
+          <View style={styles.info}>
+
+            <Text style={styles.linktag} onPress={handlePress}>
+              Edit
+            </Text>
+          </View>
+
+          <View style={styles.addressContainer}>
+            <View style={styles.addressDetails}>
+              <Text style={styles.text}>Shipping Information</Text>
+              <Text style={styles.addressText}>
+                {selectedAddress?.Fullname}
+              </Text>
+              <Text style={styles.addressText}>
+                {selectedAddress?.Address}
+              </Text>
+              <Text style={styles.addressText}>
+                {selectedAddress?.state}
+              </Text>
+              <Text style={styles.addressText}>
+                {selectedAddress?.pincode}
+              </Text>
+              <Text style={styles.addressText}>
+                {selectedAddress?.phone_no}
+              </Text>
+            </View>
+          </View>
 
           <View style={styles.box}>
             <Totalamount
@@ -158,102 +282,25 @@ export default function Payment() {
               onTotalChange={setTotalAmount}
             />
           </View>
-
-          {/* <Text style={styles.choosePaymentText}>Choose Payment Method</Text> */}
-
-          {/* <View style={styles.box}>
-            <TouchableOpacity
-              style={styles.option}
-              onPress={() => handleSelect("CreditCard")}
-            >
-              <View style={styles.iconLabel}>
-                <View style={styles.icon}>
-                  <Svgs.credit style={styles.svg} />
-                </View>
-                <Text style={styles.text}>Credit Card</Text>
+          {discount > 0 && (
+            <>
+              <View style={styles.discount}>
+                <Text style={styles.totalDiscountText}>{couponCode.toUpperCase()}</Text>
+                <Text style={styles.totalDiscountText}>- ₹ {((totalAmount * discount) / 100).toFixed(2)}</Text>
               </View>
-              {selectedMethod === "CreditCard" && (
-                <MaterialIcons name="check-circle" size={24} color="green" />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.option}
-              onPress={() => handleSelect("Paypal")}
-            >
-              <View style={styles.iconLabel}>
-                <View style={styles.icon}>
-                  <Svgs.paypal style={styles.svg} />
-                </View>
-                <Text style={styles.text}>Paypal</Text>
-              </View>
-              {selectedMethod === "Paypal" && (
-                <MaterialIcons name="check-circle" size={24} color="green" />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.option}
-              onPress={() => handleSelect("ApplePay")}
-            >
-              <View style={styles.iconLabel}>
-                <View style={styles.icon}>
-                  <Svgs.applepay style={styles.svg} />
-                </View>
-                <Text style={styles.text}>Apple Pay</Text>
-              </View>
-              {selectedMethod === "ApplePay" && (
-                <MaterialIcons name="check-circle" size={24} color="green" />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.option}
-              onPress={() => handleSelect("OtherMethods")}
-            >
-              <View style={styles.iconLabel}>
-                <View style={styles.icon}>
-                  <Svgs.more style={styles.svg} />
-                </View>
-                <Text style={styles.text}>All Other Methods</Text>
-              </View>
-              {selectedMethod === "OtherMethods" && (
-                <MaterialIcons name="check-circle" size={24} color="green" />
-              )}
-            </TouchableOpacity>
-          </View> */}
 
-          <View style={styles.info}>
-            <Text style={styles.text}>Shipping Information</Text>
-            {/* <Text style={styles.linktag} onPress={handlePress}>
-              Edit
-            </Text> */}
-          </View>
+              <View style={styles.Totalinfo}>
+                <Text style={styles.totalText}>Total</Text>
+                <Text style={styles.totalText}>
+                  ₹ {(totalAmount - (totalAmount * discount) / 100).toFixed(2)}
+                </Text>
+              </View>
+            </>
+          )}
 
-          <View style={styles.addressContainer}>
-            <View style={styles.addressDetails}>
-              <Text style={styles.addressText}>
-                Full Name: {selectedAddress?.Fullname}
-              </Text>
-              <Text style={styles.addressText}>
-                Address: {selectedAddress?.Address}
-              </Text>
-              <Text style={styles.addressText}>
-                State: {selectedAddress?.state}
-              </Text>
-              <Text style={styles.addressText}>
-                Pincode: {selectedAddress?.pincode}
-              </Text>
-              <Text style={styles.addressText}>
-                Phone No: {selectedAddress?.phone_no}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.info}>
-            <Text style={styles.totalText}>Total</Text>
-            <Text style={styles.totalText}>₹{totalAmount}</Text>
-          </View>
 
           <TouchableOpacity style={styles.button} onPress={handlePayment}>
-            <Text style={styles.buttonText}>Pay ₹{totalAmount}</Text>
+            <Text style={styles.buttonText}>Pay</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -300,10 +347,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#000",
   },
   box: {
-    backgroundColor: "#919eab29",
+    marginTop: 60,
+    backgroundColor: "#000",
     borderRadius: 10,
     padding: 20,
     marginVertical: 14,
+
   },
   choosePaymentText: {
     color: "#fff",
@@ -336,16 +385,18 @@ const styles = StyleSheet.create({
   },
   info: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     marginVertical: 14,
+    gap: 10
   },
   linktag: {
-    fontSize: 25,
+    fontSize: 18,
+    marginTop: 15,
     fontWeight: "700",
     color: "#8FFA09",
   },
   addressContainer: {
-    backgroundColor: "#333",
+    backgroundColor: "#000",
     borderRadius: 10,
     padding: 15,
     marginBottom: 20,
@@ -368,10 +419,11 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 10,
     padding: 15,
-    width: 250,
+    width: '100%',
     marginHorizontal: "auto",
     marginVertical: 10,
     backgroundColor: "#8FFA09",
+    // marginTop:45
   },
   buttonText: {
     textAlign: "center",
@@ -380,7 +432,89 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   text: {
+    marginTop: -10,
     color: "#8FFA09",
-    fontSize: 25,
+    fontSize: 20,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: 10,
+    borderWidth: 1,
+    borderColor: '#919eab',
+    borderRadius: 5,
+    height: 40,
+  },
+  input: {
+    // width:'100%',
+    flex: 1,
+    height: 40,
+
+
+    paddingLeft: 10,
+    borderRadius: 5,
+    color: '#fff',
+
+  },
+  applyText: {
+    color: '#8FFA09',
+    marginRight: 10,
+    fontSize: 14,
+    fontWeight: 'bold'
+
+  },
+  discountText: {
+    // marginTop: 10,
+    color: '#8FFA09',
+    fontSize: 14,
+  },
+  checkmarkImage: {
+    width: 15,
+    height: 15,
+    marginRight: 5
+  },
+  discount: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginLeft: 20,
+    gap: '55%',
+    fontSize: 14,
+    alignItems: 'center',
+    marginTop: -37
+  },
+  Totalinfo: {
+    width: '98%',
+    marginTop: 20,
+    display: 'flex',
+    justifyContent: 'flex-start',
+    marginLeft: 20,
+    gap: '55%',
+    flexDirection: 'row'
+
+  },
+  totalDiscountText: {
+    color: '#8FFA09'
+  },
+  discountBox: {
+    backgroundColor: 'black',  // Set background color to black
+    borderWidth: 2,            // Set border width to make it visible
+    borderColor: '#8FFA09',      // Set border color to green
+    padding: 10,
+    borderRadius: 8,
+    width: '90%',
+    margin: 20,
+  },
+  discountText: {
+    color: 'white',  // Default color for the text (white)
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  coupon: {
+    color: '#8FFA09',  // Color for the coupon code (green)
+    fontWeight: 'bold',
+  },
+  discountPercentage: {
+    color: 'white', // Color for the discount percentage (white)
   },
 });

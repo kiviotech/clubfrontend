@@ -39,6 +39,9 @@ const BrandIcons = () => {
   }, []);
 
   const handleIconPress = (brand) => {
+     const brandPosterUrl = brand.brand_poster?.[0]?.url
+          ? `${MEDIA_BASE_URL}${brand.brand_poster[0].url}`
+          : 'https://example.com/fallback-image.jpg';
     
     setSelectedBrand(brand.brand_name);
     router.push({
@@ -48,6 +51,7 @@ const BrandIcons = () => {
         brandId: brand.id,
         brandImage: `${MEDIA_BASE_URL}${brand.brand_logo.url}`,
         brandDescription: brand.description,
+        brandPoster: brandPosterUrl,
       },
     });
   };
