@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
@@ -30,11 +31,21 @@ const ProductDetails = () => {
   const params = useLocalSearchParams();
   const { images, name, price, products, in_stock, size } = params;
   const allProducts = products ? JSON.parse(products) : [];
+  // console.log(productDetails.images[0])
+  // console.log(productDetails.images[1])
 
-  const imagesArray =
-    typeof productDetails.images === "string"
-      ? [`${MEDIA_BASE_URL}${productDetails.images}`]
-      : (productDetails.images || []).map((img) => `${MEDIA_BASE_URL}${img}`);
+  const imagesArray = Array.isArray(productDetails.images)
+  ? productDetails.images.map((img) => {
+      // If the image path already contains the full URL, use it as is
+      if (img.startsWith("http://") || img.startsWith("https://")) {
+        return img;
+      }
+      // Otherwise, append the base URL to the relative image path
+      return `${MEDIA_BASE_URL}${img}`;
+    })
+  : []; // Default to empty array if images is not an array
+
+// console.log(imagesArray); // Debug to check the image URLs
 
   // console.log(productDetails);
 
@@ -187,56 +198,57 @@ const ProductDetails = () => {
         <View style={styles.imageSection}>
           {/* Custom Carousel */}
           <ScrollView
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onScroll={handleImageScroll}
-            scrollEventThrottle={16}
-            decelerationRate="fast"
-            snapToInterval={width * 0.8}
-            contentContainerStyle={{ paddingHorizontal: (width * 0.1) / 2 }}
-          >
-            {imagesArray.length > 0 ? (
-              imagesArray.map((item, index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.imageContainer,
-                    {
-                      marginLeft: index === 0 ? 0 : 10,
-                      marginRight: index === imagesArray.length - 1 ? 0 : 10,
-                    },
-                  ]}
-                >
-                  <Image
-                    source={{ uri: item }}
-                    style={styles.image}
-                    resizeMode="cover"
-                  />
-                </View>
-              ))
-            ) : (
-              <Text style={{ color: "white", textAlign: "center" }}>
-                No images available
-              </Text>
-            )}
-          </ScrollView>
+  horizontal
+  pagingEnabled
+  showsHorizontalScrollIndicator={false}
+  onScroll={handleImageScroll}
+  scrollEventThrottle={16}
+  decelerationRate="fast"
+  snapToInterval={width * 0.8}
+  contentContainerStyle={{ paddingHorizontal: (width * 0.1) / 2 }}
+>
+  {imagesArray.length > 0 ? (
+    imagesArray.map((item, index) => (
+      <View
+        key={index}
+        style={[
+          styles.imageContainer,
+          {
+            marginLeft: index === 0 ? 0 : 10,
+            marginRight: index === imagesArray.length - 1 ? 0 : 10,
+          },
+        ]}
+      >
+        <Image
+          source={{ uri: item }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+      </View>
+    ))
+  ) : (
+    <Text style={{ color: "white", textAlign: "center" }}>
+      No images available
+    </Text>
+  )}
+</ScrollView>
 
           {/* Pagination Dots */}
           <View style={styles.paginationContainer}>
-            {imagesArray.map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.dot,
-                  {
-                    backgroundColor:
-                      index === activeIndex ? "#8FFA09" : "#A4A4AA",
-                  },
-                ]}
-              />
-            ))}
-          </View>
+  {imagesArray.map((_, index) => (
+    <View
+      key={index}
+      style={[
+        styles.dot,
+        {
+          backgroundColor:
+            index === activeIndex ? "#8FFA09" : "#A4A4AA",
+        },
+      ]}
+    />
+  ))}
+</View>
+
         </View>
 
         <View style={styles.productInfo}>

@@ -185,7 +185,8 @@ const FlashSaleComponent = () => {
     const fetchProducts = async () => {
       try {
         const response = await getProducts(); // Fetch the products from the API
-        // console.log(response.data.data[0].product_image.url);
+        console.log(response.data.data[0].product_image[0].url);
+        console.log(response.data.data[0].product_image[1].url);
         
         // Limit the products to the first 6 items
         const limitedProducts = response.data.data.slice(0, 6);
@@ -193,11 +194,12 @@ const FlashSaleComponent = () => {
         const products = limitedProducts.map((product) => ({
           id: product.id,
           name: product.name,
-          image: product.product_image?.url
-            ? `${MEDIA_BASE_URL}${product.product_image.url}` // Prepend MEDIA_BASE_URL
+          image: product.product_image?.[0]?.url // Get only the first image
+            ? `${MEDIA_BASE_URL}${product.product_image[0].url}` // Prepend MEDIA_BASE_URL
             : "", // If no image, set empty string
           backgroundColor: getRandomColor(),
         }));
+        
         setProducts(products);
       } catch (error) {
         console.error("Error fetching products:", error);

@@ -66,13 +66,20 @@ console.log("brand poster is", brandPoster)
     // console.log('filtered', selectedBrand)
     
   const displayedProducts = limit ? filteredProducts.slice(0, limit) : filteredProducts;
+  const getImageUrl = (images) => {
+    if (Array.isArray(images) && images.length > 0) {
+      return `${MEDIA_BASE_URL}${images[0].url}`; // Assuming each image has a `url` field
+    }
+    return null; // Fallback if no images
+  };
 
   const handleProductDetails = (product) => {
     // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
+    const images = product.product_image.map(img => `${MEDIA_BASE_URL}${img.url}`);
   // console.log(sizes)
     setProductDetails({
       id: product.id,
-      images: product.product_image.url,
+      images: images,
       name: product.name,
       price: product.price,
       in_stock: product.in_stock,
@@ -202,7 +209,8 @@ console.log("brand poster is", brandPoster)
     ) : null} */}
     
               {displayedProducts.map((product, index) => {
-                const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+                // const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+                const imageUrl = getImageUrl(product.product_image);
                 // console.log(imageUrl)
                 const isOutOfStock = !product.in_stock;
                 const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
@@ -214,11 +222,13 @@ console.log("brand poster is", brandPoster)
                         <Text style={styles.popupText}>{popupMessage}</Text>
                       </View>
                     )}
-                    <Image
-                      source={{ uri: imageUrl }}
-                      style={styles.productimage}
-                      resizeMode="contain"
-                    />
+                    {imageUrl && (
+                               <Image
+                                 source={{ uri: imageUrl }}
+                                 style={styles.productimage}
+                                 resizeMode="contain"
+                               />
+                             )}
                     <View style={styles.buttonContainer}>
                       {/* Wishlist Button */}
                       <TouchableOpacity style={styles.wishlistButton} onPress={() => handleWishlistAdd(product)}>

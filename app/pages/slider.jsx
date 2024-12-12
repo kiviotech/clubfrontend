@@ -183,6 +183,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
         const data = response.data.data;
         setBrandCollabs(data);
         setFetchedBrandCollabs(data);
+        
       } catch (error) {
         console.error("Failed to fetch brand collabs:", error);
       }
@@ -231,18 +232,21 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
       } catch (error) {
         console.error("Failed to open URL:", error);
       }
-    } else if (index === 1) {
+    } else if (index === 5) {
       router.push("/pages/request-design");
-    } else if (index === 2 || index === 3 || index === 4 || index === 5) {
-      const brandId = "zibjzd1wx8h8ynvj6zt6dlx2";
+    } else if (index === 1 || index === 2 || index === 3 || index === 4) {
+      const brandId = "lagbzfc1r1ltzf7pobf893q4";
       if (brandId) {
         try {
           const response = await getBrandById(brandId);
+          console.log(response.data.data.brand_poster[0].url)
           const brandData = response.data.data;
           const brandName = brandData.brand_name;
           const brandDescription = brandData.description;
           const brandImage = `${MEDIA_BASE_URL}${brandData.brand_logo.url}`;
+          const brandPoster = `${MEDIA_BASE_URL}${brandData.brand_poster[0].url}`;
           const id = brandData.id;
+          
 
           setBrandById(brandData);
           setSelectedBrand(brandName);
@@ -252,6 +256,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
               brandName,
               brandDescription,
               brandImage,
+              brandPoster,
               id,
             },
           });

@@ -64,23 +64,22 @@ export default function Payment() {
 
 
   const handleCouponChange = (code) => {
-    console.log("i am clicked")
+    console.log("Coupon input changed:", code);
     setCouponCode(code);
 
+    try {
+      const appliedCoupon = coupons.find((coupon) => coupon.code === code.toUpperCase());
 
-    const appliedCoupon = coupons.find((coupon) => coupon.code === code.toUpperCase());
-
-
-    if (appliedCoupon) {
-      setDiscount(appliedCoupon.discount_percentage);
-      setIsApplied(true);
-
-    } else {
-      setDiscount(0);
-      setIsApplied(false);
+      if (appliedCoupon) {
+        setDiscount(appliedCoupon.discount_percentage);
+        setIsApplied(true);
+      } else {
+        setDiscount(0);
+        setIsApplied(false);
+      }
+    } catch (error) {
+      console.error("Error applying coupon:", error);
     }
-
-
   };
 
 
@@ -220,7 +219,10 @@ export default function Payment() {
               placeholder="Enter coupon code"
               value={couponCode}
               onChangeText={handleCouponChange}
+              keyboardType="default" // Ensure the right keyboard is used
+              onFocus={() => console.log("Input Focused")} // Debug focus events
             />
+
             <Text style={styles.applyText}>{isApplied ? "Applied" : "Apply Code"}</Text>
             {isApplied && <Image source={Subtract} style={styles.checkmarkImage} />}
           </View>
