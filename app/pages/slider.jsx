@@ -226,12 +226,13 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
 
   const handleImagePress = async (index) => {
     if (index === 0) {
-      const url = "https://new.express.adobe.com/webpage/cv645dfNQJYKt";
-      try {
-        await Linking.openURL(url);
-      } catch (error) {
-        console.error("Failed to open URL:", error);
-      }
+      // const url = "https://new.express.adobe.com/webpage/cv645dfNQJYKt";
+      // try {
+      //   await Linking.openURL(url);
+      // } catch (error) {
+      //   console.error("Failed to open URL:", error);
+      // }
+      router.push("/pages/request-design");
     } else if (index === 4) {
       router.push("/pages/request-design");
     } else if (index === 1 || index === 2 || index === 3) {
