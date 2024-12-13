@@ -116,7 +116,7 @@ const Home = () => {
         <View style={styles.card}>
           <Text style={styles.title}>PREMIUM CUSTOM CLOTHING 🛎️</Text>
           <Text style={styles.description}>
-           Design your unique, one-off pieces with this button here 👇
+          Create custom, one-of-a-kind designs that express your unique aura or unite your team, all at the touch of a button.
           </Text>
           <TouchableOpacity style={styles.button} onPress={handleRequest}>
             <Icon name="cut-outline" size={18} color="#000" style={styles.icon} />
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 16,
+    // marginBottom: 16,
     fontFamily: fonts["Poppins-Bold"],
   },
   exploreSection: {

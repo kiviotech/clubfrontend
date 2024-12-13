@@ -156,7 +156,7 @@ const NewArrival = ({ limit }) => {
             >
               <Text style={styles.productName}>{item.name}</Text>
               <Text style={styles.productBrand}>{item.brand?.brand_name}</Text>
-              <Text style={styles.productPrice}>${item.price}</Text>
+              <Text style={styles.productPrice}>₹{item.price}</Text>
             </TouchableOpacity>
           </View>
 

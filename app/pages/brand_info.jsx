@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import logo from "../../assets/logo.png";
-import { useRouter } from 'expo-router';
+import { useRouter,useNavigation } from 'expo-router';
 import { useLocalSearchParams } from 'expo-router';
 import NewArrival from '../../components/productList/NewArrival';
 import Slider from "../pages/slider"
@@ -16,9 +16,10 @@ import useProductStore from '../../src/store/useProductStore';
 import useCartStore from '../../src/store/useCartStore';
 import useWishlistStore from '../../src/store/useWishlistStore';
 import Header from './header';
+import { Ionicons } from "@expo/vector-icons";
 
 const brand_info = ({ limit }) => {
-  const { brandName, brandImage, brandDescription, brandPoster} = useLocalSearchParams();
+  const { brandName, brandImage, brandDescription, brandPoster } = useLocalSearchParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,10 +33,10 @@ const brand_info = ({ limit }) => {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupProductId, setPopupProductId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  
- 
+ const navigation = useNavigation();
 
-console.log("brand poster is", brandPoster)
+
+  // console.log("brand poster is", brandDescription)
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -54,17 +55,17 @@ console.log("brand poster is", brandPoster)
 
 
   const filteredProducts = selectedBrand
-  ? products
+    ? products
       .filter((product) => product.brand?.brand_name === selectedBrand) // Filter by selectedBrand
       .filter((product) =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) // Case-insensitive search
       )
-  : products.filter((product) =>
+    : products.filter((product) =>
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) // Case-insensitive search
     );
 
-    // console.log('filtered', selectedBrand)
-    
+  // console.log('filtered', selectedBrand)
+
   const displayedProducts = limit ? filteredProducts.slice(0, limit) : filteredProducts;
   const getImageUrl = (images) => {
     if (Array.isArray(images) && images.length > 0) {
@@ -76,7 +77,7 @@ console.log("brand poster is", brandPoster)
   const handleProductDetails = (product) => {
     // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
     const images = product.product_image.map(img => `${MEDIA_BASE_URL}${img.url}`);
-  // console.log(sizes)
+    // console.log(sizes)
     setProductDetails({
       id: product.id,
       images: images,
@@ -84,9 +85,10 @@ console.log("brand poster is", brandPoster)
       price: product.price,
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
-      documentId:product.documentId
+      documentId: product.documentId,
+      description: product.description
     });
-  
+
     router.push("../../pages/productDetails");
   };
 
@@ -100,7 +102,7 @@ console.log("brand poster is", brandPoster)
 
 
   const handleWishlistAdd = (product) => {
-    const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+    const imageUrl = getImageUrl(product.product_image);
     const item = {
       id: product.id,
       name: product.name,
@@ -127,7 +129,7 @@ console.log("brand poster is", brandPoster)
   };
 
   const handleCartAdd = (product) => {
-    const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+    const imageUrl = getImageUrl(product.product_image);
     const item = {
       id: product.id,
       name: product.name,
@@ -160,7 +162,13 @@ console.log("brand poster is", brandPoster)
   return (
     <ScrollView>
       <View style={styles.container}>
-        <Header/>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Ionicons name="arrow-back" color="white" size={20} />
+          </TouchableOpacity>
+          <Header />
+        </View>
+
         <View style={styles.searchContainer}>
           <FontAwesome name="search" size={25} color="#424646" />
           <TextInput
@@ -207,7 +215,7 @@ console.log("brand poster is", brandPoster)
         <Text style={styles.popupText}>{popupMessage}</Text>
       </View>
     ) : null} */}
-    
+
               {displayedProducts.map((product, index) => {
                 // const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
                 const imageUrl = getImageUrl(product.product_image);
@@ -223,12 +231,12 @@ console.log("brand poster is", brandPoster)
                       </View>
                     )}
                     {imageUrl && (
-                               <Image
-                                 source={{ uri: imageUrl }}
-                                 style={styles.productimage}
-                                 resizeMode="contain"
-                               />
-                             )}
+                      <Image
+                        source={{ uri: imageUrl }}
+                        style={styles.productimage}
+                        resizeMode="contain"
+                      />
+                    )}
                     <View style={styles.buttonContainer}>
                       {/* Wishlist Button */}
                       <TouchableOpacity style={styles.wishlistButton} onPress={() => handleWishlistAdd(product)}>
@@ -243,7 +251,7 @@ console.log("brand poster is", brandPoster)
                           {product.brand?.brand_name}
                         </Text>
                         <Text style={styles.productDescription}>
-                          {product.description}
+                          {product.product_Details}
                         </Text>
                         <Text style={styles.productPrice}>{product.price}</Text>
                         {isOutOfStock && <Text style={styles.stockText}></Text>}
@@ -309,6 +317,17 @@ const styles = StyleSheet.create({
     marginBottom: 26,
     marginTop: 15,
     height: 50,
+  },
+  headerContainer: {
+    // flexDirection: 'row', // Align items horizontally
+    // alignItems: 'center', // Vertically center align items
+    // justifyContent: 'space-between', // Adjust spacing; use 'space-between' if needed
+    paddingHorizontal: 10, // Add some padding on the sides
+    marginTop: 10, // Add top margin if required
+  },
+  backButton: {
+    marginRight: 10, // Space between the back button and the header text
+    padding: 5, // Add touchable area around the button
   },
   searchInput: {
     marginLeft: 8,

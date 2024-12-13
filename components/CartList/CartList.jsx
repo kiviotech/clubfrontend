@@ -40,13 +40,13 @@ export default function CartList({
         <Image source={{ uri: image }} style={styles.productImage} />
         <View style={styles.productDetails}>
           <Text style={styles.productName}>{productname}</Text>
-          <Text style={styles.productPrice}>${price}</Text>
+          <Text style={styles.productPrice}>₹{price}</Text>
           <Text style={styles.subtotal}>Size : {size}</Text>
 
 
           {!isWishlist && (
             <View style={styles.subtotalContainer}>
-              <Text style={styles.subtotal}>Subtotal: ${price * quantity}</Text>
+              <Text style={styles.subtotal}>Subtotal: ₹{price * quantity}</Text>
               <View style={styles.quantityContainer}>
                 <TouchableOpacity
                   onPress={decrement}

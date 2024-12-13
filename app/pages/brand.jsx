@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Image, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Image, SafeAreaView,ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import ProductList from '../../components/productList/ProductList';
 import { useBrandStore } from "../../src/store/brandStore";
@@ -6,10 +6,10 @@ import { useRouter,useNavigation } from 'expo-router';
 import { getProducts } from '../../src/api/repositories/productRepository';
 import { MEDIA_BASE_URL } from '../../src/api/apiClient';
 import useProductStore from '../../src/store/useProductStore';
-import useCartStore from '../../src/store/useCartStore';
 import useWishlistStore from '../../src/store/useWishlistStore';
 import Svgs from '../../constants/svgs';
 import { Ionicons } from "@expo/vector-icons";
+import useCartStore from '../../src/store/useCartStore';
 
 const Brand = ({ limit }) => {
   const [products, setProducts] = useState([]);
@@ -25,6 +25,7 @@ const Brand = ({ limit }) => {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupProductId, setPopupProductId] = useState(null);
   const navigation = useNavigation();
+  
   
   const imagesArray =
     typeof products.images === "string"
@@ -98,7 +99,7 @@ const Brand = ({ limit }) => {
 
  
   const handleWishlistAdd = (product) => {
-    const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+    const imageUrl =getImageUrl(product.product_image);
     const item = {
       id: product.id,
       name: product.name,
@@ -125,7 +126,7 @@ const Brand = ({ limit }) => {
   };
 
   const handleCartAdd = (product) => {
-    const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+    const imageUrl = getImageUrl(product.product_image);
     const item = {
       id: product.id,
       name: product.name,
@@ -156,6 +157,7 @@ const Brand = ({ limit }) => {
   };
 
   return (
+    <ScrollView>
     <SafeAreaView style={styles.area}>
       <View style={styles.header}>
         <View style={styles.backSection}>
@@ -220,7 +222,7 @@ const Brand = ({ limit }) => {
               <Text style={styles.productDescription}>
                 {product.description}
               </Text>
-              <Text style={styles.productPrice}>{product.price}</Text>
+              <Text style={styles.productPrice}>₹{product.price}</Text>
               {isOutOfStock && <Text style={styles.stockText}></Text>}
             </View>
           </TouchableOpacity>
@@ -241,6 +243,7 @@ const Brand = ({ limit }) => {
     })}
   </View>
   </SafeAreaView>
+  </ScrollView>
   );
 };
 

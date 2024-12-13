@@ -72,7 +72,8 @@ const ProductSearch = ({ limit,searchTerm }) => {
       price: product.price,
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
-      documentId:product.documentId
+      documentId:product.documentId,
+      description:product.description
     });
   
     router.push("../../pages/productDetails");
@@ -87,7 +88,7 @@ const ProductSearch = ({ limit,searchTerm }) => {
   }
   
   const handleWishlistAdd = (product) => {
-    const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+    const imageUrl = getImageUrl(product.product_image);
     const item = {
       id: product.id,
       name: product.name,
@@ -114,7 +115,7 @@ const ProductSearch = ({ limit,searchTerm }) => {
   };
 
   const handleCartAdd = (product) => {
-    const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+    const imageUrl =getImageUrl(product.product_image);
     const item = {
       id: product.id,
       name: product.name,
@@ -181,7 +182,7 @@ const ProductSearch = ({ limit,searchTerm }) => {
                   <Text style={styles.productName}>{product.name}</Text>
                   <Text style={styles.productDiscount}>{product.discount}% discount</Text>
                   <Text style={styles.productBrand}>{product.brand.brand_name}</Text>
-                  <Text style={styles.productDescription}>{product.description}</Text>
+                  <Text style={styles.productDescription}>{product.product_Details}</Text>
                   <Text style={styles.productPrice}>{product.price}</Text>
                   {/* {isOutOfStock && <Text style={styles.stockText}>Out of Stock</Text>} */}
                 </View>

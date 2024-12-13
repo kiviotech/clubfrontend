@@ -61,7 +61,7 @@ const getImageUrl = (images) => {
       try {
         const response = await getProducts();
         setProducts(response.data.data);
-        console.log(response.data.data[0].product_image[0].url)
+        // console.log(response.data.data[0].product_Details)
       } catch (error) {
         setError("Failed to load products");
       } finally {
@@ -89,7 +89,8 @@ const getImageUrl = (images) => {
       price: product.price,
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
-      documentId:product.documentId
+      documentId:product.documentId,
+      description:product.description
     });
   
     router.push("../../pages/productDetails");
@@ -106,7 +107,7 @@ const getImageUrl = (images) => {
 
 
   const handleWishlistAdd = (product) => {
-    const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+    const imageUrl = getImageUrl(product.product_image);
     const item = {
       id: product.id,
       name: product.name,
@@ -133,7 +134,7 @@ const getImageUrl = (images) => {
   };
 
   const handleCartAdd = (product) => {
-    const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+    const imageUrl = getImageUrl(product.product_image);
     const item = {
       id: product.id,
       name: product.name,
@@ -200,9 +201,9 @@ const getImageUrl = (images) => {
                   {product.brand?.brand_name}
                 </Text>
                 <Text style={styles.productDescription}>
-                  {product.description}
+                  {product.product_Details}
                 </Text>
-                <Text style={styles.productPrice}>{product.price}</Text>
+                <Text style={styles.productPrice}>₹{product.price}</Text>
                 {isOutOfStock && <Text style={styles.stockText}></Text>}
               </View>
             </TouchableOpacity>
