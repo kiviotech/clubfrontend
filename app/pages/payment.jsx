@@ -68,7 +68,7 @@ export default function Payment() {
     setCouponCode(code);
 
     try {
-      const appliedCoupon = coupons.find((coupon) => coupon.code === code.toUpperCase());
+      const appliedCoupon = coupons.find((coupon) => coupon.code === code);
 
       if (appliedCoupon) {
         setDiscount(appliedCoupon.discount_percentage);
@@ -229,7 +229,7 @@ export default function Payment() {
 
           {isApplied && <Text style={styles.discountText}>{couponCode.toUpperCase()} has been applied.</Text>}
 
-          <View style={styles.discountBox}>
+          {/* <View style={styles.discountBox}>
             {coupons.length > 0 ? (
               coupons.map((coupon) => (
                 <Text key={coupon.id} style={styles.discountText}>
@@ -241,7 +241,7 @@ export default function Payment() {
             ) : (
               <Text style={styles.discountText}>No coupons available</Text>
             )}
-          </View>
+          </View> */}
 
 
 

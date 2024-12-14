@@ -73,6 +73,8 @@ const NewArrival = ({ limit }) => {
       price: product.price,
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
+      documentId:product.documentId,
+      description:product.description
     });
 
     router.push("../../pages/productDetails");
@@ -128,7 +130,7 @@ const NewArrival = ({ limit }) => {
       renderItem={({ item }) => (
         <View style={styles.card}>
           <View style={styles.cardContent}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => handleWishlistAdd(item)}
               style={styles.favoriteIcon}
             >
@@ -141,7 +143,7 @@ const NewArrival = ({ limit }) => {
                   ? "red"
                   : "#fff"}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             {/* Display only the first image of each product */}
             <Image
@@ -156,7 +158,7 @@ const NewArrival = ({ limit }) => {
             >
               <Text style={styles.productName}>{item.name}</Text>
               <Text style={styles.productBrand}>{item.brand?.brand_name}</Text>
-              <Text style={styles.productPrice}>${item.price}</Text>
+              <Text style={styles.productPrice}>₹{item.price}</Text>
             </TouchableOpacity>
           </View>
 
@@ -219,8 +221,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   productBrand: {
-    color: '#9CA3AF',
-    fontSize: 10,
+    color: '#8FFA09',
+    fontSize: 14,
   },
   productPrice: {
     color: '#fff',

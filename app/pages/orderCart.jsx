@@ -1,9 +1,9 @@
-import React,{useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import useOrderStorelevel from "../../src/store/useOrderStorelevel"
 
-const OrderCart = ({ imageUrl, productName, productPrice ,level,id,documentId,total,quantity,updatedAt}) => {
+const OrderCart = ({ imageUrl, productName, productPrice, level, id, documentId, total, quantity, updatedAt }) => {
   const router = useRouter();
   const orderLevel = useOrderStorelevel((state) => state.orderLevel);
   console.log(orderLevel)
@@ -14,7 +14,7 @@ const OrderCart = ({ imageUrl, productName, productPrice ,level,id,documentId,to
     year: '2-digit', // Two-digit year (e.g., 24)
   });
 
-  
+
   const handleTrack = () => {
     router.push({
       pathname: "/pages/TrackOrderScreen", // Adjust the path based on your app's structure
@@ -32,25 +32,30 @@ const OrderCart = ({ imageUrl, productName, productPrice ,level,id,documentId,to
     });
   };
 
- 
+
 
   return (
     <View style={styles.card}>
       <View style={styles.row}>
-      <Image
-          source={{ uri: imageUrl  ||'https://example.com/fallback.png' }} // Use dynamic image URL
+        <Image
+          source={{ uri: imageUrl || 'https://example.com/fallback.png' }} // Use dynamic image URL
           style={styles.productImage}
         />
         <View style={styles.details}>
-        <Text style={styles.productName}>{productName}</Text>
+          <Text style={styles.productName}>{productName}</Text>
           <Text style={styles.orderId}>Order#{documentId}</Text>
           <Text style={styles.deliveryDate}>Quantity: {quantity}</Text>
           <Text style={styles.deliveryDate}>Updated At: {formattedDate}</Text>
-          
+
 
         </View>
-        <Text style={styles.price}>${total}</Text>
-        
+        <View style={styles.priceDetails}>
+          <Text style={styles.priceLabel}>Price:</Text>
+          <Text style={styles.priceValue}>${productPrice}</Text>
+          <Text style={styles.priceLabel}>Total Order:</Text>
+          <Text style={styles.priceValue}>${total}</Text>
+        </View>
+
       </View>
       <View style={styles.buttonRow}>
         <TouchableOpacity style={[styles.trackButton, styles.trackButtonCurved]} onPress={handleTrack}>
@@ -147,6 +152,22 @@ const styles = StyleSheet.create({
     color: '#8FFA09',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  priceDetails: {
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    marginLeft: 10,
+  },
+  priceLabel: {
+    fontSize: 14,
+    color: '#AAAAAA',
+    marginBottom: 2,
+  },
+  priceValue: {
+    fontSize: 20,
+    color: '#8FFA09',
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
 });
 

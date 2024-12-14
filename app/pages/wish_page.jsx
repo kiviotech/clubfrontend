@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 5,
     width: 100,
+    marginRight:150
   },
   buttonText: {
     color: "black",

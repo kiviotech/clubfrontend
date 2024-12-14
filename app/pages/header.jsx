@@ -4,6 +4,7 @@ import Svgs from '../../constants/svgs';
 import logo from "../../assets/logo.png";
 import { useRouter } from 'expo-router';
 import useCartStore from '../../src/store/useCartStore';
+// import Svgs from '../../constants/svgs';
 
 const Header = () => {
   const router = useRouter();
@@ -20,7 +21,7 @@ const Header = () => {
     <View>
       <View style={styles.header}>
         <TouchableOpacity onPress={handlehome}>
-          <Image source={logo} style={styles.logo} />
+          <Svgs.clublogo width={128} height={28} />
         </TouchableOpacity>
         
         <View style={styles.headerIcons}>
@@ -57,8 +58,8 @@ const styles = StyleSheet.create({
     paddingRight: 0,
   },
   logo: {
-    width: 120,
-    height: 30,
+    width: 100,
+    height: 20,
     resizeMode: 'contain',
   },
   headerIcons: {

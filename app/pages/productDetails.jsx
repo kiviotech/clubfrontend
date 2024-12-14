@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
-  
+
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
@@ -35,7 +35,7 @@ const ProductDetails = () => {
   // console.log(productDetails.images[1])
 
   const imagesArray = Array.isArray(productDetails.images)
-  ? productDetails.images.map((img) => {
+    ? productDetails.images.map((img) => {
       // If the image path already contains the full URL, use it as is
       if (img.startsWith("http://") || img.startsWith("https://")) {
         return img;
@@ -43,9 +43,9 @@ const ProductDetails = () => {
       // Otherwise, append the base URL to the relative image path
       return `${MEDIA_BASE_URL}${img}`;
     })
-  : []; // Default to empty array if images is not an array
+    : []; // Default to empty array if images is not an array
 
-// console.log(imagesArray); // Debug to check the image URLs
+  // console.log(imagesArray); // Debug to check the image URLs
 
   // console.log(productDetails);
 
@@ -89,9 +89,9 @@ const ProductDetails = () => {
     if (isOutOfStock(productDetails.sizes)) {
       // Update product data with in_stock set to false
       const updatedProductData = {
-        data:{
-        // ...productDetails,
-        in_stock: false,
+        data: {
+          // ...productDetails,
+          in_stock: false,
         }
       };
 
@@ -112,7 +112,7 @@ const ProductDetails = () => {
     const existingItem = useCartStore.getState().items.find(
       (cartItem) => cartItem.id === productDetails.id && cartItem.size === selectedSize
     );
-  
+
     if (existingItem) {
       setCartPopupVisible(true); // Show the cart popup if the same product with the same size exists
     } else {
@@ -125,13 +125,13 @@ const ProductDetails = () => {
         size: selectedSize,
         image: imagesArray[0],
       };
-  
+
       addItemToCart(item); // Add the new item to the cart
       setIsAddedToCart(true);
       router.push("/pages/cart");
     }
   };
-  
+
 
 
   const handleCartPopupConfirmation = (confirm) => {
@@ -179,7 +179,7 @@ const ProductDetails = () => {
           <Ionicons name="arrow-back" color="white" size={20} />
         </TouchableOpacity>
         <View style={styles.leftIcons}>
-        <View style={styles.iconContainer}>
+          <View style={styles.iconContainer}>
             <TouchableOpacity onPress={handleRequest} style={styles.iconButton}>
               <Svgs.cartIcon width={18} height={18} />
             </TouchableOpacity>
@@ -198,62 +198,62 @@ const ProductDetails = () => {
         <View style={styles.imageSection}>
           {/* Custom Carousel */}
           <ScrollView
-  horizontal
-  pagingEnabled
-  showsHorizontalScrollIndicator={false}
-  onScroll={handleImageScroll}
-  scrollEventThrottle={16}
-  decelerationRate="fast"
-  snapToInterval={width * 0.8}
-  contentContainerStyle={{ paddingHorizontal: (width * 0.1) / 2 }}
->
-  {imagesArray.length > 0 ? (
-    imagesArray.map((item, index) => (
-      <View
-        key={index}
-        style={[
-          styles.imageContainer,
-          {
-            marginLeft: index === 0 ? 0 : 10,
-            marginRight: index === imagesArray.length - 1 ? 0 : 10,
-          },
-        ]}
-      >
-        <Image
-          source={{ uri: item }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-      </View>
-    ))
-  ) : (
-    <Text style={{ color: "white", textAlign: "center" }}>
-      No images available
-    </Text>
-  )}
-</ScrollView>
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={handleImageScroll}
+            scrollEventThrottle={16}
+            decelerationRate="fast"
+            snapToInterval={width * 0.8}
+            contentContainerStyle={{ paddingHorizontal: (width * 0.1) / 2 }}
+          >
+            {imagesArray.length > 0 ? (
+              imagesArray.map((item, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.imageContainer,
+                    {
+                      marginLeft: index === 0 ? 0 : 10,
+                      marginRight: index === imagesArray.length - 1 ? 0 : 10,
+                    },
+                  ]}
+                >
+                  <Image
+                    source={{ uri: item }}
+                    style={styles.image}
+                    resizeMode="cover"
+                  />
+                </View>
+              ))
+            ) : (
+              <Text style={{ color: "white", textAlign: "center" }}>
+                No images available
+              </Text>
+            )}
+          </ScrollView>
 
           {/* Pagination Dots */}
           <View style={styles.paginationContainer}>
-  {imagesArray.map((_, index) => (
-    <View
-      key={index}
-      style={[
-        styles.dot,
-        {
-          backgroundColor:
-            index === activeIndex ? "#8FFA09" : "#A4A4AA",
-        },
-      ]}
-    />
-  ))}
-</View>
+            {imagesArray.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.dot,
+                  {
+                    backgroundColor:
+                      index === activeIndex ? "#8FFA09" : "#A4A4AA",
+                  },
+                ]}
+              />
+            ))}
+          </View>
 
         </View>
 
         <View style={styles.productInfo}>
           <Text style={styles.productName}>{productDetails.name}</Text>
-          <Text style={styles.productPrice}>{productDetails.price}</Text>
+          <Text style={styles.productPrice}>₹{productDetails.price}</Text>
           {productDetails.in_stock ? (
             <Text style={styles.inStockText}>In Stock</Text>
           ) : (
@@ -326,33 +326,33 @@ const ProductDetails = () => {
           </TouchableOpacity>
 
           <Modal
-  visible={cartPopupVisible}
-  transparent={true}
-  animationType="fade" // Better for a mobile experience
-  onRequestClose={() => setCartPopupVisible(false)}
->
-  <View style={styles.modalContainer}>
-    <View style={styles.modalContent}>
-      <Text style={styles.modalText}>
-        Product already in cart! Do you want to go to your cart?
-      </Text>
-      <View style={styles.modalButtons}>
-        <TouchableOpacity
-          onPress={() => handleCartPopupConfirmation(false)}
-          style={styles.modalButton}
-        >
-          <Text style={styles.modalButtonText}>No</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => handleCartPopupConfirmation(true)}
-          style={styles.modalButton}
-        >
-          <Text style={styles.modalButtonText}>Yes</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </View>
-</Modal>
+            visible={cartPopupVisible}
+            transparent={true}
+            animationType="fade" // Better for a mobile experience
+            onRequestClose={() => setCartPopupVisible(false)}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalText}>
+                  Product already in cart! Do you want to go to your cart?
+                </Text>
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity
+                    onPress={() => handleCartPopupConfirmation(false)}
+                    style={styles.modalButton}
+                  >
+                    <Text style={styles.modalButtonText}>No</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleCartPopupConfirmation(true)}
+                    style={styles.modalButton}
+                  >
+                    <Text style={styles.modalButtonText}>Yes</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
 
           <View>
             {/* Add to Wishlist Button */}
@@ -398,13 +398,11 @@ const ProductDetails = () => {
         <View style={styles.detailsSection}>
           <Text style={styles.detailsTitle}>Product Details</Text>
           <Text style={styles.detailsText}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus
-            felis justo, lacinia ac iaculis nec, efficitur in arcu. Suspendisse
-            posuere, elit ut tempor finibus, dolor tortor ullamcorper leo.
+            {productDetails.description}
           </Text>
-          <Text style={styles.detailsText}>
+          {/* <Text style={styles.detailsText}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit...
-          </Text>
+          </Text> */}
           <TouchableOpacity>
             <Text style={styles.seeMoreText}>See More</Text>
           </TouchableOpacity>
@@ -573,7 +571,7 @@ const styles = StyleSheet.create({
     color: '#8FFA09',
     marginTop: 5, // Adds spacing below the button
   },
-  
+
 
 
   // Action Buttons

@@ -226,20 +226,21 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
 
   const handleImagePress = async (index) => {
     if (index === 0) {
-      const url = "https://new.express.adobe.com/webpage/cv645dfNQJYKt";
-      try {
-        await Linking.openURL(url);
-      } catch (error) {
-        console.error("Failed to open URL:", error);
-      }
-    } else if (index === 5) {
+      // const url = "https://new.express.adobe.com/webpage/cv645dfNQJYKt";
+      // try {
+      //   await Linking.openURL(url);
+      // } catch (error) {
+      //   console.error("Failed to open URL:", error);
+      // }
       router.push("/pages/request-design");
-    } else if (index === 1 || index === 2 || index === 3 || index === 4) {
+    } else if (index === 4) {
+      router.push("/pages/request-design");
+    } else if (index === 1 || index === 2 || index === 3) {
       const brandId = "lagbzfc1r1ltzf7pobf893q4";
       if (brandId) {
         try {
           const response = await getBrandById(brandId);
-          console.log(response.data.data.brand_poster[0].url)
+          // console.log(response.data.data.brand_poster[0].url)
           const brandData = response.data.data;
           const brandName = brandData.brand_name;
           const brandDescription = brandData.description;
@@ -264,7 +265,38 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
           console.error("Failed to fetch brand details:", error);
         }
       }
-    } else {
+    }else if(index === 5){
+      const brandId = "o3palnwfu9qs18guh09a1it1";
+      if (brandId) {
+        try {
+          const response = await getBrandById(brandId);
+          // console.log(response.data.data.brand_poster[0].url)
+          const brandData = response.data.data;
+          const brandName = brandData.brand_name;
+          const brandDescription = brandData.description;
+          const brandImage = `${MEDIA_BASE_URL}${brandData.brand_logo.url}`;
+          const brandPoster = `${MEDIA_BASE_URL}${brandData.brand_poster[0].url}`;
+          const id = brandData.id;
+          
+
+          setBrandById(brandData);
+          setSelectedBrand(brandName);
+          router.push({
+            pathname: "/pages/brand_info",
+            params: {
+              brandName,
+              brandDescription,
+              brandImage,
+              brandPoster,
+              id,
+            },
+          });
+        } catch (error) {
+          console.error("Failed to fetch brand details:", error);
+        }
+      }
+    } 
+    else {
       console.warn("No action defined for this item");
     }
   };
@@ -310,7 +342,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
             <Text style={{ color: "#fff" }}>Image not available</Text>
           )}
         </TouchableOpacity>
-        {index === 1 && (
+        {index === 0 && (
           <TouchableOpacity style={styles.whatsappButton} onPress={openWhatsApp}>
             <Text>Contact us</Text>
             <Image
@@ -366,7 +398,7 @@ const styles = StyleSheet.create({
   },
   whatsappButton: {
     position: "absolute",
-    bottom: 20,
+    bottom: 40,
     right: 20,
     flexDirection: "row",
     alignItems: "center",

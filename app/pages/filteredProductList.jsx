@@ -13,6 +13,7 @@ import { useBrandStore } from '../../src/store/brandStore';
 import { MEDIA_BASE_URL } from '../../src/api/apiClient';
 import useProductStore from '../../src/store/useProductStore';
 import useWishlistStore from '../../src/store/useWishlistStore';
+import useCartStore from '../../src/store/useCartStore';
 
 
 const FilteredProductList = ({ selectedDiscount }) => {
@@ -22,7 +23,7 @@ const FilteredProductList = ({ selectedDiscount }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const setProductDetails = useProductStore((state) => state.setProductDetails);
-  // const addItemToCart = useCartStore((state) => state.addItem);
+  const addItemToCart = useCartStore((state) => state.addItem);
   const [quantity, setQuantity] = useState(1);
   const selectedBrand = useBrandStore((state) => state.selectedBrand);
   const addToWishlist = useWishlistStore((state) => state.addToWishlist);
@@ -107,39 +108,45 @@ const FilteredProductList = ({ selectedDiscount }) => {
       price: product.price,
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
-      documentId:product.documentId
+      documentId:product.documentId,
+      description:product.description
     });
   
     router.push("../../pages/productDetails");
   };
 
-  const handleWishlistAdd = (product) => {
-    const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
-    const item = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      quantity: quantity,
-      image: imageUrl,
-    };
-
-    if (wishlist.some((wishItem) => wishItem.id === product.id)) {
-      removeFromWishlist(product.id);
-      setPopupMessage("Removed from wishlist! ❌");
-    } else {
-      addToWishlist(item);
-      setPopupMessage("Added to wishlist!✔️");
-    }
-
-    setTimeout(() => {
-      setPopupMessage("");
-    }, 2000);
-  };
+ const handleWishlistAdd = (product) => {
+     const imageUrl = getImageUrl(product.product_image);
+     const item = {
+       id: product.id,
+       name: product.name,
+       price: product.price,
+       quantity: quantity,
+       image: imageUrl,
+     };
+ 
+     if (wishlist.some((wishItem) => wishItem.id === product.id)) {
+       removeFromWishlist(product.id);
+       // setPopupMessage("Removed from wishlist! ❌");
+       setPopupProductId(product.id); // Show popup for this product
+       setPopupMessage("Removed from wishlist! ❌");
+     } else {
+       addToWishlist(item);
+       // setPopupMessage("Added to wishlist!✔️");
+       setPopupProductId(product.id); // Show popup for this product
+       setPopupMessage("Added to wishlist!✔️");
+     }
+ 
+     setTimeout(() => {
+       setPopupMessage("");
+     }, 2000);
+   };
+ 
 
   const displayedProducts = filteredProducts;
 
   const handleCartAdd = (product) => {
-    const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+    const imageUrl =getImageUrl(product.product_image);
     const item = {
       id: product.id,
       name: product.name,
@@ -148,12 +155,24 @@ const FilteredProductList = ({ selectedDiscount }) => {
       image: imageUrl,
     };
 
-    addItemToCart(item);
-    setPopupMessage("Added to cart! 🛒");
+    // Check if the product is already in the cart
+    const isProductInCart = useCartStore.getState().items.some(
+      (cartItem) => cartItem.id === product.id
+    );
 
-   
+    if (isProductInCart) {
+      setPopupProductId(product.id); // Show popup for this product
+      setPopupMessage("Product is already in the cart! 🛒");
+    } else {
+      addItemToCart(item);
+      setPopupProductId(product.id); // Show popup for this product
+      setPopupMessage("Added to cart! 🛒");
+    }
+
+    // Automatically clear the popup message after 2 seconds
     setTimeout(() => {
-      setPopupMessage("");
+      setPopupProductId(null); // Hide popup
+      setPopupMessage(""); // Clear the message
     }, 2000);
   };
 
@@ -192,14 +211,14 @@ const FilteredProductList = ({ selectedDiscount }) => {
            <TouchableOpacity onPress={() => handleProductDetails(product)}>
              <View style={styles.imageWrapper}>
                <Text style={styles.productName}>{product.name}</Text>
-               <Text style={styles.productdiscount}>{product.discount}% discount</Text>
+               {/* <Text style={styles.productdiscount}>{product.discount}% discount</Text> */}
                <Text style={styles.productBrand}>
                  {product.brand.brand_name}
                </Text>
                <Text style={styles.productDescription}>
-                 {product.description}
+                 {product.product_Details}
                </Text>
-               <Text style={styles.productPrice}>{product.price}</Text>
+               <Text style={styles.productPrice}>₹{product.price}</Text>
                {/* {isOutOfStock && <Text style={styles.stockText}></Text>} */}
              </View>
            </TouchableOpacity>
@@ -250,19 +269,21 @@ const styles = StyleSheet.create({
       fontSize: 16, // Font size
       fontWeight: "bold",
       marginTop: 6, // Reduced margin for less height
+      textAlign: 'center',
     },
     productdiscount:{
       color: "red",
       fontSize: 12,
     },
     productBrand: {
-      color: "#9CA3AF",
+      color: "#8FFA09",
       fontSize: 12, // Font size
     },
     productDescription: {
       color: "#9CA3AF",
       fontSize: 12, // Font size
       marginTop: 2, // Reduced margin for less height
+      textAlign: 'center',
     },
     productPrice: {
       color: "#ffffff",

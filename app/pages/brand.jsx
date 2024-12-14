@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Image, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Image, SafeAreaView,ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import ProductList from '../../components/productList/ProductList';
 import { useBrandStore } from "../../src/store/brandStore";
@@ -6,10 +6,10 @@ import { useRouter,useNavigation } from 'expo-router';
 import { getProducts } from '../../src/api/repositories/productRepository';
 import { MEDIA_BASE_URL } from '../../src/api/apiClient';
 import useProductStore from '../../src/store/useProductStore';
-import useCartStore from '../../src/store/useCartStore';
 import useWishlistStore from '../../src/store/useWishlistStore';
 import Svgs from '../../constants/svgs';
 import { Ionicons } from "@expo/vector-icons";
+import useCartStore from '../../src/store/useCartStore';
 
 const Brand = ({ limit }) => {
   const [products, setProducts] = useState([]);
@@ -25,6 +25,7 @@ const Brand = ({ limit }) => {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupProductId, setPopupProductId] = useState(null);
   const navigation = useNavigation();
+  
   
   const imagesArray =
     typeof products.images === "string"
@@ -83,7 +84,8 @@ const Brand = ({ limit }) => {
       price: product.price,
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
-      documentId:product.documentId
+      documentId:product.documentId,
+      description:product.description
     });
   
     router.push("../../pages/productDetails");
@@ -98,7 +100,7 @@ const Brand = ({ limit }) => {
 
  
   const handleWishlistAdd = (product) => {
-    const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+    const imageUrl =getImageUrl(product.product_image);
     const item = {
       id: product.id,
       name: product.name,
@@ -125,7 +127,7 @@ const Brand = ({ limit }) => {
   };
 
   const handleCartAdd = (product) => {
-    const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+    const imageUrl = getImageUrl(product.product_image);
     const item = {
       id: product.id,
       name: product.name,
@@ -156,6 +158,7 @@ const Brand = ({ limit }) => {
   };
 
   return (
+    <ScrollView>
     <SafeAreaView style={styles.area}>
       <View style={styles.header}>
         <View style={styles.backSection}>
@@ -213,14 +216,14 @@ const Brand = ({ limit }) => {
           <TouchableOpacity onPress={() => handleProductDetails(product)}>
             <View style={styles.imageWrapper}>
               <Text style={styles.productName}>{product.name}</Text>
-              <Text style={styles.productdiscount}>{product.discount}% discount</Text>
+              {/* <Text style={styles.productdiscount}>{product.discount}% discount</Text> */}
               <Text style={styles.productBrand}>
                 {product.brand.brand_name}
               </Text>
               <Text style={styles.productDescription}>
-                {product.description}
+                {product.product_Details}
               </Text>
-              <Text style={styles.productPrice}>{product.price}</Text>
+              <Text style={styles.productPrice}>₹{product.price}</Text>
               {isOutOfStock && <Text style={styles.stockText}></Text>}
             </View>
           </TouchableOpacity>
@@ -241,6 +244,7 @@ const Brand = ({ limit }) => {
     })}
   </View>
   </SafeAreaView>
+  </ScrollView>
   );
 };
 
@@ -286,19 +290,21 @@ const styles = StyleSheet.create({
     fontSize: 16, // Font size
     fontWeight: "bold",
     marginTop: 6, // Reduced margin for less height
+    textAlign: 'center',
   },
   productdiscount: {
     color: "red",
     fontSize: 12,
   },
   productBrand: {
-    color: "#9CA3AF",
+    color: "#8FFA09",
     fontSize: 12, // Font size
   },
   productDescription: {
     color: "#9CA3AF",
     fontSize: 12, // Font size
     marginTop: 2, // Reduced margin for less height
+    textAlign: 'center',
   },
   productPrice: {
     color: "#ffffff",

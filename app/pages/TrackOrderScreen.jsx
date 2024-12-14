@@ -121,7 +121,12 @@ const TrackOrderScreen = () => {
         />
         <View style={styles.productDetails}>
           <Text style={styles.productName}>{productName}</Text>
-          <Text style={styles.productPrice}>${total}</Text>
+         
+           <View style={styles.priceDetails}>
+                    
+                    <Text style={styles.priceValue}>Price : ${productPrice}</Text>
+                    <Text style={styles.priceValue}>Total Order : ${total}</Text>
+                  </View>
           <Text style={styles.deliveryDate}>Order date : {formattedDate}</Text>
           <Text style={styles.deliveryDate}>Quantity : {quantity}</Text>
           <View style={styles.ratingContainer}>
@@ -422,6 +427,23 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
 
+  },
+  priceDetails: {
+    justifyContent: 'center',
+    // alignItems: 'center',
+    // marginLeft: 10,
+    flexDirection:"column"
+  },
+  priceLabel: {
+    fontSize: 14,
+    color: '#AAAAAA',
+    marginBottom: 2,
+  },
+  priceValue: {
+    fontSize: 20,
+    color: '#8FFA09',
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
 });
 

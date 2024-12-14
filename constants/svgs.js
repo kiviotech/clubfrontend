@@ -39,6 +39,7 @@ import afterstoreScreen from "../assets/icons/afterstoreScreen.svg"
 import afterprofileScreen from "../assets/icons/afterprofileScreen.svg"
 import cartIcon from "../assets/icons/cartIcon.svg"
 import wishlistIcon from "../assets/icons/wishlistIcon.svg"
+import clublogo from "../assets/icons/clublogo.svg"
 export default {
   gicon,
   ficon,
@@ -79,6 +80,7 @@ export default {
   afterstoreScreen,
   afterprofileScreen,
   cartIcon,
-  wishlistIcon
+  wishlistIcon,
+  clublogo
 
 };
