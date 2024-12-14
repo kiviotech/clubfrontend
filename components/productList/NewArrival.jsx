@@ -128,7 +128,7 @@ const NewArrival = ({ limit }) => {
       renderItem={({ item }) => (
         <View style={styles.card}>
           <View style={styles.cardContent}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => handleWishlistAdd(item)}
               style={styles.favoriteIcon}
             >
@@ -141,7 +141,7 @@ const NewArrival = ({ limit }) => {
                   ? "red"
                   : "#fff"}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             {/* Display only the first image of each product */}
             <Image

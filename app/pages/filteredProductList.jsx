@@ -108,7 +108,8 @@ const FilteredProductList = ({ selectedDiscount }) => {
       price: product.price,
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
-      documentId:product.documentId
+      documentId:product.documentId,
+      description:product.description
     });
   
     router.push("../../pages/productDetails");
@@ -215,7 +216,7 @@ const FilteredProductList = ({ selectedDiscount }) => {
                  {product.brand.brand_name}
                </Text>
                <Text style={styles.productDescription}>
-                 {product.description}
+                 {product.product_Details}
                </Text>
                <Text style={styles.productPrice}>₹{product.price}</Text>
                {/* {isOutOfStock && <Text style={styles.stockText}></Text>} */}
