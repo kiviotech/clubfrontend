@@ -144,9 +144,9 @@ const Home = () => {
 
         </View>
 
-        <View style={styles.sale}>
+        {/* <View style={styles.sale}>
           <Sale />
-        </View>
+        </View> */}
 
         <View>
           <Text style={styles.popularProductsTitle}>New Arrival</Text>
