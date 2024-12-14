@@ -27,6 +27,7 @@ const OrderPage = () => {
         setLoading(true);
         const response = await getUserWithOrderDetails(userId); // Fetch data
         setOrderDetails(response?.data); // Save the fetched order details
+        console.log(response.data.order_details[0].orderItems[0].price)
         
         setLoading(false);
       } catch (err) {
@@ -69,7 +70,10 @@ const OrderPage = () => {
           {orderDetails?.order_details?.map((order) =>
             order.orderItems.map((item) => {
               const product = item.product; // Access product data
-              const imageUrl = `${MEDIA_BASE_URL}${product?.product_image?.url}`;
+              const imageUrl =
+              product?.product_image && product.product_image.length > 0
+                ? `${MEDIA_BASE_URL}${product.product_image[0]?.url}`
+                : `${MEDIA_BASE_URL}/default-image.jpg`;
               const productName = product?.name || "No Name";
               const productPrice = product?.price || "0.00";
               const level = order.level;
