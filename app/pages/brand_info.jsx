@@ -253,7 +253,7 @@ const brand_info = ({ limit }) => {
                         <Text style={styles.productDescription}>
                           {product.product_Details}
                         </Text>
-                        <Text style={styles.productPrice}>{product.price}</Text>
+                        <Text style={styles.productPrice}>₹{product.price}</Text>
                         {isOutOfStock && <Text style={styles.stockText}></Text>}
                       </View>
                     </TouchableOpacity>

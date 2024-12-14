@@ -57,7 +57,7 @@ const ProductCard = ({ id, productname, price, image, isWishlist, onDelete }) =>
           <Text style={styles.ratingText}>(32k Ratings)</Text>
         </View>
         <View style={styles.pricebutton}>
-          <Text style={styles.price}>${price}</Text>
+          <Text style={styles.price}>₹{price}</Text>
           <TouchableOpacity style={styles.button} onPress={handleAddToCart}>
             <Text style={styles.buttonText}>Add to Cart</Text>
           </TouchableOpacity>

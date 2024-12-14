@@ -92,7 +92,7 @@ const MobilePaymentRazorPay = () => {
                             (function() {
                                 try {
                                     var options = {
-                                        "key": "rzp_test_X9YfY2bGPwua8A", // Use test key if in development
+                                        "key": "rzp_live_J7INryzPN4waTo", // Use test key if in development
                                         "amount": "${totalAmount * 100}", // Amount in paise
                                         "currency": "INR",
                                         "name": "Dhairyawan",

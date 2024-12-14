@@ -124,8 +124,8 @@ const TrackOrderScreen = () => {
          
            <View style={styles.priceDetails}>
                     
-                    <Text style={styles.priceValue}>Price : ${productPrice}</Text>
-                    <Text style={styles.priceValue}>Total Order : ${total}</Text>
+                    <Text style={styles.priceValue}>Price : ₹{productPrice}</Text>
+                    <Text style={styles.priceValue}>Total Order : ₹{total}</Text>
                   </View>
           <Text style={styles.deliveryDate}>Order date : {formattedDate}</Text>
           <Text style={styles.deliveryDate}>Quantity : {quantity}</Text>
