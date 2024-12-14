@@ -183,7 +183,7 @@ const ProductSearch = ({ limit,searchTerm }) => {
                   {/* <Text style={styles.productDiscount}>{product.discount}% discount</Text> */}
                   <Text style={styles.productBrand}>{product.brand.brand_name}</Text>
                   <Text style={styles.productDescription}>{product.product_Details}</Text>
-                  <Text style={styles.productPrice}>{product.price}</Text>
+                  <Text style={styles.productPrice}>₹{product.price}</Text>
                   {/* {isOutOfStock && <Text style={styles.stockText}>Out of Stock</Text>} */}
                 </View>
               </TouchableOpacity>

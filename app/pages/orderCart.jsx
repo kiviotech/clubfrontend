@@ -51,9 +51,9 @@ const OrderCart = ({ imageUrl, productName, productPrice, level, id, documentId,
         </View>
         <View style={styles.priceDetails}>
           <Text style={styles.priceLabel}>Price:</Text>
-          <Text style={styles.priceValue}>${productPrice}</Text>
+          <Text style={styles.priceValue}>₹{productPrice}</Text>
           <Text style={styles.priceLabel}>Total Order:</Text>
-          <Text style={styles.priceValue}>${total}</Text>
+          <Text style={styles.priceValue}>₹{total}</Text>
         </View>
 
       </View>

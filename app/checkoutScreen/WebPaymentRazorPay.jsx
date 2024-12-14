@@ -8,7 +8,7 @@ import { createPaymentDetailService } from "../../src/api/services/paymentDetail
 
 
 const WebPaymentRazorPay = () => {
-  const [key_id] = useState("rzp_test_X9YfY2bGPwua8A");
+  const [key_id] = useState("rzp_live_J7INryzPN4waTo");
   const { totalAmount, razorpayOrderId, documentIds, orderDetailsDocumentId, orderdetailId } = useLocalSearchParams();
 
   useEffect(() => {
