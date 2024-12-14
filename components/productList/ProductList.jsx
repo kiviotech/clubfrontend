@@ -196,7 +196,7 @@ const getImageUrl = (images) => {
             <TouchableOpacity onPress={() => handleProductDetails(product)}>
               <View style={styles.imageWrapper}>
                 <Text style={styles.productName}>{product.name}</Text>
-                <Text style={styles.productdiscount}>{product.discount}% discount</Text>
+                {/* <Text style={styles.productdiscount}>{product.discount}% discount</Text> */}
                 <Text style={styles.productBrand}>
                   {product.brand?.brand_name}
                 </Text>
@@ -247,25 +247,28 @@ const styles = StyleSheet.create({
   imageWrapper: {
     position: "relative",
     alignItems: "center", // Center image horizontally
+    
   },
   productName: {
     color: "#ffffff",
     fontSize: 16, // Font size
     fontWeight: "bold",
     marginTop: 6, // Reduced margin for less height
+    textAlign: 'center',
   },
   productdiscount: {
     color: "red",
     fontSize: 12,
   },
   productBrand: {
-    color: "#9CA3AF",
+    color: "#8FFA09",
     fontSize: 12, // Font size
   },
   productDescription: {
     color: "#9CA3AF",
     fontSize: 12, // Font size
     marginTop: 2, // Reduced margin for less height
+    textAlign: 'center',
   },
   productPrice: {
     color: "#ffffff",

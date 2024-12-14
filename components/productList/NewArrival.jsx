@@ -73,6 +73,8 @@ const NewArrival = ({ limit }) => {
       price: product.price,
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
+      documentId:product.documentId,
+      description:product.description
     });
 
     router.push("../../pages/productDetails");
@@ -219,8 +221,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   productBrand: {
-    color: '#9CA3AF',
-    fontSize: 10,
+    color: '#8FFA09',
+    fontSize: 14,
   },
   productPrice: {
     color: '#fff',

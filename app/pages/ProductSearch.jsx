@@ -180,7 +180,7 @@ const ProductSearch = ({ limit,searchTerm }) => {
               <TouchableOpacity onPress={() => handleProductDetails(product)}>
                 <View style={styles.imageWrapper}>
                   <Text style={styles.productName}>{product.name}</Text>
-                  <Text style={styles.productDiscount}>{product.discount}% discount</Text>
+                  {/* <Text style={styles.productDiscount}>{product.discount}% discount</Text> */}
                   <Text style={styles.productBrand}>{product.brand.brand_name}</Text>
                   <Text style={styles.productDescription}>{product.product_Details}</Text>
                   <Text style={styles.productPrice}>{product.price}</Text>
@@ -237,19 +237,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginTop: 6,
+    textAlign: 'center',
   },
   productDiscount: {
     color: "red",
     fontSize: 12,
   },
   productBrand: {
-    color: "#9CA3AF",
+    color: "#8FFA09",
     fontSize: 12,
   },
   productDescription: {
     color: "#9CA3AF",
     fontSize: 12,
     marginTop: 2,
+    textAlign: 'center',
   },
   productPrice: {
     color: "#ffffff",
