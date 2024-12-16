@@ -38,21 +38,14 @@ export default function Payment() {
   const [discount, setDiscount] = useState(0);
   const [isApplied, setIsApplied] = useState(false);
   const [coupons, setCoupons] = useState([]);
-
-  // logic for calculating discount
-  // const couponCodes = {
-  //   DISCOUNT10: 10,
-  //   DISCOUNT20: 20,
-  //   DISCOUNT30: 30, // Add more dynamic codes as needed
-  // };
+  const [appliedCouponDocumentId, setAppliedCouponDocumentId] = useState(null);
 
   useEffect(() => {
     const fetchCouponsData = async () => {
       try {
-        const couponsData = await getCoupons(); // Fetch the coupons using the service
-        setCoupons(couponsData.data.data); // Store coupons in the state
-        console.log(couponsData.data.data[0].code)
-        console.log(couponsData.data.data[0].discount_percentage)
+        const couponsData = await getCoupons(); 
+        setCoupons(couponsData.data.data);
+        
       } catch (error) {
         console.error("Error fetching coupons:", error);
         setError("Failed to load coupons");
@@ -66,13 +59,17 @@ export default function Payment() {
   const handleCouponChange = (code) => {
     console.log("Coupon input changed:", code);
     setCouponCode(code);
-
+  
     try {
-      const appliedCoupon = coupons.find((coupon) => coupon.code === code);
-
+      // Convert user input to lowercase for comparison
+      const appliedCoupon = coupons.find((coupon) => 
+        coupon.code.toLowerCase() === code.trim().toLowerCase()
+      );
+  
       if (appliedCoupon) {
         setDiscount(appliedCoupon.discount_percentage);
         setIsApplied(true);
+        setAppliedCouponDocumentId(appliedCoupon.documentId);
       } else {
         setDiscount(0);
         setIsApplied(false);
@@ -81,6 +78,7 @@ export default function Payment() {
       console.error("Error applying coupon:", error);
     }
   };
+  
 
 
   useEffect(() => {
@@ -129,6 +127,7 @@ export default function Payment() {
           razorpayOrderId: "string",
           razorpayPaymentId: "string",
           razorpaySignature: "string",
+          coupon: appliedCouponDocumentId,
         },
       };
 
@@ -137,7 +136,7 @@ export default function Payment() {
       const orderDetailsDocumentId = response?.data?.documentId;
       const orderdetailId = response?.data?.id;
 
-      // console.log("Order Detail Response:", response.data.id);
+      console.log("Order Detail Response:",orderDetailsDocumentId);
 
       if (Platform.OS === 'web') {
         // Navigate to CheckoutScreen on web
@@ -150,6 +149,7 @@ export default function Payment() {
             documentIds: documentIds,
             orderDetailsDocumentId: orderdetailId, // Add the new documentId here
             orderdetailId: orderdetailId,
+            orderdocId:orderDetailsDocumentId,
           },
         });
 

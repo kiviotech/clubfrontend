@@ -9,7 +9,7 @@ import { createPaymentDetailService } from "../../src/api/services/paymentDetail
 
 const WebPaymentRazorPay = () => {
   const [key_id] = useState("rzp_live_J7INryzPN4waTo");
-  const { totalAmount, razorpayOrderId, documentIds, orderDetailsDocumentId, orderdetailId } = useLocalSearchParams();
+  const { totalAmount, razorpayOrderId, documentIds, orderDetailsDocumentId, orderdetailId,orderdocId } = useLocalSearchParams();
 
   useEffect(() => {
     const loadScript = (src) => {
@@ -73,14 +73,15 @@ const WebPaymentRazorPay = () => {
         },
         modal: {
           ondismiss: async function () {
-            // console.log("Razorpay modal dismissed");
-
-            if (orderDetailsDocumentId) {
+            console.log("Razorpay modal dismissed");
+        
+            // Use orderdocId for deleting the order detail document
+            if (orderdocId) {
               try {
-                await deleteOrderDetail(orderDetailsDocumentId); // Cleanup after payment
-                // console.log(`Order detail ID ${orderDetailsDocumentId} deleted.`);
+                await deleteOrderDetail(orderdocId); // Cleanup after payment
+                console.log(`Order detail ID ${orderdocId} deleted.`);
               } catch (error) {
-                // console.error("Error deleting order detail:", error);
+                console.error("Error deleting order detail:", error);
               }
             }
 

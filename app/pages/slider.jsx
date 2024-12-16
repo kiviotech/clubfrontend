@@ -232,7 +232,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
       // } catch (error) {
       //   console.error("Failed to open URL:", error);
       // }
-      router.push("/pages/request-design");
+      // router.push("/pages/request-design");
     } else if (index === 4) {
       router.push("/pages/request-design");
     } else if (index === 1 || index === 2 || index === 3) {
