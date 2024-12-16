@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -18,12 +18,15 @@ import { router } from "expo-router";
 import { login } from "../../src/utils/auth";
 import useStore from "../../src/store/useStore";
 import useUserDataStore from "../../src/store/userData";
+import { useRouter } from "expo-router";
 
 // Helper functions for platform-specific storage
 const saveData = async (key, value) => {
   if (Platform.OS === "web") {
     if (typeof localStorage !== "undefined") {
       localStorage.setItem(key, value);
+    } else {
+      // console.error("localStorage is not available");
     }
   } else {
     await AsyncStorage.setItem(key, value);
@@ -34,10 +37,24 @@ const getData = async (key) => {
   if (Platform.OS === "web") {
     if (typeof localStorage !== "undefined") {
       return localStorage.getItem(key);
+    } else {
+      // console.error("localStorage is not available");
+      return null;
     }
-    return null;
   } else {
     return await AsyncStorage.getItem(key);
+  }
+};
+
+const removeData = async (key) => {
+  if (Platform.OS === "web") {
+    if (typeof localStorage !== "undefined") {
+      localStorage.removeItem(key);
+    } else {
+      // console.error("localStorage is not available");
+    }
+  } else {
+    await AsyncStorage.removeItem(key);
   }
 };
 
@@ -48,23 +65,7 @@ const SignIn = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const setUser = useStore((state) => state.setShippingInfo);
   const addUser = useUserDataStore((state) => state.addUser);
-
-  // Check for existing token on component mount
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const token = await getData("token");
-        if (token) {
-          // If token exists, redirect to home
-          router.replace("/(tabs)/profile");
-        }
-      } catch (error) {
-        console.error("Error checking auth status:", error);
-      }
-    };
-
-    checkAuthStatus();
-  }, []);
+  const router = useRouter();
 
   const handlePassword = () => {
     router.push("/pages/changePasswordScreen");
@@ -90,7 +91,7 @@ const SignIn = () => {
     if (formErrors[name]) {
       setFormErrors({ ...formErrors, [name]: "" });
     }
-    setErrorMessage("");
+    setErrorMessage(""); // Clear error message on input change
   };
 
   const handleSubmit = async () => {
@@ -99,34 +100,40 @@ const SignIn = () => {
       setFormErrors(errors);
     } else {
       try {
+        // Make the login API call
         const response = await login(formValues.username, formValues.password);
+  
+        // Get the JWT and user data from response
         const { jwt, user } = response;
-
-        // Save token and user data
+  
+        // Store token and user data
         await saveData("token", jwt);
         await saveData("userId", user.id.toString());
-
-        // Update stores with user data
-        addUser({
+  
+        // Update both stores with user data
+        const userData = {
           id: user.id,
           username: user.username,
           email: user.email,
-        });
-
-        setUser({
-          id: user.id,
-          username: user.username,
-          email: user.email,
-        });
-
+        };
+  
+        addUser(userData);
+        setUser(userData);
+  
+        // Navigate to home screen
         router.replace("/home");
       } catch (error) {
-        setErrorMessage(
-          error.response?.data?.error?.message || "Invalid credentials"
-        );
+        // Only display an error message to the user without logging to console
+        setErrorMessage("Wrong username or password. Please try again.");
+        // Remove the line below if it exists, as it may be logging errors to the console.
+        // console.error(error);
       }
     }
   };
+  
+
+
+
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -177,14 +184,11 @@ const SignIn = () => {
         <Text style={styles.errorText}>{formErrors.password}</Text>
       )}
 
-      {errorMessage ? (
+{errorMessage ? (
         <Text style={styles.errorText}>{errorMessage}</Text>
       ) : null}
 
-      <TouchableOpacity
-        style={styles.forgotPasswordContainer}
-        onPress={handlePassword}
-      >
+      <TouchableOpacity style={styles.forgotPasswordContainer} onPress={handlePassword}>
         <Text style={styles.forgotPasswordText}>Forgot password?</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>

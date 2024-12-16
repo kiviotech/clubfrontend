@@ -404,7 +404,7 @@ const ProductDetails = () => {
             Lorem ipsum dolor sit amet, consectetur adipiscing elit...
           </Text> */}
           <TouchableOpacity>
-            <Text style={styles.seeMoreText}>See More</Text>
+            {/* <Text style={styles.seeMoreText}>See More</Text> */}
           </TouchableOpacity>
         </View>
 
