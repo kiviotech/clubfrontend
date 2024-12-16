@@ -217,6 +217,7 @@ export default function Payment() {
             <TextInput
               style={styles.input}
               placeholder="Enter coupon code"
+              placeholderTextColor="#FFFFFF"
               value={couponCode}
               onChangeText={handleCouponChange}
               keyboardType="default" // Ensure the right keyboard is used

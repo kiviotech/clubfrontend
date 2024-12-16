@@ -1,18 +1,45 @@
-import { View, Text, StyleSheet, Dimensions, useWindowDimensions } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  useWindowDimensions,
+} from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
 import Svgs from "../../constants/svgs";
+import { useAuthMiddleware } from "../../src/utils/AuthMiddleware";
+import ProtectedRoute from "../../components/ProtectedRoute";
 
-const TabIcon = ({ SvgIcon, AfterSvgIcon, color, name, focused, screenWidth }) => {
+const TabIcon = ({
+  SvgIcon,
+  AfterSvgIcon,
+  color,
+  name,
+  focused,
+  screenWidth,
+}) => {
   const iconSize = screenWidth > 400 ? 28 : 22; // Adjust icon size based on screen width
   const fontSize = screenWidth > 400 ? 16 : 12; // Adjust font size based on screen width
 
   return (
     <View style={styles.tabItem}>
       {focused ? (
-        <View style={[styles.focusedTabContainer, { paddingHorizontal: screenWidth > 400 ? 25 : 15 }]}>
+        <View
+          style={[
+            styles.focusedTabContainer,
+            { paddingHorizontal: screenWidth > 400 ? 25 : 15 },
+          ]}
+        >
           <AfterSvgIcon width={iconSize} height={iconSize} fill={"black"} />
-          <Text style={[styles.focusedTabLabel, { fontSize, lineHeight: fontSize + 4 }]}>{name}</Text>
+          <Text
+            style={[
+              styles.focusedTabLabel,
+              { fontSize, lineHeight: fontSize + 4 },
+            ]}
+          >
+            {name}
+          </Text>
         </View>
       ) : (
         <View style={styles.iconContainer}>
@@ -24,6 +51,8 @@ const TabIcon = ({ SvgIcon, AfterSvgIcon, color, name, focused, screenWidth }) =
 };
 
 const TabsLayout = () => {
+  useAuthMiddleware();
+
   const { width: screenWidth } = useWindowDimensions();
 
   const tabScreens = [
@@ -58,43 +87,45 @@ const TabsLayout = () => {
   ];
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarShowLabel: false,
-        tabBarActiveTintColor: "#8FFA09", // Bright green
-        tabBarInactiveTintColor: "#B0B0B0", // Light gray
-        tabBarStyle: {
-          backgroundColor: "black",
-          height: screenWidth > 400 ? 80 : 60, // Adjust height based on screen width
-          position: "absolute",
-          borderTopWidth: 0,
-          overflow: "hidden",
-          paddingLeft: 10,
-          paddingRight: 10,
-        },
-      }}
-    >
-      {tabScreens.map((screen) => (
-        <Tabs.Screen
-          key={screen.name}
-          name={screen.name}
-          options={{
-            title: screen.title,
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                SvgIcon={screen.SvgIcon}
-                AfterSvgIcon={screen.AfterSvgIcon}
-                color={color}
-                name={screen.label}
-                focused={focused}
-                screenWidth={screenWidth}
-              />
-            ),
-          }}
-        />
-      ))}
-    </Tabs>
+    <ProtectedRoute>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarActiveTintColor: "#8FFA09", // Bright green
+          tabBarInactiveTintColor: "#B0B0B0", // Light gray
+          tabBarStyle: {
+            backgroundColor: "black",
+            height: screenWidth > 400 ? 80 : 60, // Adjust height based on screen width
+            position: "absolute",
+            borderTopWidth: 0,
+            overflow: "hidden",
+            paddingLeft: 10,
+            paddingRight: 10,
+          },
+        }}
+      >
+        {tabScreens.map((screen) => (
+          <Tabs.Screen
+            key={screen.name}
+            name={screen.name}
+            options={{
+              title: screen.title,
+              tabBarIcon: ({ color, focused }) => (
+                <TabIcon
+                  SvgIcon={screen.SvgIcon}
+                  AfterSvgIcon={screen.AfterSvgIcon}
+                  color={color}
+                  name={screen.label}
+                  focused={focused}
+                  screenWidth={screenWidth}
+                />
+              ),
+            }}
+          />
+        ))}
+      </Tabs>
+    </ProtectedRoute>
   );
 };
 

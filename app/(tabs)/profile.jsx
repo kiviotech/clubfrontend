@@ -1,23 +1,33 @@
-import React,{useEffect,useState} from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity,ScrollView,Alert,Modal } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Modal,
+} from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
 import logo from "../../assets/logo.png";
-import Svgs from '../../constants/svgs';
-import { useRouter } from 'expo-router';
-import { getProfiles } from '../../src/api/repositories/profileRepository';
-import { MEDIA_BASE_URL } from '../../src/api/apiClient';
-import { getProfileByUserId } from '../../src/api/repositories/profileRepository';
-import useUserDataStore from '../../src/store/userData';
-import { getUserById } from '../../src/api/repositories/userRepository';
-import { logout } from '../../src/utils/auth';
-import { getUserProfile } from '../../src/api/repositories/userRepository';
-import useProfileStore from '../../src/store/useProfileStore';
-import useCartStore from '../../src/store/useCartStore';
-import useStore from '../../src/store/useStore';
-import { useFocusEffect } from '@react-navigation/native';
+import Svgs from "../../constants/svgs";
+import { useRouter } from "expo-router";
+import { getProfiles } from "../../src/api/repositories/profileRepository";
+import { MEDIA_BASE_URL } from "../../src/api/apiClient";
+import { getProfileByUserId } from "../../src/api/repositories/profileRepository";
+import useUserDataStore from "../../src/store/userData";
+import { getUserById } from "../../src/api/repositories/userRepository";
+import { logout } from "../../src/utils/auth";
+import { getUserProfile } from "../../src/api/repositories/userRepository";
+import useProfileStore from "../../src/store/useProfileStore";
+import useCartStore from "../../src/store/useCartStore";
+import useStore from "../../src/store/useStore";
+import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Profile = () => {
-  const [user, setUser] = useState(null); 
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const ProfileSvg = Svgs.profile;
   const router = useRouter();
@@ -25,11 +35,11 @@ const Profile = () => {
   const [profile, setProfile] = useState(null);
   const { name, username, image } = useProfileStore((state) => state.profile);
   // console.log('Profile from Zustand:', { name, username, image });
-  const removeItem = useCartStore((state)=> state.removeItem)
-  const removeUser = useUserDataStore((state)=> state.removeUser)
+  const removeItem = useCartStore((state) => state.removeItem);
+  const removeUser = useUserDataStore((state) => state.removeUser);
   const clearShippingInfo = useStore((state) => state.clearShippingInfo);
   const clearCart = useCartStore((state) => state.clearCart);
-  const [modalVisible, setModalVisible] = useState(false); 
+  const [modalVisible, setModalVisible] = useState(false);
   // Watch for changes in the profile state
 
   // Replace the navigation effect with useFocusEffect
@@ -47,15 +57,17 @@ const Profile = () => {
         const { data } = response;
         if (data && data.profile) {
           setProfile({
-            name: data.profile.name || '',
-            username: data.profile.username || '',
-            profileImage: data.profile.image?.url ? `${MEDIA_BASE_URL}${data.profile.image.url}` : 'https://example.com/fallback.png'
+            name: data.profile.name || "",
+            username: data.profile.username || "",
+            profileImage: data.profile.image?.url
+              ? `${MEDIA_BASE_URL}${data.profile.image.url}`
+              : "https://example.com/fallback.png",
           });
         }
       }
     } catch (error) {
       // console.error('Error fetching profile:', error);
-      Alert.alert('Error', 'Failed to fetch profile.');
+      Alert.alert("Error", "Failed to fetch profile.");
     } finally {
       setLoading(false);
     }
@@ -75,11 +87,8 @@ const Profile = () => {
         // username: user.username,
         // profile_img: `${MEDIA_BASE_URL}${user.profile_img.url}`,
       },
-      
     });
   };
-  
-  
 
   // const profile = {
   //   name: "Jess Bailey",
@@ -87,46 +96,56 @@ const Profile = () => {
   // };
 
   // const handlePassword = () => {
-  //   router.push("/pages/changePasswordScreen"); 
+  //   router.push("/pages/changePasswordScreen");
   // };
-  const handleSignOut = () => {
-    setModalVisible(false);
+  const handleLogout = async () => {
     try {
-      if (userId) {
-        removeUser(userId);
-      }
-      removeItem();
-      clearCart();
-      clearShippingInfo();
-      logout();
-      router.push("sign-in");
+      // Clear all auth-related data
+      await AsyncStorage.multiRemove([
+        "user-data-storage",
+        "token",
+        "userId",
+        "userData",
+        "user-storage",
+        "authToken",
+        "cart-storage",
+        "order-items-storage",
+        "rzp_checkout_anon_id",
+        "rzp_device_id",
+        "rzp_stored_checkout_id",
+      ]);
+
+      // Clear any other relevant store states
+      // Example: useUserDataStore.getState().clearUser();
+
+      // Force navigation to sign-in
+      router.replace("/(auth)/sign-in");
     } catch (error) {
-      // console.error("Error during logout:", error);
+      console.error("Logout failed:", error);
+      Alert.alert("Error", "Failed to logout. Please try again.");
     }
   };
 
-
   const Profile = () => {
-    router.push("/pages/profileScreen"); 
+    router.push("/pages/profileScreen");
   };
 
   const handlePassword = () => {
-    router.push("/pages/ResetPasswordScreen"); 
+    router.push("/pages/ResetPasswordScreen");
   };
   const handleAddress = () => {
-    router.push("/pages/changeAddress"); 
+    router.push("/pages/changeAddress");
   };
   const handleCart = () => {
-    router.push("/pages/orderPage"); 
+    router.push("/pages/orderPage");
   };
   const handleLanguage = () => {
-    router.push("pages/designRequestCart"); 
+    router.push("pages/designRequestCart");
   };
 
   return (
     <ScrollView style={styles.container}>
-
-<Modal
+      <Modal
         visible={modalVisible}
         transparent={true}
         animationType="fade"
@@ -135,7 +154,9 @@ const Profile = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Confirm Logout</Text>
-            <Text style={styles.modalMessage}>Are you sure you want to logout?</Text>
+            <Text style={styles.modalMessage}>
+              Are you sure you want to logout?
+            </Text>
             <View style={styles.modalActions}>
               <TouchableOpacity
                 style={[styles.modalButton, styles.cancelButton]}
@@ -145,7 +166,7 @@ const Profile = () => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalButton, styles.confirmButton]}
-                onPress={handleSignOut}
+                onPress={handleLogout}
               >
                 <Text style={styles.buttonText1}>Logout</Text>
               </TouchableOpacity>
@@ -153,7 +174,7 @@ const Profile = () => {
           </View>
         </View>
       </Modal>
-     
+
       {/* Header with Logo and Logout */}
       <View style={styles.headerRow}>
         <Image source={logo} style={styles.logo} />
@@ -162,36 +183,48 @@ const Profile = () => {
           onPress={() => setModalVisible(true)}
         >
           <Text style={styles.logoutText}>Logout</Text>
-          <Icon name="log-out-outline" size={20} color="#8FFA09" style={styles.logoutIcon} />
+          <Icon
+            name="log-out-outline"
+            size={20}
+            color="#8FFA09"
+            style={styles.logoutIcon}
+          />
         </TouchableOpacity>
       </View>
 
       {/* Profile Section */}
       <View style={styles.header}>
         {/* Display Profile Image */}
-        <Image source={{ uri: profile?.profileImage }} style={styles.profileImage} />
+        <Image
+          source={{ uri: profile?.profileImage }}
+          style={styles.profileImage}
+        />
         <View style={styles.profileText}>
           <Text style={styles.profileName}>{profile?.name}</Text>
           <Text style={styles.profileUsername}>{profile?.username}</Text>
         </View>
       </View>
-     
 
       {/* Account Section */}
       <Text style={styles.sectionTitle}>Account</Text>
       <View style={styles.section}>
-      <TouchableOpacity onPress={Profile} style={styles.menuItem}>
+        <TouchableOpacity onPress={Profile} style={styles.menuItem}>
           <Icon name="person" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Profile</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={handlePassword}>
-          <Icon name="lock-closed" size={20} color="#8FFA09" style={styles.icon} />
+          <Icon
+            name="lock-closed"
+            size={20}
+            color="#8FFA09"
+            style={styles.icon}
+          />
           <Text style={styles.menuText}>Change password</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}  onPress={handleAddress}>
-          <Icon name="location" size={20} color="#8FFA09" style={styles.icon}/>
+        <TouchableOpacity style={styles.menuItem} onPress={handleAddress}>
+          <Icon name="location" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Change address</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
@@ -200,7 +233,7 @@ const Profile = () => {
           <Text style={styles.menuText}>Orders</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={handleLanguage }>
+        <TouchableOpacity style={styles.menuItem} onPress={handleLanguage}>
           <Icon name="language" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Design Request</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
@@ -211,17 +244,32 @@ const Profile = () => {
       <Text style={styles.sectionTitle}>Feedback & Information</Text>
       <View style={styles.section}>
         <TouchableOpacity style={styles.menuItem}>
-          <Icon name="help-circle" size={20} color="#8FFA09" style={styles.icon} />
+          <Icon
+            name="help-circle"
+            size={20}
+            color="#8FFA09"
+            style={styles.icon}
+          />
           <Text style={styles.menuText}>FAQ's</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem}>
-          <Icon name="document-text" size={20} color="#8FFA09" style={styles.icon} />
+          <Icon
+            name="document-text"
+            size={20}
+            color="#8FFA09"
+            style={styles.icon}
+          />
           <Text style={styles.menuText}>Term of Service</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem}>
-          <Icon name="shield-checkmark" size={20} color="#8FFA09" style={styles.icon} />
+          <Icon
+            name="shield-checkmark"
+            size={20}
+            color="#8FFA09"
+            style={styles.icon}
+          />
           <Text style={styles.menuText}>Privacy Policy</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
@@ -233,34 +281,33 @@ const Profile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212', // Dark background color
+    backgroundColor: "#121212", // Dark background color
     paddingHorizontal: 20,
     paddingTop: 40,
-    
   },
   headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between', // Ensures space between logo and logout button
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between", // Ensures space between logo and logout button
     marginBottom: 20,
-    marginTop:10,
+    marginTop: 10,
   },
   logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 5,
     paddingHorizontal: 10,
   },
   logoutText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
   },
   logoutIcon: {
     marginLeft: 5,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 30,
   },
   profileImage: {
@@ -272,27 +319,27 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   profileName: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   profileUsername: {
-    color: '#ccc',
+    color: "#ccc",
     fontSize: 14,
   },
   sectionTitle: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
     marginVertical: 10,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   section: {
     borderRadius: 10,
     paddingVertical: 10,
   },
   menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 20,
     paddingHorizontal: 10,
   },
@@ -301,60 +348,60 @@ const styles = StyleSheet.create({
   },
   menuText: {
     flex: 1,
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)', // Semi-transparent background
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)", // Semi-transparent background
   },
   modalContent: {
-    width: '80%',
+    width: "80%",
     padding: 20,
-    backgroundColor: '#1e1e1e',
+    backgroundColor: "#1e1e1e",
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontWeight: "bold",
+    color: "#fff",
     marginBottom: 10,
   },
   modalMessage: {
     fontSize: 14,
-    color: '#ccc',
-    textAlign: 'center',
+    color: "#ccc",
+    textAlign: "center",
     marginBottom: 20,
   },
   modalActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
   },
   modalButton: {
     flex: 1,
     paddingVertical: 10,
     marginHorizontal: 5,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   cancelButton: {
-    backgroundColor: '#444',
+    backgroundColor: "#444",
   },
   confirmButton: {
-    backgroundColor: '#8FFA09',
+    backgroundColor: "#8FFA09",
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
   },
-  buttonText1:{
-    color: '#000',
-    fontWeight: 'bold',
-  }
+  buttonText1: {
+    color: "#000",
+    fontWeight: "bold",
+  },
 });
 
 export default Profile;
