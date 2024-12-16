@@ -22,7 +22,7 @@ const Totalamount = ({ delivery, onTotalChange=()=>{} }) => {
             {/* Delivery Charges */}
             <View style={styles.row}>
               <Text style={styles.label}>Delivery Charges</Text>
-              <Text style={styles.amount}>₹{delivery}</Text>
+              <Text style={styles.amount}>  ₹{delivery}</Text>
             </View>
 
             {/* Horizontal Line */}

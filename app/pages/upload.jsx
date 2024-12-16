@@ -29,28 +29,30 @@ const Measurement = () => {
     // Launch the image library for selection
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: true,
+      allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
 
     if (!result.canceled) {
       const uri = result.assets[0].uri;
+      console.log("Selected Image URI:", uri); // Debugging
       setImages([uri]);
 
       try {
         setUploading(true);
 
-        // Convert URI to Blob for upload
-        // const imageBlob = await (await fetch(uri)).blob();
+        // Fetch the image as a Blob
+        const imageBlob = await (await fetch(uri)).blob(); // Convert URI to Blob
+        console.log(imageBlob); // Log Blob for debugging
+
+        // Prepare FormData for upload
         const formData = new FormData();
-        formData.append("files",{
-         uri:uri,
-         type:"image/jpeg",
-         name: "custom-image.jpg"
-        });
+        formData.append("files", imageBlob, "custom-image.jpg"); // Append the blob with a file name
 
+        console.log("FormData Content:", formData); // Log formData to see its contents
 
+        // Upload image using Axios
         const uploadResponse = await axios.post(
           `${BASE_URL}/upload`,
           formData,
@@ -61,9 +63,9 @@ const Measurement = () => {
               'Accept': 'application/json',
             },
           }
-        )
-        const uploadedImageId = uploadResponse.data[0]?.id;
-        // console.log(uploadedImageId)// Assuming the backend returns the uploaded file ID
+        );
+
+        const uploadedImageId = uploadResponse.data[0]?.id;  // Assuming backend returns image ID
 
         if (uploadedImageId) {
           setProfileImageId(uploadedImageId);
@@ -74,13 +76,14 @@ const Measurement = () => {
           throw new Error("Failed to retrieve uploaded image ID.");
         }
       } catch (error) {
-        // console.error("Error uploading image:", error);
+        console.error("Error uploading image:", error);
         Alert.alert("Upload Error", "Failed to upload the image.");
       } finally {
         setUploading(false);
       }
     }
   };
+
 
   const handleNextSection = () => {
     if (!profileImageId) {

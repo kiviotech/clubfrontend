@@ -18,38 +18,30 @@ import Totalamount from "./totalamount";
 const Cart = () => {
   const router = useRouter();
   const cartItems = useCartStore((state) => state.items);
-  // console.log("data",cartItems)
   const subtotal = useCartStore((state) => state.subtotal);
-  const [deliveryCharge, setDeliveryCharge] = useState(0);
-  
+  const [deliveryCharge, setDeliveryCharge] = useState(50); // Default to 50
 
   useEffect(() => {
-    if (subtotal === 0) {
-      setDeliveryCharge(0);
-    } else if (subtotal < 100) {
-      setDeliveryCharge(10);
-    } else if (subtotal < 200) {
-      setDeliveryCharge(5);
-    } else {
-      setDeliveryCharge(0);
-    }
+    setDeliveryCharge(50); // Fixed delivery charge
   }, [subtotal]);
 
   const handleBack = () => {
     router.back("/pages/productDetails");
-};
+  };
 
-  
   const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      alert("Your cart is empty. Please add items before checking out.");
+      return;
+    }
+
     const productIds = cartItems.map((item) => item.id);
-    // console.log("id",productIds)
     router.push({
       pathname: "/pages/checkout",
       params: {
-        id: productIds
-      }
+        id: productIds,
+      },
     });
-    // console.log(productIds)
   };
 
   return (
@@ -83,10 +75,14 @@ const Cart = () => {
           )}
 
           <View style={styles.checkoutContainer}>
-            <Totalamount subtotal={subtotal} delivery={deliveryCharge} />
+            <Totalamount subtotal={subtotal} delivery ={deliveryCharge} />
             <TouchableOpacity
               onPress={handleCheckout}
-              style={styles.checkoutButton}
+              style={[
+                styles.checkoutButton,
+                cartItems.length === 0 && styles.disabledButton,
+              ]}
+              disabled={cartItems.length === 0}
             >
               <Text style={styles.checkoutText}>Check-out</Text>
             </TouchableOpacity>
@@ -143,6 +139,10 @@ const styles = StyleSheet.create({
     color: "#333",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  disabledButton: {
+    backgroundColor: "#666",
+    opacity: 0.5,
   },
 });
 

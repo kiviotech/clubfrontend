@@ -4,6 +4,9 @@ import { getToken } from "../utils/storage";
 export const BASE_URL = "http://192.168.246.41:1337/api";
 export const MEDIA_BASE_URL = "http://192.168.246.41:1337";
 
+// export const BASE_URL = "http://localhost:1337/api";
+// export const MEDIA_BASE_URL = "http://localhost:1337";
+
 // export const BASE_URL = "http://192.168.246.41:1337/api";
 // export const MEDIA_BASE_URL = "http://192.168.246.41:1337";
 
@@ -21,7 +24,7 @@ apiClient.interceptors.request.use(
       // console.log('Fetched token:', token); // Debugging log
 
       if (token) {
-        config.headers.Authorization =` Bearer ${token}`;
+        config.headers.Authorization = ` Bearer ${token}`;
         //console.log("Token set in headers"); // Debugging log
       } else {
         //console.warn("No token available"); // Warn if no token is found
