@@ -213,7 +213,7 @@ const FilteredProductList = ({ selectedDiscount }) => {
                <Text style={styles.productName}>{product.name}</Text>
                {/* <Text style={styles.productdiscount}>{product.discount}% discount</Text> */}
                <Text style={styles.productBrand}>
-                 {product.brand.brand_name}
+                 {product.brand?.brand_name}
                </Text>
                <Text style={styles.productDescription}>
                  {product.product_Details}

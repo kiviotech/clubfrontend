@@ -39,13 +39,13 @@ const BrandPage = () => {
     // console.log("Passing brandPoster:", brandPosterUrl);
   
     // Set selected brand
-    setSelectedBrand(brand.brand_name);
+    setSelectedBrand(brand?.brand_name);
   
     // Navigate to the brand_info page with the brand details
     router.push({
       pathname: "/pages/brand_info",
       params: {
-        brandName: brand.brand_name,
+        brandName: brand?.brand_name,
         brandId: brand.id,
         brandImage: `${MEDIA_BASE_URL}${brand.brand_logo.url}`,
         brandDescription: brand.description,
