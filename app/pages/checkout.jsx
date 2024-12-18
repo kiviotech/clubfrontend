@@ -24,10 +24,8 @@ import useCartStore from "../../src/store/useCartStore";
 import { getShippingInfoByUserId } from "../../src/api/repositories/shippingInfoRepository";
 import useOrderStore from "../../src/store/useOrderItemStore";
 import useUserDataStore from "../../src/store/userData";
-import { useAuthMiddleware } from "../../src/utils/AuthMiddleware";
 
 const Checkout = () => {
-  useAuthMiddleware();
   const router = useRouter();
   const { shippingInfo, setShippingInfo, setShippingId } = useStore();
   const [addresses, setAddresses] = useState([]);
@@ -53,6 +51,7 @@ const Checkout = () => {
     setModalVisible(false);
   };
 
+
   const userId = useUserDataStore((state) => state.users[0]?.id);
   useEffect(() => {
     if (!userId) return; // Ensure userId is available before proceeding
@@ -69,6 +68,7 @@ const Checkout = () => {
     fetchShippingInfos();
   }, [userId]); // Re-fetch if userId changes
 
+
   const handlePayment = async () => {
     if (!cartItems || cartItems.length === 0) {
       alert("Your cart is empty. Please add items to proceed.");
@@ -83,7 +83,7 @@ const Checkout = () => {
 
         // Map over cartItems and process each asynchronously
         const promises = cartItems.map(async (item) => {
-          console.log(item.size);
+          console.log(item.size)
           const orderItemData = {
             data: {
               quantity: item.quantity || 1,
@@ -91,7 +91,7 @@ const Checkout = () => {
               subtotal: (item.quantity || 1) * (item.price || 1),
               product: item.id,
               locale: "en",
-              size: item.size,
+              size:item.size
             },
           };
 
@@ -140,28 +140,23 @@ const Checkout = () => {
   // const documentIdOrderItem = response.data.documentId;
   // console.log("hello",docu)
   const [errors, setErrors] = useState({
-    fullName: "",
-    address: "",
-    state: "",
-    pincode: "",
-    phoneNo: "",
+    fullName: '',
+    address: '',
+    state: '',
+    pincode: '',
+    phoneNo: '',
   });
 
+
   const handleAddAddress = async () => {
-    setErrors({
-      fullName: "",
-      address: "",
-      state: "",
-      pincode: "",
-      phoneNo: "",
-    });
+    setErrors({ fullName: '', address: '', state: '', pincode: '', phoneNo: '' });
     let valid = true;
     const errorMessages = {};
-
+  
     // Regular expressions for validation
     const nameRegex = /^[A-Za-z\s]+$/; // Allows only letters and spaces
     const stateRegex = /^[A-Za-z\s]+$/; // Allows only letters and spaces
-
+  
     // Validate fullName
     if (!fullName) {
       valid = false;
@@ -170,7 +165,7 @@ const Checkout = () => {
       valid = false;
       errorMessages.fullName = "Name should only contain letters";
     }
-
+  
     // Validate state
     if (!state) {
       valid = false;
@@ -179,27 +174,27 @@ const Checkout = () => {
       valid = false;
       errorMessages.state = "State should only contain letters";
     }
-
+  
     if (!address) {
       valid = false;
       errorMessages.address = "Address is required";
     }
-
+  
     if (!pincode || pincode.length !== 6) {
       valid = false;
       errorMessages.pincode = "Pincode should be 6 digits";
     }
-
+  
     if (!phoneNo || phoneNo.length !== 10) {
       valid = false;
       errorMessages.phoneNo = "Phone number should be 10 digits";
     }
-
+  
     if (!valid) {
       setErrors(errorMessages);
       return;
     }
-
+  
     const data = {
       Fullname: fullName,
       Address: address,
@@ -208,17 +203,17 @@ const Checkout = () => {
       phone_no: phoneNo,
       user: userId,
     };
-
+  
     try {
       const response = await createShippingInfo({ data });
       const shippingId = response.data.data.id;
       setShippingInfo(data);
       setShippingId(shippingId);
-
+  
       // Update shippingInfos instead of addresses
       setShippingInfos([...shippingInfos, { ...data, id: shippingId }]);
       setModalVisible(false);
-
+  
       // Clear form fields
       setFullName("");
       setAddress("");
@@ -230,6 +225,7 @@ const Checkout = () => {
       alert("Failed to submit shipping information.");
     }
   };
+  
 
   const handleContinueToPayment = () => {
     handlePayment();
@@ -338,9 +334,7 @@ const Checkout = () => {
                   value={fullName}
                   onChangeText={setFullName}
                 />
-                {errors.fullName && (
-                  <Text style={styles.errorText}>{errors.fullName}</Text>
-                )}
+                {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
 
                 <Text style={styles.inputLabel}>Address</Text>
                 <TextInput
@@ -348,9 +342,7 @@ const Checkout = () => {
                   value={address}
                   onChangeText={setAddress}
                 />
-                {errors.address && (
-                  <Text style={styles.errorText}>{errors.address}</Text>
-                )}
+                {errors.address && <Text style={styles.errorText}>{errors.address}</Text>}
 
                 <View style={styles.row}>
                   <View style={styles.inputContainer}>
@@ -360,9 +352,7 @@ const Checkout = () => {
                       value={state}
                       onChangeText={setState}
                     />
-                    {errors.state && (
-                      <Text style={styles.errorText}>{errors.state}</Text>
-                    )}
+                    {errors.state && <Text style={styles.errorText}>{errors.state}</Text>}
                   </View>
                   <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>Pincode</Text>
@@ -372,9 +362,7 @@ const Checkout = () => {
                       onChangeText={setPincode}
                       keyboardType="numeric"
                     />
-                    {errors.pincode && (
-                      <Text style={styles.errorText}>{errors.pincode}</Text>
-                    )}
+                    {errors.pincode && <Text style={styles.errorText}>{errors.pincode}</Text>}
                   </View>
                 </View>
                 <Text style={styles.inputLabel}>Phone No.</Text>
@@ -384,9 +372,7 @@ const Checkout = () => {
                   onChangeText={setPhoneNo}
                   keyboardType="phone-pad"
                 />
-                {errors.phoneNo && (
-                  <Text style={styles.errorText}>{errors.phoneNo}</Text>
-                )}
+                {errors.phoneNo && <Text style={styles.errorText}>{errors.phoneNo}</Text>}
                 <TouchableOpacity
                   style={styles.button}
                   onPress={handleAddAddress}
@@ -465,7 +451,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 10,
     padding: 20,
-    position: "relative",
+    position: 'relative',
   },
   modalHeader: {
     fontSize: 20,
