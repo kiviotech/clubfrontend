@@ -17,70 +17,73 @@ const Measurement = () => {
   const { setUploads } = useFormStore();
   const [error, setError] = useState(null);
 
-  const pickImage = async () => {
-    setError(null);
-    // Request permission to access the media library
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      alert("Sorry, we need camera roll permissions to make this work!");
-      return;
-    }
+ 
+const pickImage = async () => {
+  setError(null);
+  // Request permission to access the media library
+  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  if (status !== "granted") {
+    alert("Sorry, we need camera roll permissions to make this work!");
+    return;
+  }
 
-    // Launch the image library for selection
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
+  // Launch the image library for selection
+  let result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: [1, 1],
+    quality: 1,
+  });
 
-    if (!result.canceled) {
-      const uri = result.assets[0].uri;
-      setImages([uri]);
+  if (!result.canceled) {
+    const uri = result.assets[0].uri;
+    console.log("Selected Image URI:", uri); // Debugging
+    setImages([uri]);
 
-      try {
-        setUploading(true);
+    try {
+      setUploading(true);
 
-        // Convert URI to Blob for upload
-        // const imageBlob = await (await fetch(uri)).blob();
-        const formData = new FormData();
-        formData.append("files",{
-         uri:uri,
-         type:"image/jpeg",
-         name: "custom-image.jpg"
-        });
+      // Fetch the image as a Blob
+      const imageBlob = await (await fetch(uri)).blob(); // Convert URI to Blob
+      console.log(imageBlob); // Log Blob for debugging
 
+      // Prepare FormData for upload
+      const formData = new FormData();
+      formData.append("files", imageBlob, "custom-image.jpg"); // Append the blob with a file name
 
-        const uploadResponse = await axios.post(
-          `${BASE_URL}/upload`,
-          formData,
-          {
-            headers: {
-              'Authorization': 'Bearer e243b33014fab23926d9b9079d6c90018b288b84740bb443eb910febdec1b93b6563c2b091a18081788c2bb2eb950ad15bead95e14029283ab2bfd0f4ea563eb590955e3cbbfdc100e9ef8a565993c6bd8e02985ef14df8f83123689c5f139ac50263be891842c8522877b7b73fe5136c56e0ae9823d1e9d96743ebcff502780',
-              'Content-Type': 'multipart/form-data',
-              'Accept': 'application/json',
-            },
-          }
-        )
-        const uploadedImageId = uploadResponse.data[0]?.id;
-        // console.log(uploadedImageId)// Assuming the backend returns the uploaded file ID
+      console.log("FormData Content:", formData); // Log formData to see its contents
 
-        if (uploadedImageId) {
-          setProfileImageId(uploadedImageId);
-          setUploads(uploadedImageId);
-          setError(null);
-          Alert.alert("Upload Successful", "Profile image uploaded successfully!");
-        } else {
-          throw new Error("Failed to retrieve uploaded image ID.");
+      // Upload image using Axios
+      const uploadResponse = await axios.post(
+        `${BASE_URL}/upload`,
+        formData,
+        {
+          headers: {
+            'Authorization': 'Bearer e243b33014fab23926d9b9079d6c90018b288b84740bb443eb910febdec1b93b6563c2b091a18081788c2bb2eb950ad15bead95e14029283ab2bfd0f4ea563eb590955e3cbbfdc100e9ef8a565993c6bd8e02985ef14df8f83123689c5f139ac50263be891842c8522877b7b73fe5136c56e0ae9823d1e9d96743ebcff502780',
+            'Content-Type': 'multipart/form-data',
+            'Accept': 'application/json',
+          },
         }
-      } catch (error) {
-        // console.error("Error uploading image:", error);
-        Alert.alert("Upload Error", "Failed to upload the image.");
-      } finally {
-        setUploading(false);
+      );
+
+      const uploadedImageId = uploadResponse.data[0]?.id;  // Assuming backend returns image ID
+
+      if (uploadedImageId) {
+        setProfileImageId(uploadedImageId);
+        setUploads(uploadedImageId);
+        setError(null);
+        Alert.alert("Upload Successful", "Profile image uploaded successfully!");
+      } else {
+        throw new Error("Failed to retrieve uploaded image ID.");
       }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      Alert.alert("Upload Error", "Failed to upload the image.");
+    } finally {
+      setUploading(false);
     }
-  };
+  }
+};
 
   const handleNextSection = () => {
     if (!profileImageId) {

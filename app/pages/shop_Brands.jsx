@@ -37,7 +37,7 @@ const ShopByBrands = () => {
         const products = response.data.data.map(product => ({
           id: product.id,
           mainImage: `${MEDIA_BASE_URL}${product.product_image.url}`, // Adjust if your structure is different
-          brandName: product.brand.brand_name || 'Default Brand', // Default name if brand is not available
+          brandName: product.brand?.brand_name || 'Default Brand', // Default name if brand is not available
         }));
 
         setProductDetails(products);

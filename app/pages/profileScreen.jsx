@@ -87,29 +87,29 @@ const ProfileScreen = () => {
       alert("Permission to access media library is required!");
       return;
     }
+    
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
-
+  
     if (!result.canceled) {
       const uri = result.assets[0].uri;
       setProfileImage(uri); // Set image locally for preview
-
+  
       try {
         setUploading(true);
-
+  
+        // Fetch the image as a Blob
+        const imageBlob = await (await fetch(uri)).blob(); // Convert URI to Blob
+  
         // Create FormData
         const formData = new FormData();
-        formData.append('files', {
-          uri: uri,
-          type: 'image/jpeg', // You might want to detect this dynamically
-          name: 'profile-image.jpg'
-        });
-
-        // Upload file with bearer token
+        formData.append('files', imageBlob, 'profile-image.jpg'); // Append the blob with a filename
+  
+        // Upload the file with a bearer token
         const uploadResponse = await axios.post(
           `${BASE_URL}/upload`,
           formData,
@@ -121,10 +121,11 @@ const ProfileScreen = () => {
             },
           }
         );
-        
+  
+        // Check the upload response and get the uploaded image ID
         const uploadedImageId = uploadResponse.data[0]?.id;
         if (uploadedImageId) {
-          setProfileImageId(uploadedImageId);
+          setProfileImageId(uploadedImageId); // Store the image ID
           Alert.alert("Upload Successful", "Profile image uploaded successfully!");
         } else {
           throw new Error("Failed to retrieve uploaded image ID.");
@@ -137,6 +138,7 @@ const ProfileScreen = () => {
       }
     }
   };
+  
 
   const handleUpdateProfile = async () => {
     try {

@@ -43,11 +43,11 @@ const BrandIcons = () => {
           ? `${MEDIA_BASE_URL}${brand.brand_poster[0].url}`
           : 'https://example.com/fallback-image.jpg';
     
-    setSelectedBrand(brand.brand_name);
+    setSelectedBrand(brand?.brand_name);
     router.push({
       pathname: "/pages/brand_info",
       params: {
-        brandName: brand.brand_name,
+        brandName: brand?.brand_name,
         brandId: brand.id,
         brandImage: `${MEDIA_BASE_URL}${brand.brand_logo.url}`,
         brandDescription: brand.description,
@@ -79,8 +79,8 @@ const BrandIcons = () => {
                 style={styles.brandLogo} 
                 resizeMode="contain"
               />
-              <Text style={styles.brandName}>{brand.brand_name}</Text>
-              {selectedBrand === brand.brand_name && <View style={styles.selectedText}></View>}
+              <Text style={styles.brandName}>{brand?.brand_name}</Text>
+              {selectedBrand === brand?.brand_name && <View style={styles.selectedText}></View>}
             </View>
           </TouchableOpacity>
            );
