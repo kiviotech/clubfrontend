@@ -1,8 +1,11 @@
 import axios from "axios";
 import { getToken } from "../utils/storage";
 
-export const BASE_URL = "http://192.168.246.41:1337/api";
-export const MEDIA_BASE_URL = "http://192.168.246.41:1337";
+// export const BASE_URL = "http://192.168.246.41:1337/api";
+// export const MEDIA_BASE_URL = "http://192.168.246.41:1337";
+
+export const BASE_URL = "http://localhost:1337/api";
+export const MEDIA_BASE_URL = "http://localhost:1337";
 
 // export const BASE_URL = "http://192.168.246.41:1337/api";
 // export const MEDIA_BASE_URL = "http://192.168.246.41:1337";

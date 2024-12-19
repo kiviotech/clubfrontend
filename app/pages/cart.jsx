@@ -14,12 +14,20 @@ import logo from "../../assets/logo.png";
 import { Ionicons } from "@expo/vector-icons";
 import useCartStore from "../../src/store/useCartStore";
 import Totalamount from "./totalamount";
+import useUserDataStore from "../../src/store/userData";
 
 const Cart = () => {
   const router = useRouter();
+  const userId = useUserDataStore((state) => state.users[0]?.id);
   const cartItems = useCartStore((state) => state.items);
   const subtotal = useCartStore((state) => state.subtotal);
   const [deliveryCharge, setDeliveryCharge] = useState(50); // Default to 50
+
+  useEffect(() => {
+    if (!userId) {
+      router.push("/sign-in");
+    }
+  }, [userId]);
 
   useEffect(() => {
     setDeliveryCharge(50); // Fixed delivery charge
