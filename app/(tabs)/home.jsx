@@ -57,8 +57,13 @@ const Home = () => {
   };
 
   const handleRequest = () => {
-    router.push("/pages/request-design");
+    if (!userId) {
+      router.push("/sign-in");
+    } else {
+      router.push("/pages/request-design");
+    }
   };
+  
 
   const handleNotify = () => {
     router.push("/pages/notification");
@@ -96,11 +101,11 @@ const Home = () => {
       <Header />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.welcomeBox}>
-          <Text style={styles.welcomeText}>Welcome back 👋</Text>
+          <Text style={styles.welcomeText}>Welcome 👋</Text>
           {user?.username ? (
             <Text style={styles.userName}>{user.username}</Text> // Display the username
           ) : (
-            <Text style={styles.userName}>User</Text> // Fallback for undefined username
+            <></>
           )}
           <Text style={styles.exploreBrand}>Club Features</Text>
           <Slider />

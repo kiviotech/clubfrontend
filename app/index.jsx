@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Video } from "expo-av";
 import SignIn from "./(auth)/sign-in";
 import { Asset } from "expo-asset";
+import Home from "./(tabs)/home";
 
 const { width, height } = Dimensions.get("window");
 
@@ -66,7 +67,7 @@ export default function App() {
   }
 
   // Show SignIn screen after splash
-  return <SignIn />;
+  return <Home />;
 }
 
 const styles = StyleSheet.create({
