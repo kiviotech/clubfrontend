@@ -380,8 +380,8 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
     },
     savedTextbox: {
-        flex: 1, // Ensures the text content takes the available space
-        marginRight: 10, // Adds some spacing before the select button
+        flex: 1, 
+        marginRight: 10, 
     },
     savedText: {
         color: "#fff",
