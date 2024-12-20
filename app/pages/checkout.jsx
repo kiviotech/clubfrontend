@@ -91,7 +91,7 @@ const Checkout = () => {
               subtotal: (item.quantity || 1) * (item.price || 1),
               product: item.id,
               locale: "en",
-              size:item.size
+              size: item.size
             },
           };
 
@@ -152,11 +152,11 @@ const Checkout = () => {
     setErrors({ fullName: '', address: '', state: '', pincode: '', phoneNo: '' });
     let valid = true;
     const errorMessages = {};
-  
+
     // Regular expressions for validation
     const nameRegex = /^[A-Za-z\s]+$/; // Allows only letters and spaces
     const stateRegex = /^[A-Za-z\s]+$/; // Allows only letters and spaces
-  
+
     // Validate fullName
     if (!fullName) {
       valid = false;
@@ -165,7 +165,7 @@ const Checkout = () => {
       valid = false;
       errorMessages.fullName = "Name should only contain letters";
     }
-  
+
     // Validate state
     if (!state) {
       valid = false;
@@ -174,27 +174,27 @@ const Checkout = () => {
       valid = false;
       errorMessages.state = "State should only contain letters";
     }
-  
+
     if (!address) {
       valid = false;
       errorMessages.address = "Address is required";
     }
-  
+
     if (!pincode || pincode.length !== 6) {
       valid = false;
       errorMessages.pincode = "Pincode should be 6 digits";
     }
-  
+
     if (!phoneNo || phoneNo.length !== 10) {
       valid = false;
       errorMessages.phoneNo = "Phone number should be 10 digits";
     }
-  
+
     if (!valid) {
       setErrors(errorMessages);
       return;
     }
-  
+
     const data = {
       Fullname: fullName,
       Address: address,
@@ -203,17 +203,17 @@ const Checkout = () => {
       phone_no: phoneNo,
       user: userId,
     };
-  
+
     try {
       const response = await createShippingInfo({ data });
       const shippingId = response.data.data.id;
       setShippingInfo(data);
       setShippingId(shippingId);
-  
+
       // Update shippingInfos instead of addresses
       setShippingInfos([...shippingInfos, { ...data, id: shippingId }]);
       setModalVisible(false);
-  
+
       // Clear form fields
       setFullName("");
       setAddress("");
@@ -225,7 +225,7 @@ const Checkout = () => {
       alert("Failed to submit shipping information.");
     }
   };
-  
+
 
   const handleContinueToPayment = () => {
     handlePayment();
@@ -320,10 +320,7 @@ const Checkout = () => {
           >
             <View style={styles.modalContainer}>
               <View style={styles.modalContent}>
-                <TouchableOpacity
-                  style={styles.closeButton}
-                  onPress={closeModal}
-                >
+                <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
                   <Ionicons name="close-circle" size={30} color="#fff" />
                 </TouchableOpacity>
 
@@ -338,9 +335,10 @@ const Checkout = () => {
 
                 <Text style={styles.inputLabel}>Address</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, styles.addressInput]}
                   value={address}
                   onChangeText={setAddress}
+                  multiline={true} // Allows the text to wrap
                 />
                 {errors.address && <Text style={styles.errorText}>{errors.address}</Text>}
 
@@ -373,10 +371,7 @@ const Checkout = () => {
                   keyboardType="phone-pad"
                 />
                 {errors.phoneNo && <Text style={styles.errorText}>{errors.phoneNo}</Text>}
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={handleAddAddress}
-                >
+                <TouchableOpacity style={styles.button} onPress={handleAddAddress}>
                   <Text style={styles.buttonText}>Save and Continue</Text>
                 </TouchableOpacity>
               </View>
@@ -451,7 +446,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 10,
     padding: 20,
-    position: 'relative',
+    position: "relative",
   },
   modalHeader: {
     fontSize: 20,
@@ -472,6 +467,11 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     borderWidth: 1,
     borderColor: "#555",
+    textAlignVertical: "top", // Ensures proper alignment for multiline input
+  },
+  addressInput: {
+    maxHeight: 100, // Restricts height to prevent overflow
+    flexWrap: "wrap",
   },
   row: {
     flexDirection: "row",
@@ -514,10 +514,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
+  savedTextbox: {
+    flex: 1, // Ensures the text content takes the available space
+    marginRight: 10, // Adds some spacing before the select button
+  },
   savedText: {
     color: "#fff",
     fontSize: 14,
     marginBottom: 5,
+    flexWrap: "wrap",
   },
   selectButton: {
     borderRadius: 25,
