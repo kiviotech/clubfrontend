@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons";
-import { getShippingInfoByUserId ,createShippingInfo, deleteShippingInfo,updateShippingInfo } from '../../src/api/repositories/shippingInfoRepository';
+import { getShippingInfoByUserId, createShippingInfo, deleteShippingInfo, updateShippingInfo } from '../../src/api/repositories/shippingInfoRepository';
 import useStore from '../../src/store/useStore';
 import useUserDataStore from '../../src/store/userData';
 
@@ -35,14 +35,14 @@ const ChangeAddress = () => {
         const fetchShippingInfos = async () => {
             try {
                 const response = await getShippingInfoByUserId(userId);
-                setShippingInfos(response.data.data); 
+                setShippingInfos(response.data.data);
             } catch (error) {
                 // console.error("Error fetching shipping info", error);
             }
         };
 
         fetchShippingInfos();
-    }, [userId]); 
+    }, [userId]);
 
     const handleAddOrUpdateAddress = async () => {
         setErrors({ fullName: '', address: '', state: '', pincode: '', phoneNo: '' });
@@ -57,7 +57,7 @@ const ChangeAddress = () => {
             valid = false;
             errorMessages.fullName = "Name should contain only alphabets and spaces";
         }
-    
+
         // Validate address (alphabets, numbers, spaces, and some punctuation allowed)
         if (!address) {
             valid = false;
@@ -66,7 +66,7 @@ const ChangeAddress = () => {
             valid = false;
             errorMessages.address = "Address contains invalid characters";
         }
-    
+
         // Validate state (only alphabets and spaces allowed)
         if (!state) {
             valid = false;
@@ -75,7 +75,7 @@ const ChangeAddress = () => {
             valid = false;
             errorMessages.state = "State should contain only alphabets and spaces";
         }
-    
+
         if (!pincode || pincode.length !== 6) {
             valid = false;
             errorMessages.pincode = "Pincode should be 6 digits";
@@ -99,7 +99,7 @@ const ChangeAddress = () => {
             phone_no: phoneNo,
             user: userId,
         };
-    
+
         try {
             if (isEditing) {
                 // Update existing address
@@ -113,11 +113,11 @@ const ChangeAddress = () => {
                 setShippingId(shippingId);
                 alert("Address added successfully!");
             }
-    
+
             // Refetch the updated shipping info
             const updatedShippingInfos = await getShippingInfoByUserId(userId);
             setShippingInfos(updatedShippingInfos.data.data);
-    
+
             // Reset form and state
             resetForm();
         } catch (error) {
@@ -125,9 +125,9 @@ const ChangeAddress = () => {
             alert("Failed to submit shipping information.");
         }
     };
-    
 
-      const handleEditShippingInfo = (info) => {
+
+    const handleEditShippingInfo = (info) => {
         setIsEditing(true);
         setEditingAddressId(info.documentId); // Set the ID of the address being edited
         setFullName(info.Fullname);
@@ -135,9 +135,9 @@ const ChangeAddress = () => {
         setState(info.state);
         setPincode(info.pincode.toString());
         setPhoneNo(info.phone_no);
-      };
+    };
 
-      const resetForm = () => {
+    const resetForm = () => {
         setFullName("");
         setAddress("");
         setState("");
@@ -145,8 +145,8 @@ const ChangeAddress = () => {
         setPhoneNo("");
         setIsEditing(false);
         setEditingAddressId(null);
-      };
-    
+    };
+
     const handleDeleteShippingInfo = async (documentId) => {
         try {
             await deleteShippingInfo(documentId);
@@ -159,9 +159,6 @@ const ChangeAddress = () => {
             alert("Failed to delete shipping info.");
         }
     };
-
-
-
 
     return (
         <ScrollView style={styles.container}>
@@ -184,11 +181,12 @@ const ChangeAddress = () => {
             {/* Address */}
             <Text style={styles.label}>Address</Text>
             <TextInput
-                style={styles.input}
+                style={[styles.input, styles.addressInput]}
                 placeholder="Enter your address"
                 placeholderTextColor="#AAAAAA"
                 value={address}
                 onChangeText={setAddress}
+                multiline={true}
             />
             {errors.address && <Text style={styles.errorText}>{errors.address}</Text>}
 
@@ -241,46 +239,58 @@ const ChangeAddress = () => {
                         <View key={index} style={styles.savedTextContainer}>
                             <View style={styles.savedTextbox}>
                                 <View style={styles.TextContainer}>
-                                    <Text style={styles.savedText}>Full Name: {info.Fullname}</Text>
-                                    <Text style={styles.savedText}>Address: {info.Address}</Text>
+                                    <Text style={styles.savedText}>
+                                        Full Name: {info.Fullname}
+                                    </Text>
+                                    <Text style={styles.savedText}>
+                                        Address: {info.Address}
+                                    </Text>
                                     <Text style={styles.savedText}>State: {info.state}</Text>
-                                    <Text style={styles.savedText}>Pincode: {info.pincode}</Text>
-                                    <Text style={styles.savedText}>Phone No.: {info.phone_no}</Text>
+                                    <Text style={styles.savedText}>
+                                        Pincode: {info.pincode}
+                                    </Text>
+                                    <Text style={styles.savedText}>
+                                        Phone No.: {info.phone_no}
+                                    </Text>
                                 </View>
-                                <TouchableOpacity
-                                    style={styles.selectButton}
-                                    onPress={() => {
-                                        if (selectedAddress === info) {
-                                            setSelectedAddress(null); // Deselect if already selected
-                                        } else {
-                                            setSelectedAddress(info); // Select address
-                                        }
-                                    }}
-                                >
-                                    <Ionicons
-                                        name={selectedAddress === info ? "checkmark-circle" : "radio-button-off"}
-                                        size={30}
-                                        color={selectedAddress === info ? "#8FFA09" : "#fff"} // Green for selected, white for unselected
-                                    />
-                                </TouchableOpacity>
+
                             </View>
+                            <TouchableOpacity
+                                style={styles.selectButton}
+                                onPress={() => {
+                                    if (selectedAddress === info) {
+                                        setSelectedAddress(null); // Deselect if already selected
+                                    } else {
+                                        setSelectedAddress(info); // Select address
+                                    }
+                                }}
+                            >
+                                <Ionicons
+                                    name={selectedAddress === info ? "checkmark-circle" : "radio-button-off"}
+                                    size={30}
+                                    color={selectedAddress === info ? "#8FFA09" : "#fff"} // Green for selected, white for unselected
+                                />
+                            </TouchableOpacity>
                             <View style={styles.buttonsContainer}>
-                            <TouchableOpacity style={styles.editButton} onPress={() => handleEditShippingInfo(info)}>
-                  <Ionicons name="create" size={30} color="#8FFA09" />
-                </TouchableOpacity>
-                             
+                                <TouchableOpacity style={styles.editButton} onPress={() => handleEditShippingInfo(info)}>
+                                    <Ionicons name="create" size={30} color="#8FFA09" />
+                                </TouchableOpacity>
+
 
                                 <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteShippingInfo(info.documentId)}>
                                     <Ionicons name="trash" size={30} color="#FF3B30" />
                                 </TouchableOpacity>
                             </View>
 
+
                         </View>
+
                     ))
                 ) : (
-                    <Text style={styles.savedText}>No shipping information available</Text>
+                    <Text style={styles.savedText}>
+                        No shipping information available
+                    </Text>
                 )}
-
             </ScrollView>
         </ScrollView>
     );
@@ -316,6 +326,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 15,
     },
+    addressInput: {
+        maxHeight: 100, // Restricts height to prevent overflow
+        flexWrap: "wrap",
+    },
     row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -340,10 +354,9 @@ const styles = StyleSheet.create({
     },
     savedAddress: {
         padding: 10,
-        marginVertical: 10,
         borderRadius: 10,
         marginHorizontal: 20,
-        flexDirection: "column"
+        marginBottom: -45,
     },
     savedTextContainer: {
         padding: 15,
@@ -355,44 +368,52 @@ const styles = StyleSheet.create({
         borderColor: "#555",
         borderWidth: 2,
         borderColor: "#8FFA09",
-        flexDirection: "column",
+        flexDirection: "row",
         justifyContent: "space-between",
+        position: 'relative', // Add this to position elements inside relative to this container
     },
-    TextContainer: {
-        justifyContent: "space-evenly",
-        flexDirection: "column",
+    buttonsContainer: {
+        position: 'absolute',  // Positions the buttons inside the savedTextContainer
+        bottom: 10,  // Adjust this value to change vertical positioning
+        right: 10,  // Adjust this value to change horizontal positioning
+        flexDirection: 'row',  // Make the buttons appear in a row
+        justifyContent: 'flex-end',
+    },
+    savedTextbox: {
+        flex: 1, // Ensures the text content takes the available space
+        marginRight: 10, // Adds some spacing before the select button
     },
     savedText: {
         color: "#fff",
         fontSize: 14,
         marginBottom: 5,
+        flexWrap: "wrap",
     },
     selectButton: {
-        marginLeft: 10,
         borderRadius: 25,
         paddingVertical: 10,
         paddingHorizontal: 20,
         marginTop: 10,
         alignSelf: "center",
     },
-    buttonsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
+    selectButtonText: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#fff",
     },
-    editButton: {
-        marginRight: 10,
-        paddingVertical: 10,
-        // paddingHorizontal: 20,
+    closeButton: {
+        position: "absolute",
+        top: 10,
+        right: 10,
+        padding: 10,
+        zIndex: 1,
     },
-    deleteButton: {
-        paddingVertical: 10,
-        // paddingHorizontal: 20,
+    errorText: {
+        color: "red",
+        fontSize: 10,
+        // marginBottom:10,
+        // margin:0
     },
-    errorText:{
-        color:"red",
-        fontSize:10,
-    }
 });
 
 export default ChangeAddress;
