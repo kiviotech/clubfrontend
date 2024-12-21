@@ -108,54 +108,74 @@ export default function Payment() {
       Alert.alert("Error", "Your cart is empty");
       return;
     }
-
+  
     try {
-      // Calculate the final total amount based on the coupon
-      const finalAmount = isApplied
-        ? totalAmount - (totalAmount * discount) / 100
-        : totalAmount; // If coupon applied, subtract discount, else keep original totalAmount
-
-      // Create order detail first
-      const orderDetailData = {
-        data: {
-          orderItems: orderItem, // Assuming orderItem is the ID
-          total: finalAmount, // Use the final amount here after applying coupon
-          level: "pending",
-          shipping_info: selectedAddress?.id, // Assuming selectedAddress has an id
-          user: userId, //  now change dynamic user id
-          locale: "en",
-          razorpayOrderId: "string",
-          razorpayPaymentId: "string",
-          razorpaySignature: "string",
-          coupon: appliedCouponDocumentId,
-        },
-      };
-
-      const response = await createOrderDetailService(orderDetailData);
-      const razorpayOrderId = response?.data?.razorpayOrderId;
-      const orderDetailsDocumentId = response?.data?.documentId;
-      const orderdetailId = response?.data?.id;
-
-      console.log("Order Detail Response:",orderDetailsDocumentId);
-
-      if (Platform.OS === 'web') {
-        // Navigate to CheckoutScreen on web
+      const paymentPromise = new Promise(async (resolve, reject) => {
+        try {
+          // Calculate the final total amount based on the coupon
+          const finalAmount = isApplied
+            ? totalAmount - (totalAmount * discount) / 100
+            : totalAmount; // If coupon applied, subtract discount, else keep original totalAmount
+  
+          // Create order detail first
+          const orderDetailData = {
+            data: {
+              orderItems: orderItem, // Assuming orderItem is the ID
+              total: finalAmount, // Use the final amount here after applying coupon
+              level: "pending",
+              shipping_info: selectedAddress?.id, // Assuming selectedAddress has an id
+              user: userId, // Dynamic user ID
+              locale: "en",
+              razorpayOrderId: "string",
+              razorpayPaymentId: "string",
+              razorpaySignature: "string",
+              coupon: appliedCouponDocumentId,
+            },
+          };
+  
+          const response = await createOrderDetailService(orderDetailData);
+          const razorpayOrderId = response?.data?.razorpayOrderId;
+          const orderDetailsDocumentId = response?.data?.documentId;
+          const orderdetailId = response?.data?.id;
+  
+          console.log("Order Detail Response:", orderDetailsDocumentId);
+  
+          // Resolve data for further navigation
+          resolve({
+            finalAmount,
+            razorpayOrderId,
+            orderDetailsDocumentId,
+            orderdetailId,
+          });
+        } catch (error) {
+          reject(error); // Reject in case of failure
+        }
+      });
+  
+      const {
+        finalAmount,
+        razorpayOrderId,
+        orderDetailsDocumentId,
+        orderdetailId,
+      } = await paymentPromise;
+  
+      // Navigate to the appropriate screen based on the platform
+      if (Platform.OS === "web") {
         router.push({
-          pathname: '/checkoutScreen/WebPaymentRazorPay',
+          pathname: "/checkoutScreen/WebPaymentRazorPay",
           params: {
             totalAmount: finalAmount,
             razorpayOrderId: razorpayOrderId,
             orderItem: orderItem,
             documentIds: documentIds,
-            orderDetailsDocumentId: orderdetailId, // Add the new documentId here
+            orderDetailsDocumentId: orderdetailId,
             orderdetailId: orderdetailId,
-            orderdocId:orderDetailsDocumentId,
+            orderdocId: orderDetailsDocumentId,
           },
         });
-
-      } else if (Platform.OS === 'android') {
+      } else if (Platform.OS === "android") {
         router.push({
-          pathname: '/checkoutScreen/MobilePaymentRazorPay',
+          pathname: "/checkoutScreen/MobilePaymentRazorPay",
           params: {
             totalAmount: finalAmount,
             razorpayOrderId: razorpayOrderId,
@@ -163,16 +183,15 @@ export default function Payment() {
             documentIds: documentIds,
             orderDetailsDocumentId: orderDetailsDocumentId,
             orderdetailId: orderdetailId,
-
           },
         });
       }
     } catch (err) {
-      // console.error("Payment error:", err);
       setError("Error processing payment");
       Alert.alert("Error", "Failed to process payment");
     }
   };
+  
 
   const handleSelect = (method) => {
     setSelectedMethod(method);

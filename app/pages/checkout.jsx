@@ -74,52 +74,56 @@ const Checkout = () => {
       alert("Your cart is empty. Please add items to proceed.");
       return;
     }
-
+  
     if (selectedAddress) {
-      // console.log("Selected Address:", selectedAddress);
       try {
-        const createdItems = [];
-        const documentIds = []; // Initialize array to store documentIds
-
-        // Map over cartItems and process each asynchronously
-        const promises = cartItems.map(async (item) => {
-          console.log(item.size)
-          const orderItemData = {
-            data: {
-              quantity: item.quantity || 1,
-              price: item.price || 1,
-              subtotal: (item.quantity || 1) * (item.price || 1),
-              product: item.id,
-              locale: "en",
-              size: item.size
-            },
-          };
-
-          // Await the creation of the order and store the result
-          const response = await createOrder(orderItemData);
-          createdItems.push(response.data.id);
-
-          // Push the documentId to documentIds array
-          documentIds.push(response.data.documentId);
-
-          addOrderItem(response.data.id); // Store the order item ID
-          // console.log("Order Item Stored:", response.data.documentId);
+        // Create a new promise to handle the payment flow
+        const paymentPromise = new Promise(async (resolve, reject) => {
+          const createdItems = [];
+          const documentIds = []; // Array to store documentIds
+  
+          try {
+            // Map over cart items to process each asynchronously
+            const promises = cartItems.map(async (item) => {
+              const orderItemData = {
+                data: {
+                  quantity: item.quantity || 1,
+                  price: item.price || 1,
+                  subtotal: (item.quantity || 1) * (item.price || 1),
+                  product: item.id,
+                  locale: "en",
+                  size: item.size,
+                },
+              };
+  
+              // Await the creation of the order and store the result
+              const response = await createOrder(orderItemData);
+              createdItems.push(response.data.id);
+              documentIds.push(response.data.documentId); // Push the documentId to array
+  
+              addOrderItem(response.data.id); // Store the order item ID
+            });
+  
+            await Promise.all(promises); // Ensure all async operations complete
+  
+            resolve({ createdItems, documentIds }); // Resolve with the required data
+          } catch (error) {
+            reject(error); // Reject the promise if any errors occur
+          }
         });
-
-        // Wait for all promises to resolve
-        await Promise.all(promises);
-
-        // Only proceed if all promises are successful
+  
+        const result = await paymentPromise; // Await the resolution of the promise
+        const { createdItems, documentIds } = result;
+  
+        // Encode data for navigation
         const encodedOrderItems = encodeURIComponent(
           JSON.stringify(createdItems)
         );
-
         const encodedDocumentIds = encodeURIComponent(
           JSON.stringify(documentIds)
         );
-
-        // console.log(documentIds); // This will now show populated documentIds
-
+  
+        // Navigate to the payment page with parameters
         router.push({
           pathname: "/pages/payment",
           params: {
@@ -129,13 +133,13 @@ const Checkout = () => {
           },
         });
       } catch (error) {
-        // console.error("Error creating order items:", error);
-        alert("Failed to create order items.");
+        alert("Failed to create order items."); // Handle errors from promise
       }
     } else {
-      alert("Please select an address!");
+      alert("Please select an address!"); // Handle case of missing address
     }
   };
+  
 
   // const documentIdOrderItem = response.data.documentId;
   // console.log("hello",docu)
