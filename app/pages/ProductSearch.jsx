@@ -122,6 +122,7 @@ const ProductSearch = ({ limit,searchTerm }) => {
       price: product.price,
       quantity: quantity,
       image: imageUrl,
+      size: "S",
     };
 
     // Check if the product is already in the cart

@@ -136,6 +136,7 @@ const brand_info = ({ limit }) => {
       price: product.price,
       quantity: quantity,
       image: imageUrl,
+      size: "S",
     };
 
     // Check if the product is already in the cart

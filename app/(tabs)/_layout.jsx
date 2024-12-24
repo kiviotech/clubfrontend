@@ -62,11 +62,11 @@ const TabsLayout = () => {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: "#8FFA09", // Bright green
-        tabBarInactiveTintColor: "#B0B0B0", // Light gray
+        tabBarActiveTintColor: "#8FFA09", 
+        tabBarInactiveTintColor: "#B0B0B0",
         tabBarStyle: {
           backgroundColor: "black",
-          height: screenWidth > 400 ? 80 : 60, // Adjust height based on screen width
+          height: screenWidth > 400 ? 80 : 60,
           position: "absolute",
           borderTopWidth: 0,
           overflow: "hidden",

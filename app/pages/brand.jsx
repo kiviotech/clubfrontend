@@ -25,7 +25,7 @@ const Brand = ({ limit }) => {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupProductId, setPopupProductId] = useState(null);
   const navigation = useNavigation();
-  
+  const totalCartItems = useCartStore((state) => state.getTotalItems());
   
   const imagesArray =
     typeof products.images === "string"
@@ -134,6 +134,7 @@ const Brand = ({ limit }) => {
       price: product.price,
       quantity: quantity,
       image: imageUrl,
+      size: "S",
     };
 
     // Check if the product is already in the cart
@@ -169,14 +170,21 @@ const Brand = ({ limit }) => {
           {selectedBrand ? `${selectedBrand} Products` : "All Products"}
         </Text>
         </View>
-        <View style={styles.rightIcons}>
-          <TouchableOpacity onPress={handleRequest}>
-            <Svgs.cartIcon width={18} height={18} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("/pages/wishlist")}>
-            <Svgs.wishlistIcon width={18} height={18} />
-          </TouchableOpacity>
-        </View>
+       <View style={styles.leftIcons}>
+                 <View style={styles.iconContainer}>
+                   <TouchableOpacity onPress={handleRequest} style={styles.iconButton}>
+                     <Svgs.cartIcon width={18} height={18} />
+                   </TouchableOpacity>
+                   {totalCartItems > 0 && (
+                     <View style={styles.badge}>
+                       <Text style={styles.badgeText}>{totalCartItems}</Text>
+                     </View>
+                   )}
+                 </View>
+                 <TouchableOpacity onPress={() => router.push("/pages/wishlist")}>
+                   <Svgs.wishlistIcon width={18} height={18} />
+                 </TouchableOpacity>
+               </View>
       </View>
       {/* <View style={styles.titleContainer}>
         <Text style={styles.brandTitle}>
@@ -262,6 +270,33 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#8FFA09",
   },
+  leftIcons: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 20,
+
+  },
+  iconContainer: {
+    position: "relative", // To position badge on top of the icon
+  },
+  badge: {
+    position: "absolute",
+    top: -3,
+    right: -9,
+    backgroundColor: "#FF0000", // Badge color
+    borderRadius: 10,
+    width: 14,
+    height: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1, // Ensure badge is on top of the cart icon
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+
   container: {
     // flex: 1,
     flexDirection: "row",

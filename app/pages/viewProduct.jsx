@@ -6,12 +6,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import SearchBar from '../../components/SearchBar';
 import ProductSearch from './ProductSearch';
+import useCartStore from '../../src/store/useCartStore';
 
 const ViewProduct = () => {
   const navigation = useNavigation();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-
+  const totalCartItems = useCartStore((state) => state.getTotalItems());
   const handleRequest = () => {
     router.push("/pages/cart"); 
   };
@@ -28,14 +29,21 @@ const ViewProduct = () => {
           </TouchableOpacity>
           <Text style={styles.headerText}>All Products</Text>
         </View>
-        <View style={styles.rightIcons}>
-          <TouchableOpacity onPress={handleRequest}>
-            <Svgs.cartIcon width={18} height={18} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("/pages/wishlist")}>
-            <Svgs.wishlistIcon width={18} height={18} />
-          </TouchableOpacity>
-        </View>
+        <View style={styles.leftIcons}>
+                  <View style={styles.iconContainer}>
+                    <TouchableOpacity onPress={handleRequest} style={styles.iconButton}>
+                      <Svgs.cartIcon width={18} height={18} />
+                    </TouchableOpacity>
+                    {totalCartItems > 0 && (
+                      <View style={styles.badge}>
+                        <Text style={styles.badgeText}>{totalCartItems}</Text>
+                      </View>
+                    )}
+                  </View>
+                  <TouchableOpacity onPress={() => router.push("/pages/wishlist")}>
+                    <Svgs.wishlistIcon width={18} height={18} />
+                  </TouchableOpacity>
+                </View>
       </View>
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
       <View>
@@ -51,6 +59,33 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     padding: 10,
   },
+  leftIcons: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 20,
+
+  },
+  iconContainer: {
+    position: "relative", // To position badge on top of the icon
+  },
+  badge: {
+    position: "absolute",
+    top: -3,
+    right: -9,
+    backgroundColor: "#FF0000", // Badge color
+    borderRadius: 10,
+    width: 14,
+    height: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1, // Ensure badge is on top of the cart icon
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+
   // Header
   header: {
     flexDirection: "row",
