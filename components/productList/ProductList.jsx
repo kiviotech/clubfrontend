@@ -14,6 +14,7 @@ import { MEDIA_BASE_URL } from "../../src/api/apiClient";
 import useProductStore from "../../src/store/useProductStore";
 import useCartStore from "../../src/store/useCartStore";
 import useWishlistStore from "../../src/store/useWishlistStore";
+import { updateProduct } from "../../src/api/repositories/productRepository";
 
 const ProductList = ({ limit }) => {
   const [products, setProducts] = useState([]);
@@ -36,13 +37,13 @@ const ProductList = ({ limit }) => {
       ? [`${MEDIA_BASE_URL}${products.images}`]
       : (products.images || []).map((img) => `${MEDIA_BASE_URL}${img}`);
 
-      // Helper function to get the first image URL
-const getImageUrl = (images) => {
-  if (Array.isArray(images) && images.length > 0) {
-    return `${MEDIA_BASE_URL}${images[0].url}`; // Assuming each image has a `url` field
-  }
-  return null; // Fallback if no images
-};
+  // Helper function to get the first image URL
+  const getImageUrl = (images) => {
+    if (Array.isArray(images) && images.length > 0) {
+      return `${MEDIA_BASE_URL}${images[0].url}`; // Assuming each image has a `url` field
+    }
+    return null; // Fallback if no images
+  };
 
 
 
@@ -56,22 +57,55 @@ const getImageUrl = (images) => {
     }
   };
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await getProducts();
-        setProducts(response.data.data);
-        // console.log(response.data.data[0].product_Details)
-      } catch (error) {
-        setError("Failed to load products");
-      } finally {
-        setLoading(false);
-      }
-    };
+  
 
-    fetchProducts();
-  }, [selectedBrand]);
-
+ useEffect(() => {
+     const fetchProducts = async () => {
+       try {
+         const response = await getProducts();
+         setProducts(response.data.data);
+   
+         const updatedProducts = [...response.data.data];
+   
+         for (let i = 0; i < updatedProducts.length; i++) {
+           const product = updatedProducts[i];
+   
+           // Check if any size has available stock
+           const hasAvailableStock = product.sizes.some(
+             (size) => size.number_of_items > 0
+           );
+   
+           // If any size has stock, mark the product as in stock
+           const updatedProductData = {
+             data: {
+               in_stock: hasAvailableStock,
+             },
+           };
+   
+           // Update product stock locally first
+           if (hasAvailableStock !== product.in_stock) {
+             updatedProducts[i] = {
+               ...product,
+               in_stock: hasAvailableStock, // Update the in_stock property immediately
+             };
+   
+             setProducts(updatedProducts); // Update the state immediately for the UI
+   
+             // Then, send the updated data to the server
+             await updateProduct(product.documentId, updatedProductData);
+             // console.log(`Product ${product.name} stock status updated.`);
+           }
+         }
+   
+       } catch (error) {
+         setError("Failed to load products");
+       } finally {
+         setLoading(false);
+       }
+     };
+   
+     fetchProducts();
+   }, [selectedBrand]);
 
 
   const displayedProducts = limit ? products.slice(0, limit) : products;
@@ -81,21 +115,21 @@ const getImageUrl = (images) => {
     // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
     const images = product.product_image.map(img => `${MEDIA_BASE_URL}${img.url}`);
 
-  // console.log(sizes)
+    // console.log(sizes)
     setProductDetails({
       id: product.id,
-      images:  images,
+      images: images,
       name: product.name,
       price: product.price,
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
-      documentId:product.documentId,
-      description:product.description
+      documentId: product.documentId,
+      description: product.description
     });
-  
+
     router.push("../../pages/productDetails");
   };
-  
+
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
@@ -114,6 +148,7 @@ const getImageUrl = (images) => {
       price: product.price,
       quantity: quantity,
       image: imageUrl,
+      in_stock: product.in_stock,
     };
 
     if (wishlist.some((wishItem) => wishItem.id === product.id)) {
@@ -169,25 +204,25 @@ const getImageUrl = (images) => {
   return (
     <View style={styles.container}>
       {displayedProducts.map((product, index) => {
-          const imageUrl = getImageUrl(product.product_image);
+        const imageUrl = getImageUrl(product.product_image);
         // const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
         const isOutOfStock = !product.in_stock;
         const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
         const isPopupVisible = popupProductId === product.id;
         return (
           <View key={index} style={styles.productCard}>
-            {isPopupVisible && popupMessage !== ""  && (
+            {isPopupVisible && popupMessage !== "" && (
               <View style={styles.popup}>
                 <Text style={styles.popupText}>{popupMessage}</Text>
               </View>
             )}
             {imageUrl && (
-            <Image
-              source={{ uri: imageUrl }}
-              style={styles.productimage}
-              resizeMode="contain"
-            />
-          )}
+              <Image
+                source={{ uri: imageUrl }}
+                style={styles.productimage}
+                resizeMode="contain"
+              />
+            )}
             <View style={styles.buttonContainer}>
               {/* Wishlist Button */}
               <TouchableOpacity style={styles.wishlistButton} onPress={() => handleWishlistAdd(product)}>
@@ -248,7 +283,7 @@ const styles = StyleSheet.create({
   imageWrapper: {
     position: "relative",
     alignItems: "center", // Center image horizontally
-    
+
   },
   productName: {
     color: "#ffffff",

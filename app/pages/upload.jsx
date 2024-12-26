@@ -154,7 +154,7 @@ const pickImage = async () => {
           {error && <Text style={styles.errorText}>{error}</Text>}
         </View>
 
-        <View style={styles.buttonContainer}>
+        {/* <View style={styles.buttonContainer}>
           <TouchableOpacity
             // onPress={onRemoveAll}
             style={styles.removeAllButton}
@@ -169,7 +169,7 @@ const pickImage = async () => {
             <Text style={styles.uploadText}>Upload</Text>
             <Text style={styles.uploadIcon}>☁️</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         {/* Buttons Section */}
         <View style={styles.actionButtonContainer}>

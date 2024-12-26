@@ -98,7 +98,11 @@ const Home = () => {
           <Nicon />
         </TouchableOpacity>
       </View> */}
-      <Header />
+     {/* Header */}  
+<View style={styles.headerContainer}>
+  <Header />
+</View>
+
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.welcomeBox}>
           <Text style={styles.welcomeText}>Welcome 👋</Text>
@@ -185,6 +189,11 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     paddingHorizontal: 12,
   },
+  // headerContainer: {
+  //   paddingLeft:20, // Adjust padding as needed
+  //   backgroundColor: "black", // Matches the theme of your app
+  // },
+  
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -192,6 +201,7 @@ const styles = StyleSheet.create({
     width: "100%",
     // padding: 8,
   },
+
   welcomeBox: {
     marginBottom: 20,
     borderRadius: 20,

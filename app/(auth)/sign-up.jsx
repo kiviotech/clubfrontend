@@ -128,11 +128,18 @@ const SignUp = () => {
       // Navigate to the sign-in page after successful signup
       
     } catch (error) {
-      // console.error("Signup error:", error);
-      Alert.alert(
-        "Signup Error",
-        error.message || "There was an issue with signup. Please try again."
-      );
+      
+      if (error.response && error.response.status === 400) {
+       
+          setEmailError("Email already exists. Please use a different email.");
+        
+          // console.error("Signup error:", error);
+          Alert.alert("Error", "Something went wrong. Please try again later.");
+        
+      } else {
+        // console.error("Signup error:", error);
+        Alert.alert("Error", "Something went wrong. Please try again later.");
+      }
     }
   };
 

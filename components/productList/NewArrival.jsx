@@ -19,6 +19,7 @@ import useWishlistStore from "../../src/store/useWishlistStore";
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ProductList from "./ProductList";
+import { updateProduct } from "../../src/api/repositories/productRepository";
 
 
 const { width } = Dimensions.get('window');
@@ -37,19 +38,52 @@ const NewArrival = ({ limit }) => {
 
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await getProducts();
-        setProducts(response.data.data);
-      } catch (error) {
-        setError("Failed to load products");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, [selectedBrand]);
+      const fetchProducts = async () => {
+        try {
+          const response = await getProducts();
+          setProducts(response.data.data);
+    
+          const updatedProducts = [...response.data.data];
+    
+          for (let i = 0; i < updatedProducts.length; i++) {
+            const product = updatedProducts[i];
+    
+            // Check if any size has available stock
+            const hasAvailableStock = product.sizes.some(
+              (size) => size.number_of_items > 0
+            );
+    
+            // If any size has stock, mark the product as in stock
+            const updatedProductData = {
+              data: {
+                in_stock: hasAvailableStock,
+              },
+            };
+    
+            // Update product stock locally first
+            if (hasAvailableStock !== product.in_stock) {
+              updatedProducts[i] = {
+                ...product,
+                in_stock: hasAvailableStock, // Update the in_stock property immediately
+              };
+    
+              setProducts(updatedProducts); // Update the state immediately for the UI
+    
+              // Then, send the updated data to the server
+              await updateProduct(product.documentId, updatedProductData);
+              // console.log(`Product ${product.name} stock status updated.`);
+            }
+          }
+    
+        } catch (error) {
+          setError("Failed to load products");
+        } finally {
+          setLoading(false);
+        }
+      };
+    
+      fetchProducts();
+    }, [selectedBrand]);
 
   const displayedProducts = limit ? products.slice(0, limit) : products;
 
@@ -96,6 +130,7 @@ const NewArrival = ({ limit }) => {
       name: product.name,
       price: product.price,
       image: imageUrl,
+      in_stock: product.in_stock,
     };
 
     if (isInWishlist) {

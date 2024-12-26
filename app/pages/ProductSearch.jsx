@@ -15,6 +15,7 @@ import { MEDIA_BASE_URL } from "../../src/api/apiClient";
 import useProductStore from "../../src/store/useProductStore";
 import useCartStore from "../../src/store/useCartStore";
 import useWishlistStore from "../../src/store/useWishlistStore";
+import { updateProduct } from "../../src/api/repositories/productRepository";
 
 const ProductSearch = ({ limit,searchTerm }) => {
   const [products, setProducts] = useState([]);
@@ -38,16 +39,49 @@ const ProductSearch = ({ limit,searchTerm }) => {
       try {
         const response = await getProducts();
         setProducts(response.data.data);
-        // console.log(response.data.data[0].documentId)
+  
+        const updatedProducts = [...response.data.data];
+  
+        for (let i = 0; i < updatedProducts.length; i++) {
+          const product = updatedProducts[i];
+  
+          // Check if any size has available stock
+          const hasAvailableStock = product.sizes.some(
+            (size) => size.number_of_items > 0
+          );
+  
+          // If any size has stock, mark the product as in stock
+          const updatedProductData = {
+            data: {
+              in_stock: hasAvailableStock,
+            },
+          };
+  
+          // Update product stock locally first
+          if (hasAvailableStock !== product.in_stock) {
+            updatedProducts[i] = {
+              ...product,
+              in_stock: hasAvailableStock, // Update the in_stock property immediately
+            };
+  
+            setProducts(updatedProducts); // Update the state immediately for the UI
+  
+            // Then, send the updated data to the server
+            await updateProduct(product.documentId, updatedProductData);
+            // console.log(`Product ${product.name} stock status updated.`);
+          }
+        }
+  
       } catch (error) {
         setError("Failed to load products");
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchProducts();
   }, [selectedBrand]);
+  
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -95,6 +129,7 @@ const ProductSearch = ({ limit,searchTerm }) => {
       price: product.price,
       quantity: quantity,
       image: imageUrl,
+      in_stock: product.in_stock,
     };
 
     if (wishlist.some((wishItem) => wishItem.id === product.id)) {

@@ -13,9 +13,22 @@ const RequestDesign = () => {
   const [fabricOpen, setFabricOpen] = useState(false);
   const [fabricValue, setFabricValue] = useState(null);
   const [fabricItems, setFabricItems] = useState([
-    { label: "Cotton", value: "cotton" },
-    { label: "Polyester", value: "polyester" },
+    { label: "Cotton", value: "Cotton" },
+    { label: "Cotton Blends", value: "Cotton Blends" },
+    { label: "Polyester", value: "Polyester" },
     { label: "Silk", value: "silk" },
+    { label: "Spandex(Elastane)", value: "Spandex(Elastane)" },
+    { label: "Bamboo Fiber", value: "Bamboo Fiber" },
+    { label: "Lycra", value: "Lycra" },
+    { label: "Organic Cotton", value: "Organic Cotton" },
+    { label: "Terrycloth", value: "Terrycloth" },
+    { label: "Wool Blends", value: "Wool Blends" },
+    { label: "Denim(Jean)", value: "Denim(Jean)" },
+    { label: "Leather", value: "Leather" },
+    { label: "Canvas", value: "Canvas" },
+    { label: "Suede", value: "Suede" },
+    { label: "Velvet", value: "Velvet" },
+    { label: "Others", value: "Others" },
   ]);
   const [startDate, setStartDate] = useState(null);
   const { designDetails, setDesignDetails } = useFormStore();
@@ -60,6 +73,7 @@ const RequestDesign = () => {
     if (!fabricValue) errors.fabric = "Fabric selection is required.";
     if (!designDetails.color) errors.color = "Color preference is required.";
     if (!startDate) errors.deadline = "Deadline is required.";
+    else if (startDate < new Date()) errors.deadline = "Deadline must be a future date.";
     if (!designDetails.budget) {
       errors.budget = "Budget is required.";
     } else if (!/^\d+$/.test(designDetails.budget)) {

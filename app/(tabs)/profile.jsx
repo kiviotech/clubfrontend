@@ -97,6 +97,7 @@ const Profile = () => {
       }
       removeItem();
       clearCart();
+      clearWishlist();
       clearShippingInfo();
       logout();
       router.push("sign-in");

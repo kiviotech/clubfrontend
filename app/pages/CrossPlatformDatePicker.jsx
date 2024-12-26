@@ -13,6 +13,9 @@ const CrossPlatformDatePicker = ({ label, value, onChange }) => {
     }
   };
 
+  const currentDate = new Date();
+  const todayString = currentDate.toISOString().split("T")[0]; // To get current date in YYYY-MM-DD format
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
@@ -21,6 +24,7 @@ const CrossPlatformDatePicker = ({ label, value, onChange }) => {
           type="date"
           value={value ? value.toISOString().split("T")[0] : ""} // Ensure valid date format for web
           onChange={(e) => onChange(new Date(e.target.value))}
+          min={todayString} // Disable past dates
           style={styles.webDatePicker}
         />
       ) : (
@@ -40,7 +44,7 @@ const CrossPlatformDatePicker = ({ label, value, onChange }) => {
               mode="date"
               display="calendar" // Calendar display for Android/iOS
               onChange={handleDateChange}
-              minimumDate={new Date(2000, 0, 1)}
+              minimumDate={currentDate} // Ensure no past dates can be selected
               maximumDate={new Date(2100, 11, 31)}
               themeVariant="dark" // Dark theme to get a grayish calendar
             />

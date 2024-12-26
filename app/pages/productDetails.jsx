@@ -26,13 +26,12 @@ import { Modal } from "react-native";
 const ProductDetails = () => {
 
   const productDetails = useProductStore((state) => state.productDetails);
+  const setProductDetails = useProductStore((state) => state.setProductDetails);
   const addItemToCart = useCartStore((state) => state.addItem);
   const addToWishlist = useWishlistStore((state) => state.addToWishlist);
   const params = useLocalSearchParams();
   const { images, name, price, products, in_stock, size } = params;
   const allProducts = products ? JSON.parse(products) : [];
-  // console.log(productDetails.images[0])
-  // console.log(productDetails.images[1])
 
   const imagesArray = Array.isArray(productDetails.images)
     ? productDetails.images.map((img) => {
@@ -76,36 +75,49 @@ const ProductDetails = () => {
     }
   };
 
-  useEffect(() => {
-    // Check and update the stock status when the component mounts
-    handleUpdateStockStatus(productDetails);
-  }, [productDetails]);
-
-  const isOutOfStock = (sizes) => {
-    return sizes.every(size => size.number_of_items === 0);
-  };
-
-  const handleUpdateStockStatus = (productDetails) => {
-    if (isOutOfStock(productDetails.sizes)) {
-      // Update product data with in_stock set to false
-      const updatedProductData = {
-        data: {
-          // ...productDetails,
-          in_stock: false,
-        }
-      };
-
-      updateProduct(productDetails.documentId, updatedProductData)
-        .then(response => {
-          // console.log("Product stock status updated successfully:", response);
-        })
-        .catch(error => {
-          // console.error("Error updating product stock status:", error);
-        });
-    }
-  };
+  // useEffect(() => {
+  //   // Check and update the stock status when the component mounts
+  //   handleUpdateStockStatus(productDetails);
+  // }, [productDetails]);
 
 
+  
+  // const isOutOfStock = (sizes) => {
+  //   // Ensure sizes is an array and check if every size has zero stock
+  //   return Array.isArray(sizes) && sizes.every((size) => size.number_of_items === 0);
+  // };
+
+  // const handleUpdateStockStatus = async (productDetails) => {
+  //   try {
+  //     if (!productDetails || !productDetails.sizes) {
+  //       console.warn("Invalid product details or sizes are not defined.");
+  //       return;
+  //     }
+
+  //     // Check if the product should be in stock
+  //     const updatedProductData = {
+  //       data: {
+  //         in_stock: !isOutOfStock(productDetails.sizes), // true if at least one size has stock
+  //       },
+  //     };
+
+  //     // Send updated stock status to the backend
+  //     await updateProduct(productDetails.documentId, updatedProductData);
+
+  //     console.log(
+  //       `Product stock status updated to: ${updatedProductData.data.in_stock}`
+  //     );
+  //   } catch (error) {
+  //     console.error("Error updating product stock status:", error);
+  //   }
+  // };
+
+  // // Automatically run the stock update logic whenever productDetails changes
+  // useEffect(() => {
+  //   handleUpdateStockStatus(productDetails);
+  // }, []);
+
+ 
 
   const handleAddToCart = () => {
     // Check if the same product with the same size is already in the cart
@@ -150,6 +162,7 @@ const ProductDetails = () => {
         name: productDetails.name,
         price: productDetails.price,
         image: imagesArray[0],
+        in_stock: productDetails.in_stock,
       };
       addToWishlist(item);
       router.push("/pages/wishlist");
@@ -321,7 +334,7 @@ const ProductDetails = () => {
             disabled={!productDetails.in_stock}
           >
             <Text style={styles.addToCartText}>
-              {isAddedToCart ? "In Cart" : "Add to Cart"}
+              {isAddedToCart ? "Add to Cart" : "Add to Cart"}
             </Text>
           </TouchableOpacity>
 

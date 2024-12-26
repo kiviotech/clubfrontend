@@ -23,14 +23,14 @@ export default function CartList({
   const increment = () => {
     const newQuantity = quantity + 1;
     setQuantity(newQuantity);
-    updateQuantity(id, newQuantity);
+    updateQuantity(id, size, newQuantity);
   };
 
   const decrement = () => {
     if (quantity > 1) {
       const newQuantity = quantity - 1;
       setQuantity(newQuantity);
-      updateQuantity(id, newQuantity);
+      updateQuantity(id, size, newQuantity);
     }
   };
 
@@ -61,18 +61,18 @@ export default function CartList({
                 >
                   <Text style={styles.quantityText}>+</Text>
                 </TouchableOpacity>
-                
+
               </View>
             </View>
           )}
         </View>
 
-        <TouchableOpacity 
-  style={styles.deleteButton} 
-  onPress={() => removeItem(id, size)} // Pass both id and size
->
-  <svgs.TrashSimple />
-</TouchableOpacity>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => removeItem(id, size)} // Pass both id and size
+        >
+          <svgs.TrashSimple />
+        </TouchableOpacity>
 
       </View>
     </View>

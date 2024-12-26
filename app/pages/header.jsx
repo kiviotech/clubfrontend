@@ -55,8 +55,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#000',
     paddingBottom: 7,
-    paddingRight: 0,
+    paddingRight: 15,
     paddingTop: 12,
+    paddingLeft:0,
   },
   logo: {
     width: 100,

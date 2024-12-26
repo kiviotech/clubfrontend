@@ -6,18 +6,18 @@ import {
   StyleSheet,
   TouchableOpacity,
   Modal,
-  Button,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import useCartStore from "../../src/store/useCartStore";
 import { useRouter } from "expo-router"; // To navigate to the cart
 
-const ProductCard = ({ id, productname, price, image, isWishlist, onDelete }) => {
+const ProductCard = ({ id, productname, price, image, isWishlist, onDelete, inStock }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [alreadyInCart, setAlreadyInCart] = useState(false);
   const addItemToCart = useCartStore((state) => state.addItem);
   const cartItems = useCartStore((state) => state.items);
   const router = useRouter();
+  // console.log(inStock);
 
   const handleAddToCart = () => {
     const productExists = cartItems.some((item) => item.id === id);
@@ -35,12 +35,11 @@ const ProductCard = ({ id, productname, price, image, isWishlist, onDelete }) =>
     }
     setModalVisible(true); // Show the modal for both cases.
   };
-  
+
   const navigateToCart = () => {
     setModalVisible(false); // Close the modal.
     router.push("/pages/cart"); // Navigate to the cart page.
   };
-  
 
   return (
     <View style={styles.card}>
@@ -56,46 +55,50 @@ const ProductCard = ({ id, productname, price, image, isWishlist, onDelete }) =>
           <Text>⭐ ⭐ ⭐ ⭐ ⭐</Text>
           <Text style={styles.ratingText}>(32k Ratings)</Text>
         </View>
-        <View style={styles.pricebutton}>
-          <Text style={styles.price}>₹{price}</Text>
-          <TouchableOpacity style={styles.button} onPress={handleAddToCart}>
-            <Text style={styles.buttonText}>Add to Cart</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.price}>₹{price}</Text>
+        {/* Add to Cart Button */}
+        <TouchableOpacity
+          style={[styles.button, !inStock && styles.disabledButton]} // Add conditional style for disabled state
+          onPress={inStock ? handleAddToCart : null} // Disable action if out of stock
+          disabled={!inStock} // Disable button when out of stock
+        >
+          <Text style={styles.buttonText}>
+            {inStock ? "Add to Cart" : "Out of Stock"}
+          </Text>
+        </TouchableOpacity>
       </View>
 
       {/* Modal for cart confirmation */}
       <Modal
-  animationType="slide"
-  transparent={true}
-  visible={modalVisible}
-  onRequestClose={() => setModalVisible(false)}
->
-  <View style={styles.modalContainer}>
-    <View style={styles.modalContent}>
-      <Text style={styles.modalText}>
-        {alreadyInCart
-          ? "This product is already in your cart. Do you want to go to your cart?"
-          : "Product added to cart! Do you want to go to your cart?"}
-      </Text>
-      <View style={styles.modalActions}>
-        <TouchableOpacity
-          style={[styles.modalButton, styles.modalButtonYes]}
-          onPress={navigateToCart}
-        >
-          <Text style={styles.modalButtonText}>Yes</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.modalButton, styles.modalButtonNo]}
-          onPress={() => setModalVisible(false)}
-        >
-          <Text style={styles.modalButtonText}>No</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </View>
-</Modal>
-
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>
+              {alreadyInCart
+                ? "This product is already in your cart. Do you want to go to your cart?"
+                : "Product added to cart! Do you want to go to your cart?"}
+            </Text>
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonYes]}
+                onPress={navigateToCart}
+              >
+                <Text style={styles.modalButtonText}>Yes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonNo]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>No</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -105,15 +108,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#1C1C1E",
     borderRadius: 10,
     overflow: "hidden",
-    width: 160,
+    width: 190,
     position: "relative",
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: "column", // Change to column for stacking items vertically
     justifyContent: "space-between",
+    marginBottom: 10, // Space between cards
   },
   image: {
-    width: "90%",
+    width: "100%",
     height: 150,
+    padding: 10,
   },
   deleteIcon: {
     position: "absolute",
@@ -124,7 +128,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   details: {
-    padding: 1,
+    padding: 10, // Increase padding for better spacing
   },
   productName: {
     color: "white",
@@ -148,24 +152,19 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    backgroundColor: "#39D353",
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    backgroundColor: "#8FFA09",
+    paddingVertical: 6,
     alignItems: "center",
     borderRadius: 5,
-    width: 100,
-    marginRight:150
+    width: "100%", // Full width button
+  },
+  disabledButton: {
+    backgroundColor: "#B0B0B0", // Gray color when out of stock
   },
   buttonText: {
     color: "black",
     fontSize: 14,
     fontWeight: "bold",
-  },
-  pricebutton: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    gap: 5,
   },
   modalContainer: {
     flex: 1,
@@ -211,6 +210,8 @@ const styles = StyleSheet.create({
 });
 
 export default ProductCard;
+
+
 
 
 
