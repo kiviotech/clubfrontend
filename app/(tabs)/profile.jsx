@@ -15,6 +15,7 @@ import useProfileStore from '../../src/store/useProfileStore';
 import useCartStore from '../../src/store/useCartStore';
 import useStore from '../../src/store/useStore';
 import { useFocusEffect } from '@react-navigation/native';
+import useWishlistStore from '../../src/store/useWishlistStore';
 
 const Profile = () => {
   const [user, setUser] = useState(null); 
@@ -30,6 +31,7 @@ const Profile = () => {
   const clearShippingInfo = useStore((state) => state.clearShippingInfo);
   const clearCart = useCartStore((state) => state.clearCart);
   const [modalVisible, setModalVisible] = useState(false); 
+  const clearWishlist = useWishlistStore((state) => state.clearWishlist);
   // Watch for changes in the profile state
 
   // Replace the navigation effect with useFocusEffect
