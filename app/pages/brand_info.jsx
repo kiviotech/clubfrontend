@@ -202,7 +202,9 @@ const brand_info = ({ limit }) => {
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Ionicons name="arrow-back" color="white" size={20} />
           </TouchableOpacity>
-          <Header />
+          <View style={{ width: '95%'}}>
+            <Header />
+          </View>
         </View>
 
         <View style={styles.searchContainer}>
@@ -234,13 +236,13 @@ const brand_info = ({ limit }) => {
         <View style={styles.brandInfoContainer}>
           <Text style={styles.brandName}>{brandName}</Text>
           <Text style={styles.brandDescription}>{brandDescription}</Text>
-          <FontAwesome name="share" size={24} color="#8FFA09" style={styles.shareIcon} />
+          {/* <FontAwesome name="share" size={24} color="#8FFA09" style={styles.shareIcon} /> */}
         </View>
 
         {/* Follow button */}
-        <TouchableOpacity style={styles.followButton}>
+        {/* <TouchableOpacity style={styles.followButton}>
           <Text style={styles.followButtonText}>Follow</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <View>
           <SafeAreaView style={styles.area}>
@@ -355,8 +357,8 @@ const styles = StyleSheet.create({
     height: 50,
   },
   headerContainer: {
-    // flexDirection: 'row', // Align items horizontally
-    // alignItems: 'center', // Vertically center align items
+    flexDirection: 'row', // Align items horizontally
+    alignItems: 'center', // Vertically center align items
     // justifyContent: 'space-between', // Adjust spacing; use 'space-between' if needed
     paddingHorizontal: 10, // Add some padding on the sides
     marginTop: 10, // Add top margin if required

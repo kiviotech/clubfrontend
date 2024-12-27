@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
   popup: {
     position: 'absolute',
     top: '50%',
-    left: '50%',
+    left: '35%',
     transform: [{ translateX: -50 }, { translateY: -50 }],
     backgroundColor: '#000',
     padding: 12, // Padding for popup
