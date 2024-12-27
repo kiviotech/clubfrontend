@@ -21,15 +21,17 @@ import svgs from "../../constants/svgs";
 import { useState } from "react";
 import ProductSearch from "../pages/ProductSearch";
 import Header from "../pages/header";
+import { Video } from "expo-av";
+import { Asset } from "expo-asset";
 
 
 const categories = ["All", "Men", "Women", "Kids Wear"];
 
-
+const videoUri = Asset.fromModule(require("../../assets/loading.mp4")).uri;
 
 const store = () => {
 
-
+const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [slideAnim] = useState(new Animated.Value(0));
   const [isFilterVisible, setIsFilterVisible] = useState(false);

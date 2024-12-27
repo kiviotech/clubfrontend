@@ -155,7 +155,7 @@ const pickImage = async () => {
           {error && <Text style={styles.errorText}>{error}</Text>}
           {successMessage && <Text style={styles.successMessage}>{successMessage}</Text>}
         </View>
-
+        
         {/* <View style={styles.buttonContainer}>
           <TouchableOpacity
             // onPress={onRemoveAll}
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     height: 128, // Equivalent to h-32
     width: 128, // Equivalent to w-32
     backgroundColor: '#1E1E1E',
-    borderRadius: 10, // Equivalent to rounded-lg
+    borderRadius: 10,     
     justifyContent: 'center',
     alignItems: 'center',
   },

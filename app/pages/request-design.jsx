@@ -162,7 +162,12 @@ const RequestDesign = () => {
               setStartDate(date);
               handleDesignDetailsChange("deadline", date);
             }}
-            icon={<Ionicons name="calendar" size={20} color="white" />} // Add this prop if supported
+            icon={ <Ionicons
+              name="calendar"
+              size={20}
+              color="white"
+              style={{ position: "absolute", right: 10, top: 10 }}
+            />} // Add this prop if supported
           />
 
           {validationErrors.deadline && <Text style={styles.errorText}>{validationErrors.deadline}</Text>}
