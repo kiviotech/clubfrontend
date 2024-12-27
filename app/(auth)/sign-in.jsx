@@ -195,7 +195,7 @@ const SignIn = () => {
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
 
-      <SocialLoginButtons />
+      {/* <SocialLoginButtons /> */}
     </SafeAreaView>
   );
 };

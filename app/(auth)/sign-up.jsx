@@ -248,7 +248,7 @@ const SignUp = () => {
         </TouchableOpacity>
       </View>
 
-      <SocialLoginButtons />
+      {/* <SocialLoginButtons /> */}
     </SafeAreaView>
   );
 };
