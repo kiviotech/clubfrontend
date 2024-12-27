@@ -185,7 +185,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
         setFetchedBrandCollabs(data);
         
       } catch (error) {
-        console.error("Failed to fetch brand collabs:", error);
+        // console.error("Failed to fetch brand collabs:", error);
       }
     };
 
@@ -262,7 +262,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
             },
           });
         } catch (error) {
-          console.error("Failed to fetch brand details:", error);
+          // console.error("Failed to fetch brand details:", error);
         }
       }
     }else if(index === 5){
@@ -292,12 +292,12 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
             },
           });
         } catch (error) {
-          console.error("Failed to fetch brand details:", error);
+          // console.error("Failed to fetch brand details:", error);
         }
       }
     } 
     else {
-      console.warn("No action defined for this item");
+      // console.warn("No action defined for this item");
     }
   };
 

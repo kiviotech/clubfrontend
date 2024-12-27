@@ -237,7 +237,7 @@ const Checkout = () => {
 
   const handleSelectAddress = (info) => {
     setSelectedAddress(info);
-    console.log("Selected Address ID:", info.id);
+    // console.log("Selected Address ID:", info.id);
   };
 
   return (

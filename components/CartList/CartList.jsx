@@ -11,6 +11,7 @@ export default function CartList({
   quantity: initialQuantity = 1,
   size,
   isWishlist = false,
+  stockAvailable,
 }) {
   const [quantity, setQuantity] = useState(initialQuantity);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
@@ -21,9 +22,13 @@ export default function CartList({
   }, [initialQuantity]);
 
   const increment = () => {
-    const newQuantity = quantity + 1;
-    setQuantity(newQuantity);
-    updateQuantity(id, size, newQuantity);
+    if (quantity < stockAvailable) {
+      const newQuantity = quantity + 1;
+      setQuantity(newQuantity);
+      updateQuantity(id, size, newQuantity);
+    } else {
+      alert(`Only ${stockAvailable} items are available in stock.`);
+    }
   };
 
   const decrement = () => {
@@ -43,7 +48,6 @@ export default function CartList({
           <Text style={styles.productPrice}>₹{price}</Text>
           <Text style={styles.subtotal}>Size : {size}</Text>
 
-
           {!isWishlist && (
             <View style={styles.subtotalContainer}>
               <Text style={styles.subtotal}>Subtotal: ₹{price * quantity}</Text>
@@ -61,7 +65,6 @@ export default function CartList({
                 >
                   <Text style={styles.quantityText}>+</Text>
                 </TouchableOpacity>
-
               </View>
             </View>
           )}
@@ -69,11 +72,10 @@ export default function CartList({
 
         <TouchableOpacity
           style={styles.deleteButton}
-          onPress={() => removeItem(id, size)} // Pass both id and size
+          onPress={() => removeItem(id, size)}
         >
           <svgs.TrashSimple />
         </TouchableOpacity>
-
       </View>
     </View>
   );

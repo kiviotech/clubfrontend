@@ -131,7 +131,7 @@ const ProfileScreen = () => {
           throw new Error("Failed to retrieve uploaded image ID.");
         }
       } catch (error) {
-        console.error("Error uploading image:", error.response?.data || error.message);
+        // console.error("Error uploading image:", error.response?.data || error.message);
         Alert.alert("Upload Error", "Failed to upload the image.");
       } finally {
         setUploading(false);

@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#1C1C1E",
     borderRadius: 10,
     overflow: "hidden",
-    width: 190,
+    width: 170,
     position: "relative",
     flexDirection: "column", // Change to column for stacking items vertically
     justifyContent: "space-between",

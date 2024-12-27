@@ -73,15 +73,15 @@ const WebPaymentRazorPay = () => {
         },
         modal: {
           ondismiss: async function () {
-            console.log("Razorpay modal dismissed");
+            // console.log("Razorpay modal dismissed");
         
             // Use orderdocId for deleting the order detail document
             if (orderdocId) {
               try {
                 await deleteOrderDetail(orderdocId); // Cleanup after payment
-                console.log(`Order detail ID ${orderdocId} deleted.`);
+                // console.log(`Order detail ID ${orderdocId} deleted.`);
               } catch (error) {
-                console.error("Error deleting order detail:", error);
+                // console.error("Error deleting order detail:", error);
               }
             }
 

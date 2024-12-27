@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
-
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
@@ -17,7 +16,6 @@ import useProductStore from "../../src/store/useProductStore";
 import { MEDIA_BASE_URL } from "../../src/api/apiClient";
 import useCartStore from "../../src/store/useCartStore";
 import useWishlistStore from "../../src/store/useWishlistStore";
-// import { Modal } from "react-native-web";
 import Svgs from "../../constants/svgs";
 import { updateProduct } from "../../src/api/repositories/productRepository";
 const { width } = Dimensions.get("window");
@@ -44,10 +42,6 @@ const ProductDetails = () => {
     })
     : []; // Default to empty array if images is not an array
 
-  // console.log(imagesArray); // Debug to check the image URLs
-
-  // console.log(productDetails);
-
   const [activeIndex, setActiveIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState("XS");
@@ -66,7 +60,16 @@ const ProductDetails = () => {
   const totalCartItems = useCartStore((state) => state.getTotalItems());
 
   const increment = () => {
-    setQuantity(quantity + 1);
+    // Find the stock for the selected size
+    const selectedSizeObj = productDetails.sizes.find(
+      (sizeObj) => sizeObj.size === selectedSize
+    );
+  
+    if (selectedSizeObj && quantity < selectedSizeObj.number_of_items) {
+      setQuantity(quantity + 1);
+    } else {
+      alert(`Maximum available stock is ${selectedSizeObj.number_of_items}`);
+    }
   };
 
   const decrement = () => {
@@ -75,75 +78,55 @@ const ProductDetails = () => {
     }
   };
 
-  // useEffect(() => {
-  //   // Check and update the stock status when the component mounts
-  //   handleUpdateStockStatus(productDetails);
-  // }, [productDetails]);
-
-
-  
-  // const isOutOfStock = (sizes) => {
-  //   // Ensure sizes is an array and check if every size has zero stock
-  //   return Array.isArray(sizes) && sizes.every((size) => size.number_of_items === 0);
-  // };
-
-  // const handleUpdateStockStatus = async (productDetails) => {
-  //   try {
-  //     if (!productDetails || !productDetails.sizes) {
-  //       console.warn("Invalid product details or sizes are not defined.");
-  //       return;
-  //     }
-
-  //     // Check if the product should be in stock
-  //     const updatedProductData = {
-  //       data: {
-  //         in_stock: !isOutOfStock(productDetails.sizes), // true if at least one size has stock
-  //       },
-  //     };
-
-  //     // Send updated stock status to the backend
-  //     await updateProduct(productDetails.documentId, updatedProductData);
-
-  //     console.log(
-  //       `Product stock status updated to: ${updatedProductData.data.in_stock}`
-  //     );
-  //   } catch (error) {
-  //     console.error("Error updating product stock status:", error);
-  //   }
-  // };
-
-  // // Automatically run the stock update logic whenever productDetails changes
-  // useEffect(() => {
-  //   handleUpdateStockStatus(productDetails);
-  // }, []);
-
- 
+  const handleSizeSelection = (size) => {
+    setSelectedSize(size);
+    const selectedSizeObj = productDetails.sizes.find(
+      (sizeObj) => sizeObj.size === size
+    );
+    if (selectedSizeObj) {
+      // Reset quantity to 1 when size changes
+      setQuantity(1);
+      console.log(`Available stock for ${size}: ${selectedSizeObj.number_of_items}`);
+    }
+  };
 
   const handleAddToCart = () => {
     // Check if the same product with the same size is already in the cart
     const existingItem = useCartStore.getState().items.find(
       (cartItem) => cartItem.id === productDetails.id && cartItem.size === selectedSize
     );
-
+  
     if (existingItem) {
       setCartPopupVisible(true); // Show the cart popup if the same product with the same size exists
     } else {
-      // Add the product with the selected size to the cart
-      const item = {
-        id: productDetails.id,
-        name: productDetails.name,
-        price: productDetails.price,
-        quantity: quantity,
-        size: selectedSize,
-        image: imagesArray[0],
-      };
-
-      addItemToCart(item); // Add the new item to the cart
-      setIsAddedToCart(true);
-      router.push("/pages/cart");
+      // Get the stock for the selected size
+      const selectedSizeObj = productDetails.sizes.find(
+        (sizeObj) => sizeObj.size === selectedSize
+      );
+      
+  
+      if (selectedSizeObj) {
+        // Add the product with the selected size to the cart
+        const item = {
+          id: productDetails.id,
+          name: productDetails.name,
+          price: productDetails.price,
+          quantity: quantity,
+          size: selectedSize,
+          stockAvailable: selectedSizeObj.number_of_items, // Include stock info for the selected size
+          image: imagesArray[0],
+        };
+  
+        addItemToCart(item); // Add the new item to the cart
+        setIsAddedToCart(true);
+        router.push("/pages/cart");
+      } else {
+        alert("Selected size details are unavailable.");
+      }
     }
   };
-
+  
+                     
 
 
   const handleCartPopupConfirmation = (confirm) => {
@@ -293,7 +276,10 @@ const ProductDetails = () => {
               productDetails.sizes.map((sizeObj, index) => (
                 <View key={index} style={styles.sizeItem}>
                   <TouchableOpacity
-                    onPress={() => setSelectedSize(sizeObj.size)}
+                    onPress={() => {
+                      setSelectedSize(sizeObj.size);
+                      handleSizeSelection(sizeObj.size)
+                    }}
                     style={[
                       styles.sizeButton,
                       {
@@ -318,9 +304,9 @@ const ProductDetails = () => {
 
                   {/* Display number of products and stock status */}
                   <Text style={styles.sizeInfo}>{`${sizeObj.number_of_items}`}</Text>
-                  <Text style={styles.sizeInfo}>
+                  {/* <Text style={styles.sizeInfo}>
                     {`Stock: ${sizeObj.in_stock ? "Yes" : "No"}`}
-                  </Text>
+                  </Text> */}
                 </View>
               ))}
           </View>

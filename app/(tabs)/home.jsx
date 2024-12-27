@@ -23,7 +23,7 @@ import useUserDataStore from "../../src/store/userData";
 import { getUserById } from "../../src/api/repositories/userRepository";
 import Header from "../pages/header";
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import Nav from "../pages/nav"
 
 
 const Home = () => {
@@ -179,6 +179,7 @@ const Home = () => {
           <Text style={styles.footerText}>© 2022 ClubUnplugged</Text>
         </View>
       </ScrollView>
+      <Nav/>
     </SafeAreaView>
   );
 };

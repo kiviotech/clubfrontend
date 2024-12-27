@@ -37,7 +37,7 @@ const pickImage = async () => {
 
   if (!result.canceled) {
     const uri = result.assets[0].uri;
-    console.log("Selected Image URI:", uri); // Debugging
+    // console.log("Selected Image URI:", uri); // Debugging
     setImages([uri]);
 
     try {
@@ -45,13 +45,13 @@ const pickImage = async () => {
 
       // Fetch the image as a Blob
       const imageBlob = await (await fetch(uri)).blob(); // Convert URI to Blob
-      console.log(imageBlob); // Log Blob for debugging
+      // console.log(imageBlob); // Log Blob for debugging
 
       // Prepare FormData for upload
       const formData = new FormData();
       formData.append("files", imageBlob, "custom-image.jpg"); // Append the blob with a file name
 
-      console.log("FormData Content:", formData); // Log formData to see its contents
+      // console.log("FormData Content:", formData); // Log formData to see its contents
 
       // Upload image using Axios
       const uploadResponse = await axios.post(
@@ -77,7 +77,7 @@ const pickImage = async () => {
         throw new Error("Failed to retrieve uploaded image ID.");
       }
     } catch (error) {
-      console.error("Error uploading image:", error);
+      // console.error("Error uploading image:", error);
       Alert.alert("Upload Error", "Failed to upload the image.");
     } finally {
       setUploading(false);

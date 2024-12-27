@@ -47,7 +47,7 @@ export default function Payment() {
         setCoupons(couponsData.data.data);
         
       } catch (error) {
-        console.error("Error fetching coupons:", error);
+        // console.error("Error fetching coupons:", error);
         setError("Failed to load coupons");
       }
     };
@@ -57,7 +57,7 @@ export default function Payment() {
 
 
   const handleCouponChange = (code) => {
-    console.log("Coupon input changed:", code);
+    // console.log("Coupon input changed:", code);
     setCouponCode(code);
   
     try {
@@ -75,7 +75,7 @@ export default function Payment() {
         setIsApplied(false);
       }
     } catch (error) {
-      console.error("Error applying coupon:", error);
+      // console.error("Error applying coupon:", error);
     }
   };
   
@@ -138,7 +138,7 @@ export default function Payment() {
           const orderDetailsDocumentId = response?.data?.documentId;
           const orderdetailId = response?.data?.id;
   
-          console.log("Order Detail Response:", orderDetailsDocumentId);
+          // console.log("Order Detail Response:", orderDetailsDocumentId);
   
           // Resolve data for further navigation
           resolve({

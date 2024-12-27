@@ -27,7 +27,7 @@ const OrderPage = () => {
         setLoading(true);
         const response = await getUserWithOrderDetails(userId); // Fetch data
         setOrderDetails(response?.data); // Save the fetched order details
-        console.log(response.data.order_details[0].orderItems[0].price)
+        // console.log(response.data.order_details[0].orderItems[0].price)
         
         setLoading(false);
       } catch (err) {

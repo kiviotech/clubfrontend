@@ -23,6 +23,8 @@ const Cart = () => {
   const subtotal = useCartStore((state) => state.subtotal);
   const [deliveryCharge, setDeliveryCharge] = useState(50); // Default to 50
 
+  // console.log(cartItems[0].stockAvailable)
+
   useEffect(() => {
     if (!userId) {
       router.push("/sign-in");
@@ -74,6 +76,7 @@ const Cart = () => {
                 image={item.image}
                 quantity={item.quantity}
                 size={item.size}
+                stockAvailable={item.stockAvailable}
               />
             ))
           ) : (

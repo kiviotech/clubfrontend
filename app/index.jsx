@@ -3,38 +3,33 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Dimensions, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Video } from "expo-av";
-import SignIn from "./(auth)/sign-in";
 import { Asset } from "expo-asset";
-import Home from "./(tabs)/home";
+import { useRouter } from "expo-router";
 
 const { width, height } = Dimensions.get("window");
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const router = useRouter();
 
   // Preload video URI
   const videoUri = Asset.fromModule(require("../assets/FrontScreen.mp4")).uri;
 
   useEffect(() => {
-    // Hide splash screen after timeout
+    // Hide splash screen and navigate to Home after timeout
     if (isVideoLoaded) {
       const timer = setTimeout(() => {
         setShowSplash(false);
+        router.replace("/(tabs)/home"); // Navigate to Home
       }, 3500);
       return () => clearTimeout(timer);
     }
   }, [isVideoLoaded]);
 
   const handleVideoLoad = () => {
-    console.log("Video loaded");
     setIsVideoLoaded(true); // Trigger timeout after the video loads
   };
-
-  // Debug log to ensure state updates
-  useEffect(() => {
-    console.log("Show splash:", showSplash);
-  }, [showSplash]);
 
   if (showSplash) {
     return (
@@ -66,8 +61,7 @@ export default function App() {
     );
   }
 
-  // Show SignIn screen after splash
-  return <Home />;
+  return null; // Return null since navigation is handling the route
 }
 
 const styles = StyleSheet.create({

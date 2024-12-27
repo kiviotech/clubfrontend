@@ -35,6 +35,13 @@ const Profile = () => {
   // Watch for changes in the profile state
 
   // Replace the navigation effect with useFocusEffect
+
+   useEffect(() => {
+      if (!userId) {
+        router.push("/sign-in");
+      }
+    }, [userId]);
+    
   useFocusEffect(
     React.useCallback(() => {
       fetchProfile();
