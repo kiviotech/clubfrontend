@@ -1,30 +1,30 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { deleteDesignRequest } from '../../src/api/repositories/designRequestRepository';
 import { removeDesignRequest } from '../../src/api/services/designRequestService';
 import useRequestStore from '../../src/store/useRequestStore';
 
-const RequestCart = ({ title, budget, colorPreferences, deadline,image,requestId, onDelete, documentId}) => {
-  // const [quantity, setQuantity] = useState(1);
-  // console.log(documentId)
+const RequestCart = ({ title, budget, colorPreferences, deadline, image, requestId, onDelete, documentId }) => {
   const { getQuantity, updateQuantity } = useRequestStore();
   const quantity = getQuantity(requestId);
+
+  // Increment and Decrement Quantity
   const incrementQuantity = () => updateQuantity(requestId, quantity + 1);
   const decrementQuantity = () => {
     if (quantity > 1) updateQuantity(requestId, quantity - 1);
   };
 
+  // Handle Delete Request
   const handleDelete = async () => {
     try {
-      // Call the service to delete the request from the backend using the documentId
+      // Call service to remove request by documentId
       await removeDesignRequest(documentId);
 
-      // Call the onDelete function passed from the parent component to remove the item from frontend state
-      onDelete(requestId); // Pass the requestId to the delete function (or pass documentId if needed)
-
+      // If deletion is successful, execute the onDelete function passed from parent
+      onDelete(requestId);
     } catch (error) {
-      // console.error("Failed to delete the request:", error);
+      console.error("Error deleting request:", error);
+      Alert.alert("Error", "Unable to delete the request. Please try again later.");
     }
   };
 
@@ -37,16 +37,15 @@ const RequestCart = ({ title, budget, colorPreferences, deadline,image,requestId
 
       {/* Product Image */}
       <Image
-        source={{ uri: image || 'https://via.placeholder.com/100x100' }} // Replace with your image URL
+        source={{ uri: image || 'https://via.placeholder.com/100x100' }} // Fallback if no image is provided
         style={styles.productImage}
       />
 
       {/* Product Details */}
       <View style={styles.details}>
         <Text style={styles.productTitle}>{title}</Text>
-        <Text style={styles.productPrice}>${budget}</Text>
+        <Text style={styles.productPrice}>₹{budget}</Text>
         <Text style={styles.productColor}>Color Preferences: {colorPreferences}</Text>
-        {/* Expected Delivery */}
         <Text style={styles.deliveryText}>Expected Delivery:</Text>
         <Text style={styles.datePlaceholder}>{deadline}</Text>
       </View>

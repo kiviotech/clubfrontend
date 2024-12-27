@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity,ScrollView,Alert,Modal } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity,ScrollView,Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import logo from "../../assets/logo.png";
 import Svgs from '../../constants/svgs';
@@ -16,6 +16,8 @@ import useCartStore from '../../src/store/useCartStore';
 import useStore from '../../src/store/useStore';
 import { useFocusEffect } from '@react-navigation/native';
 import useWishlistStore from '../../src/store/useWishlistStore';
+import { Alert } from 'react-native';
+
 
 const Profile = () => {
   const [user, setUser] = useState(null); 
@@ -35,6 +37,16 @@ const Profile = () => {
   // Watch for changes in the profile state
 
   // Replace the navigation effect with useFocusEffect
+
+  const showFeatureUnavailable = () => {
+    console.log("Feature unavailable clicked"); // Debugging message
+    Alert.alert(
+      "Feature Unavailable", 
+      "This feature is currently unavailable. Please try again later.", 
+      [{ text: "OK" }]
+    );
+  };
+  
 
    useEffect(() => {
       if (!userId) {
@@ -220,17 +232,17 @@ const Profile = () => {
       {/* Feedback & Information Section */}
       <Text style={styles.sectionTitle}>Feedback & Information</Text>
       <View style={styles.section}>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={showFeatureUnavailable}>
           <Icon name="help-circle" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>FAQ's</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={showFeatureUnavailable}>
           <Icon name="document-text" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Term of Service</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={showFeatureUnavailable}>
           <Icon name="shield-checkmark" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Privacy Policy</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />

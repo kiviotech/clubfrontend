@@ -16,7 +16,7 @@ const Measurement = () => {
   const [uploading, setUploading] = useState(false);
   const { setUploads } = useFormStore();
   const [error, setError] = useState(null);
-
+  const [successMessage, setSuccessMessage] = useState("");
  
 const pickImage = async () => {
   setError(null);
@@ -72,6 +72,7 @@ const pickImage = async () => {
         setProfileImageId(uploadedImageId);
         setUploads(uploadedImageId);
         setError(null);
+        setSuccessMessage("Profile image uploaded successfully!");
         Alert.alert("Upload Successful", "Profile image uploaded successfully!");
       } else {
         throw new Error("Failed to retrieve uploaded image ID.");
@@ -152,6 +153,7 @@ const pickImage = async () => {
             />
           )}
           {error && <Text style={styles.errorText}>{error}</Text>}
+          {successMessage && <Text style={styles.successMessage}>{successMessage}</Text>}
         </View>
 
         {/* <View style={styles.buttonContainer}>
@@ -229,6 +231,11 @@ const styles = StyleSheet.create({
   },
   uploadText: {
     color: 'white',
+  },
+  successMessage: {
+    color: "green",
+    fontSize: 14,
+    marginTop: 10,
   },
   imageContainer: {
     position: 'relative',
