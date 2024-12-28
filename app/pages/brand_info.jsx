@@ -165,6 +165,7 @@ const brand_info = ({ limit }) => {
 
   const handleCartAdd = (product) => {
     const imageUrl = getImageUrl(product.product_image);
+    const sizeStock = product.sizes[1]?.number_of_items || 0;
     const item = {
       id: product.id,
       name: product.name,
@@ -172,6 +173,7 @@ const brand_info = ({ limit }) => {
       quantity: quantity,
       image: imageUrl,
       size: "S",
+      stockAvailable: sizeStock,
     };
 
     // Check if the product is already in the cart
@@ -292,7 +294,7 @@ const brand_info = ({ limit }) => {
                           {product.product_Details}
                         </Text>
                         <Text style={styles.productPrice}>₹{product.price}</Text>
-                        {isOutOfStock && <Text style={styles.stockText}></Text>}
+                        {/* {isOutOfStock && <Text style={styles.stockText}></Text>} */}
                       </View>
                     </TouchableOpacity>
                     <TouchableOpacity

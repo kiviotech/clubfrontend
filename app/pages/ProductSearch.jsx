@@ -151,6 +151,7 @@ const ProductSearch = ({ limit,searchTerm }) => {
 
   const handleCartAdd = (product) => {
     const imageUrl =getImageUrl(product.product_image);
+    const sizeStock = product.sizes[1]?.number_of_items || 0;
     const item = {
       id: product.id,
       name: product.name,
@@ -158,6 +159,7 @@ const ProductSearch = ({ limit,searchTerm }) => {
       quantity: quantity,
       image: imageUrl,
       size: "S",
+      stockAvailable: sizeStock,  
     };
 
     // Check if the product is already in the cart

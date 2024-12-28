@@ -134,11 +134,11 @@ const SignUp = () => {
           setEmailError("Email already exists. Please use a different email.");
         
           // console.error("Signup error:", error);
-          Alert.alert("Error", "Something went wrong. Please try again later.");
+          // Alert.alert("Error", "Something went wrong. Please try again later.");
         
       } else {
         // console.error("Signup error:", error);
-        Alert.alert("Error", "Something went wrong. Please try again later.");
+        // Alert.alert("Error", "Something went wrong. Please try again later.");
       }
     }
   };

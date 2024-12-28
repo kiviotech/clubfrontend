@@ -23,10 +23,14 @@ import useUserDataStore from "../../src/store/userData";
 import { getUserById } from "../../src/api/repositories/userRepository";
 import Header from "../pages/header";
 import Icon from 'react-native-vector-icons/Ionicons';
-import Nav from "../pages/nav"
+import useTokenExpiryCheck from "../../src/utils/tokenExpiryCheck";
+
 
 
 const Home = () => {
+
+  // useTokenExpiryCheck();
+  
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -179,7 +183,7 @@ const Home = () => {
           <Text style={styles.footerText}>© 2022 ClubUnplugged</Text>
         </View>
       </ScrollView>
-      <Nav/>
+      {/* <Nav/> */}
     </SafeAreaView>
   );
 };
@@ -211,7 +215,7 @@ const styles = StyleSheet.create({
   welcomeText: {
     color: "white",
     fontSize: 16,
-    // marginBottom: 8,
+    marginBottom: 0,
     fontFamily: fonts["Poppins-SemiBold"],
 
   },

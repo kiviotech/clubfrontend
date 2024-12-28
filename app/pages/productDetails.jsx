@@ -52,6 +52,7 @@ const ProductDetails = () => {
   const isInWishlist = useWishlistStore((state) => state.wishlist.some((item) => item.id === productDetails.id));
   const [modalVisible, setModalVisible] = useState(false);
   const [cartPopupVisible, setCartPopupVisible] = useState(false);
+  const [stockPopupMessage, setStockPopupMessage] = useState("");
   const isInCart = useCartStore((state) =>
     state.items.some(
       (item) => item.id === productDetails.id
@@ -64,11 +65,19 @@ const ProductDetails = () => {
     const selectedSizeObj = productDetails.sizes.find(
       (sizeObj) => sizeObj.size === selectedSize
     );
-  
+
     if (selectedSizeObj && quantity < selectedSizeObj.number_of_items) {
       setQuantity(quantity + 1);
+      setStockPopupMessage("");
     } else {
-      alert(`Maximum available stock is ${selectedSizeObj.number_of_items}`);
+     const stockMessage = `Maximum available stock is ${selectedSizeObj.number_of_items}`;
+    setStockPopupMessage(stockMessage);
+
+    // Clear the popup message after 3 seconds
+    setTimeout(() => {
+      setStockPopupMessage("");
+    }, 3000);
+      // alert(`Maximum available stock is ${selectedSizeObj.number_of_items}`);
     }
   };
 
@@ -95,7 +104,7 @@ const ProductDetails = () => {
     const existingItem = useCartStore.getState().items.find(
       (cartItem) => cartItem.id === productDetails.id && cartItem.size === selectedSize
     );
-  
+
     if (existingItem) {
       setCartPopupVisible(true); // Show the cart popup if the same product with the same size exists
     } else {
@@ -103,8 +112,8 @@ const ProductDetails = () => {
       const selectedSizeObj = productDetails.sizes.find(
         (sizeObj) => sizeObj.size === selectedSize
       );
-      
-  
+
+
       if (selectedSizeObj) {
         // Add the product with the selected size to the cart
         const item = {
@@ -116,7 +125,7 @@ const ProductDetails = () => {
           stockAvailable: selectedSizeObj.number_of_items, // Include stock info for the selected size
           image: imagesArray[0],
         };
-  
+
         addItemToCart(item); // Add the new item to the cart
         setIsAddedToCart(true);
         router.push("/pages/cart");
@@ -125,8 +134,8 @@ const ProductDetails = () => {
       }
     }
   };
-  
-                     
+
+
 
 
   const handleCartPopupConfirmation = (confirm) => {
@@ -270,6 +279,9 @@ const ProductDetails = () => {
           </View>
         </View>
         <View style={styles.sizeSection}>
+        {stockPopupMessage ? (
+    <Text style={styles.stockPopupMessage}>{stockPopupMessage}</Text>
+  ) : null}
           <Text style={styles.sizeLabel}>Size</Text>
           <View style={styles.sizeContainer}>
             {productDetails.sizes &&
@@ -431,7 +443,7 @@ const styles = StyleSheet.create({
   header: {
     display: "flex",
     flexDirection: "row",
-    gap: 260,
+    gap: 240,
     padding: 10,
 
   },
@@ -439,7 +451,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     gap: 20,
-
+  
   },
   iconContainer: {
     position: "relative", // To position badge on top of the icon
@@ -540,6 +552,13 @@ const styles = StyleSheet.create({
   // Size Section
   sizeSection: {
     marginBottom: 16,
+  },
+  stockPopupMessage: {
+    color: "#FF4D4D", // Red color to show error
+    fontSize: 12,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
   },
   sizeLabel: {
     fontSize: 16,

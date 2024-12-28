@@ -29,7 +29,7 @@ const ProductList = ({ limit }) => {
   const { wishlist, removeFromWishlist } = useWishlistStore();
   const [popupMessage, setPopupMessage] = useState("");
   const [popupProductId, setPopupProductId] = useState(null);
-
+  const [selectedSize, setSelectedSize] = useState(null);
 
 
   const imagesArray =
@@ -64,6 +64,7 @@ const ProductList = ({ limit }) => {
        try {
          const response = await getProducts();
          setProducts(response.data.data);
+        //  console.log(response.data.data[0].sizes[1].number_of_items)
    
          const updatedProducts = [...response.data.data];
    
@@ -170,6 +171,7 @@ const ProductList = ({ limit }) => {
 
   const handleCartAdd = (product) => {
     const imageUrl = getImageUrl(product.product_image);
+    const sizeStock = product.sizes[1]?.number_of_items || 0;
     const item = {
       id: product.id,
       name: product.name,
@@ -177,6 +179,7 @@ const ProductList = ({ limit }) => {
       quantity: quantity,
       image: imageUrl,
       size: "S",
+      stockAvailable: sizeStock,
     };
 
     // Check if the product is already in the cart
@@ -240,7 +243,7 @@ const ProductList = ({ limit }) => {
                   {product.product_Details}
                 </Text>
                 <Text style={styles.productPrice}>₹{product.price}</Text>
-                {isOutOfStock && <Text style={styles.stockText}></Text>}
+                {/* {isOutOfStock && <Text style={styles.stockText}></Text>} */}
               </View>
             </TouchableOpacity>
             <TouchableOpacity

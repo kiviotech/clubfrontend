@@ -170,8 +170,6 @@ export const logout = () => {
     if (clearUserData) {
       clearUserData(); // Reset user data
     }
-
-    // console.log("User logged out successfully.");
   } catch (error) {
     // console.error("Logout error:", error);
     throw error;

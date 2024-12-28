@@ -6,18 +6,28 @@ import {
   StyleSheet,
   TouchableOpacity,
   Modal,
+  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import useCartStore from "../../src/store/useCartStore";
-import { useRouter } from "expo-router"; // To navigate to the cart
+import { useRouter } from "expo-router";
 
-const ProductCard = ({ id, productname, price, image, isWishlist, onDelete, inStock }) => {
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+
+const ProductCard = ({
+  id,
+  productname,
+  price,
+  image,
+  isWishlist,
+  onDelete,
+  inStock,
+}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [alreadyInCart, setAlreadyInCart] = useState(false);
   const addItemToCart = useCartStore((state) => state.addItem);
   const cartItems = useCartStore((state) => state.items);
   const router = useRouter();
-  // console.log(inStock);
 
   const handleAddToCart = () => {
     const productExists = cartItems.some((item) => item.id === id);
@@ -29,21 +39,25 @@ const ProductCard = ({ id, productname, price, image, isWishlist, onDelete, inSt
         name: productname,
         price,
         image,
+        size: "S",
       };
       addItemToCart(product);
-      setAlreadyInCart(false); // This ensures the modal shows the correct message for new items.
+      setAlreadyInCart(false);
     }
-    setModalVisible(true); // Show the modal for both cases.
+    setModalVisible(true);
   };
 
   const navigateToCart = () => {
-    setModalVisible(false); // Close the modal.
-    router.push("/pages/cart"); // Navigate to the cart page.
+    setModalVisible(false);
+    router.push("/pages/cart");
   };
 
   return (
-    <View style={styles.card}>
-      <Image source={{ uri: image }} style={styles.image} />
+    <View style={[styles.card, { width: screenWidth * 0.45 }]}>
+      <Image
+        source={{ uri: image }}
+        style={[styles.image, { height: screenHeight * 0.2 }]}
+      />
       {isWishlist && (
         <TouchableOpacity style={styles.deleteIcon} onPress={onDelete}>
           <Ionicons name="trash-outline" size={24} color="white" />
@@ -56,11 +70,10 @@ const ProductCard = ({ id, productname, price, image, isWishlist, onDelete, inSt
           <Text style={styles.ratingText}>(32k Ratings)</Text>
         </View>
         <Text style={styles.price}>₹{price}</Text>
-        {/* Add to Cart Button */}
         <TouchableOpacity
-          style={[styles.button, !inStock && styles.disabledButton]} // Add conditional style for disabled state
-          onPress={inStock ? handleAddToCart : null} // Disable action if out of stock
-          disabled={!inStock} // Disable button when out of stock
+          style={[styles.button, !inStock && styles.disabledButton]}
+          onPress={inStock ? handleAddToCart : null}
+          disabled={!inStock}
         >
           <Text style={styles.buttonText}>
             {inStock ? "Add to Cart" : "Out of Stock"}
@@ -68,7 +81,6 @@ const ProductCard = ({ id, productname, price, image, isWishlist, onDelete, inSt
         </TouchableOpacity>
       </View>
 
-      {/* Modal for cart confirmation */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -108,16 +120,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#1C1C1E",
     borderRadius: 10,
     overflow: "hidden",
-    width: 170,
-    position: "relative",
-    flexDirection: "column", // Change to column for stacking items vertically
-    justifyContent: "space-between",
-    marginBottom: 10, // Space between cards
+    // margin: 10,
+    flexDirection: "column",
+    padding:7
   },
   image: {
     width: "100%",
-    height: 150,
-    padding: 10,
+    resizeMode: "cover",
   },
   deleteIcon: {
     position: "absolute",
@@ -128,11 +137,11 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   details: {
-    padding: 10, // Increase padding for better spacing
+    padding: 10,
   },
   productName: {
     color: "white",
-    fontSize: 16,
+    fontSize: screenHeight * 0.016, // Reduced font size
     fontWeight: "bold",
     marginBottom: 5,
   },
@@ -143,27 +152,26 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     color: "white",
-    fontSize: 8,
+    fontSize: screenHeight * 0.010, // Reduced font size
   },
   price: {
     color: "white",
-    fontSize: 18,
+    fontSize: screenHeight * 0.020, // Reduced font size
     fontWeight: "bold",
     marginBottom: 10,
   },
   button: {
     backgroundColor: "#8FFA09",
-    paddingVertical: 6,
+    paddingVertical: screenHeight * 0.005,
     alignItems: "center",
-    borderRadius: 5,
-    width: "100%", // Full width button
+    borderRadius: 8,
   },
   disabledButton: {
-    backgroundColor: "#B0B0B0", // Gray color when out of stock
+    backgroundColor: "#B0B0B0",
   },
   buttonText: {
     color: "black",
-    fontSize: 14,
+    fontSize: screenHeight * 0.016, // Reduced font size
     fontWeight: "bold",
   },
   modalContainer: {
@@ -174,13 +182,13 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: "#8FFA09",
-    padding: 20,
+    padding: screenHeight * 0.03,
     borderRadius: 10,
     width: "80%",
     alignItems: "center",
   },
   modalText: {
-    fontSize: 16,
+    fontSize: screenHeight * 0.018, // Reduced font size
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
@@ -191,7 +199,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   modalButton: {
-    padding: 10,
+    padding: screenHeight * 0.01,
     borderRadius: 5,
     flex: 1,
     marginHorizontal: 5,
@@ -206,11 +214,11 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     fontWeight: "bold",
+    fontSize: screenHeight * 0.016, // Reduced font size
   },
 });
 
 export default ProductCard;
-
 
 
 

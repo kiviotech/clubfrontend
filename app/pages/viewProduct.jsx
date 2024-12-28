@@ -17,9 +17,6 @@ const ViewProduct = () => {
     router.push("/pages/cart"); 
   };
 
-
- 
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>

@@ -34,19 +34,8 @@ const Profile = () => {
   const clearCart = useCartStore((state) => state.clearCart);
   const [modalVisible, setModalVisible] = useState(false); 
   const clearWishlist = useWishlistStore((state) => state.clearWishlist);
-  // Watch for changes in the profile state
-
-  // Replace the navigation effect with useFocusEffect
-
-  const showFeatureUnavailable = () => {
-    console.log("Feature unavailable clicked"); // Debugging message
-    Alert.alert(
-      "Feature Unavailable", 
-      "This feature is currently unavailable. Please try again later.", 
-      [{ text: "OK" }]
-    );
-  };
-  
+  const [logoutMessageVisible, setLogoutMessageVisible] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
 
    useEffect(() => {
       if (!userId) {
@@ -99,18 +88,35 @@ const Profile = () => {
       
     });
   };
+
+  // const handleSignOut = () => {
+  //   setModalVisible(false);  
   
+  //   try {
+  //     if (userId) {
+  //       removeUser(userId);  
+  //     }
+  
+  //     removeItem();           
+  //     clearCart();            
+  //     clearWishlist();        
+  //     clearShippingInfo();    
+  //     logout();               
+
+  //     router.push("/pages/logoutScreen");
+  
+  //     setTimeout(() => {
+  //       router.push("/sign-in");
+  //     }, 5000);
+      
+  //   } catch (error) {
+  //     // Handle errors during logout
+  //     console.error("Error during logout:", error);
+  //   }
+  // };
   
 
-  // const profile = {
-  //   name: "Jess Bailey",
-  //   userName: "@jessbailey"
-  // };
-
-  // const handlePassword = () => {
-  //   router.push("/pages/changePasswordScreen"); 
-  // };
-  const handleSignOut = () => {
+   const handleSignOut = () => {
     setModalVisible(false);
     try {
       if (userId) {
@@ -145,8 +151,16 @@ const Profile = () => {
     router.push("pages/designRequestCart"); 
   };
 
+  const handleFeatureNotAvailable = (feature) => {
+    setPopupMessage(`${feature} is not currently unavailable`);
+    setTimeout(() => {
+      setPopupMessage(''); // Clear the message after some time
+    }, 1500);  // Show the message for 3 seconds
+  };
+
   return (
     <ScrollView style={styles.container}>
+       
 
 <Modal
         visible={modalVisible}
@@ -231,21 +245,37 @@ const Profile = () => {
 
       {/* Feedback & Information Section */}
       <Text style={styles.sectionTitle}>Feedback & Information</Text>
+       {/* Show Popup message if available */}
+       {popupMessage ? (
+        <View style={styles.popup}>
+          <Text style={styles.popupText}>{popupMessage}</Text>
+        </View>
+      ) : null}
       <View style={styles.section}>
-        <TouchableOpacity style={styles.menuItem} onPress={showFeatureUnavailable}>
+      <TouchableOpacity style={styles.menuItem} onPress={() => handleFeatureNotAvailable('Privacy Policy')}>
+          <Icon name="shield-checkmark" size={20} color="#8FFA09" style={styles.icon} />
+          <Text style={styles.menuText}>Privacy Policy</Text>
+          <Icon name="chevron-forward" size={20} color="#8FFA09" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={() => handleFeatureNotAvailable('FAQ\'s')}>
           <Icon name="help-circle" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>FAQ's</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={showFeatureUnavailable}>
+        <TouchableOpacity style={styles.menuItem}  onPress={() => handleFeatureNotAvailable('Term of Service')}>
           <Icon name="document-text" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Term of Service</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={showFeatureUnavailable}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => handleFeatureNotAvailable('Privacy Policy')}>
           <Icon name="shield-checkmark" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Privacy Policy</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={() => handleFeatureNotAvailable('Privacy Policy')}>
+          {/* <Icon name="shield-checkmark" size={20} color="#8FFA09" style={styles.icon} />
+          <Text style={styles.menuText}>Privacy Policy</Text>
+          <Icon name="chevron-forward" size={20} color="#8FFA09" /> */}
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -255,9 +285,11 @@ const Profile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212', // Dark background color
+    backgroundColor: '#121212',
     paddingHorizontal: 20,
     paddingTop: 40,
+    paddingBottom: 60,
+    flexDirection: 'column', 
     
   },
   headerRow: {
@@ -376,7 +408,20 @@ const styles = StyleSheet.create({
   buttonText1:{
     color: '#000',
     fontWeight: 'bold',
-  }
+  },
+  popup: {
+    marginVertical: 10,
+    backgroundColor: '#919eab29',
+    padding: 10,
+    borderRadius: 15,
+    // borderColor: '#ffecb3',
+    // borderWidth: 1,
+    marginHorizontal: 15,
+
+  },
+  popupText: {
+    color: '#856404',
+  },
 });
 
 export default Profile;

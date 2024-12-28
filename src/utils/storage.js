@@ -58,6 +58,9 @@ export const deleteToken = async () => {
   try {
     await AsyncStorage.removeItem("authToken");
     await AsyncStorage.removeItem("userId");
+    await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("user-data-storage");
+    await AsyncStorage.removeItem("user-storage");
   } catch (error) {
     // console.error("Error deleting token or user ID:", error);
   }

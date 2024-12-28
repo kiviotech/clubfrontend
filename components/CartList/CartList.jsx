@@ -16,6 +16,7 @@ export default function CartList({
   const [quantity, setQuantity] = useState(initialQuantity);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
+  const [popupMessage, setPopupMessage] = useState("");
 
   useEffect(() => {
     setQuantity(initialQuantity);
@@ -27,7 +28,8 @@ export default function CartList({
       setQuantity(newQuantity);
       updateQuantity(id, size, newQuantity);
     } else {
-      alert(`Only ${stockAvailable} items are available in stock.`);
+      setPopupMessage(`Only ${stockAvailable} items are available in stock.`);
+      setTimeout(() => setPopupMessage(""), 3000); 
     }
   };
 
@@ -47,6 +49,12 @@ export default function CartList({
           <Text style={styles.productName}>{productname}</Text>
           <Text style={styles.productPrice}>₹{price}</Text>
           <Text style={styles.subtotal}>Size : {size}</Text>
+
+           {popupMessage !== "" && (
+        <View style={styles.popupContainer}>
+          <Text style={styles.popupText}>{popupMessage}</Text>
+        </View>
+      )}
 
           {!isWishlist && (
             <View style={styles.subtotalContainer}>
@@ -69,6 +77,8 @@ export default function CartList({
             </View>
           )}
         </View>
+
+       
 
         <TouchableOpacity
           style={styles.deleteButton}
@@ -146,5 +156,22 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginBottom: 60,
     marginRight: 5,
+  },
+  popupContainer: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: "center",
+    zIndex: 10, // Ensures the popup is above other content
+  },
+  popupText: {
+    color: "white",
+    fontSize: 12,
+    textAlign: "center",
   },
 });
