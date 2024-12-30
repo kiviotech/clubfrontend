@@ -14,6 +14,7 @@ const useFormStore = create(
         color: '',
         deadline: '',
         budget: '',
+        contactNumber: '',
       },
       measurements: {
         bust: '',
@@ -27,6 +28,7 @@ const useFormStore = create(
         imageId: null,
         imageURI: null,
       },
+      
       // Method to update design details
       setDesignDetails: (details) => set((state) => {
         return {
@@ -52,6 +54,7 @@ const useFormStore = create(
           color: '',
           deadline: '',
           budget: '',
+          contactNumber: '',
         },
         measurements: {
           bust: '',

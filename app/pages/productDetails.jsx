@@ -176,11 +176,20 @@ const ProductDetails = () => {
   const handleRequest = () => {
     router.push("/pages/cart");
   };
+  const handleHome = () => {
+    router.push("/home");
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => {
+      if (navigation.canGoBack()) {
+        navigation.goBack(); // Go to the previous screen if available
+      } else {
+        handleHome() // Navigate to the correct route
+      }
+    }} style={styles.backButton}>
           <Ionicons name="arrow-back" color="white" size={20} />
         </TouchableOpacity>
         <View style={styles.leftIcons}>

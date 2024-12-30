@@ -33,6 +33,7 @@ const RequestDesign = () => {
   const [startDate, setStartDate] = useState(null);
   const { designDetails, setDesignDetails } = useFormStore();
   const [validationErrors, setValidationErrors] = useState({});
+  
 
   const handlePrevSection = () => {
     router.push("/(tabs)/home");
@@ -79,6 +80,8 @@ const RequestDesign = () => {
     } else if (!/^\d+$/.test(designDetails.budget)) {
       errors.budget = "Budget must be a valid number.";
     }
+    if (!designDetails.contactNumber) errors.contactNumber = "Contact number is required."; // Corrected field reference
+    else if (!/^\d{10}$/.test(designDetails.contactNumber)) errors.contactNumber = "Contact number must be 10 digits."; // Validates that it's a 10-digit number.
     return errors;
   };
 
@@ -185,6 +188,16 @@ const RequestDesign = () => {
             onChangeText={(text) => handleDesignDetailsChange("budget", text)}
           />
           {validationErrors.budget && <Text style={styles.errorText}>{validationErrors.budget}</Text>}
+
+          <TextInput
+          style={styles.input}
+          placeholder="Contact Number"
+          placeholderTextColor="#ccc"
+          value={designDetails.contactNumber}
+          onChangeText={(text) => handleDesignDetailsChange("contactNumber", text)}
+          keyboardType="numeric" // Ensures the keyboard is numeric
+        />
+        {validationErrors.contactNumber && <Text style={styles.errorText}>{validationErrors.contactNumber}</Text>} {/* Display validation error if exists */}
 
         </View>
 

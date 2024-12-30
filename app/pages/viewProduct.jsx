@@ -30,11 +30,21 @@ const ViewProduct = () => {
     return <Loading />; // Show Loading component while loading
   }
 
+  const handleHome = () => {
+    router.push("/home");
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.backSection}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <TouchableOpacity onPress={() => {
+      if (navigation.canGoBack()) {
+        navigation.goBack(); // Go to the previous screen if available
+      } else {
+        handleHome() // Navigate to the correct route
+      }
+    }} style={styles.backButton}>
             <Ionicons name="arrow-back" color="white" size={20} />
           </TouchableOpacity>
           <Text style={styles.headerText}>All Products</Text>

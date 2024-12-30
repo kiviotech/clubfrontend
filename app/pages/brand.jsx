@@ -195,12 +195,22 @@ const Brand = ({ limit }) => {
     }, 2000);
   };
 
+  const handleHome = () => {
+    router.push("/home");
+  };
+
   return (
     <ScrollView>
     <SafeAreaView style={styles.area}>
       <View style={styles.header}>
         <View style={styles.backSection}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <TouchableOpacity onPress={() => {
+      if (navigation.canGoBack()) {
+        navigation.goBack(); // Go to the previous screen if available
+      } else {
+        handleHome() // Navigate to the correct route
+      }
+    }} style={styles.backButton}>
             <Ionicons name="arrow-back" color="white" size={20} />
           </TouchableOpacity>
           <Text style={styles.brandTitle}>

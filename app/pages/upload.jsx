@@ -165,23 +165,6 @@ const pickImage = async () => {
           {successMessage && <Text style={styles.successMessage}>{successMessage}</Text>}
           {error && <Text style={styles.errorText}>{error}</Text>}
         </View>
-        
-        {/* <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            // onPress={onRemoveAll}
-            style={styles.removeAllButton}
-          >
-            <Text style={styles.removeAllText}>Remove All</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            // onPress={onUpload}
-            style={styles.uploadButtonContainer}
-          >
-            <Text style={styles.uploadText}>Upload</Text>
-            <Text style={styles.uploadIcon}>☁️</Text>
-          </TouchableOpacity>
-        </View> */}
 
         {/* Buttons Section */}
         <View style={styles.actionButtonContainer}>
@@ -335,3 +318,22 @@ const styles = StyleSheet.create({
 });
 
 export default Measurement;
+
+
+
+ {/* <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            // onPress={onRemoveAll}
+            style={styles.removeAllButton}
+          >
+            <Text style={styles.removeAllText}>Remove All</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            // onPress={onUpload}
+            style={styles.uploadButtonContainer}
+          >
+            <Text style={styles.uploadText}>Upload</Text>
+            <Text style={styles.uploadIcon}>☁️</Text>
+          </TouchableOpacity>
+        </View> */}

@@ -12,6 +12,7 @@ import useUserDataStore from '../../src/store/userData';
 import { getUserProfile } from '../../src/api/repositories/userRepository';
 import useProfileStore from '../../src/store/useProfileStore';
 import { MEDIA_BASE_URL } from '../../src/api/apiClient';
+import { useRouter } from 'expo-router';
 
 
 const ProfileScreen = () => {
@@ -26,6 +27,7 @@ const ProfileScreen = () => {
   const [profileId, setProfileId] = useState("")
   const [profileData,setProfileData]=useState("")
   const { setProfile } = useProfileStore();
+  const router = useRouter();
   
   // console.log('id', id, 'userid',userId)
 
@@ -173,9 +175,19 @@ const ProfileScreen = () => {
     }
   };
 
+  const handleHome = () => {
+    router.push("/profile");
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+      <TouchableOpacity onPress={() => {
+      if (navigation.canGoBack()) {
+        navigation.goBack(); // Go to the previous screen if available
+      } else {
+        handleHome() // Navigate to the correct route
+      }
+    }} style={styles.backButton}>
         <Ionicons name="arrow-back" color="white" size={30} />
       </TouchableOpacity>
 

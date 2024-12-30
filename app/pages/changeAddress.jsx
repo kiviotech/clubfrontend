@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { useNavigation } from 'expo-router';
+import { useNavigation,useRouter } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons";
 import { getShippingInfoByUserId, createShippingInfo, deleteShippingInfo, updateShippingInfo } from '../../src/api/repositories/shippingInfoRepository';
 import useStore from '../../src/store/useStore';
@@ -22,6 +22,7 @@ const ChangeAddress = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [editingAddressId, setEditingAddressId] = useState(null);
     const userId = useUserDataStore((state) => state.users[0]?.id);
+    const router = useRouter();
 
     const [errors, setErrors] = useState({
         fullName: '',
@@ -160,9 +161,19 @@ const ChangeAddress = () => {
         }
     };
 
+    const handleHome = () => {
+        router.push("/profile");
+      };
+
     return (
         <ScrollView style={styles.container}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <TouchableOpacity onPress={() => {
+      if (navigation.canGoBack()) {
+        navigation.goBack(); // Go to the previous screen if available
+      } else {
+        handleHome() // Navigate to the correct route
+      }
+    }} style={styles.backButton}>
                 <Ionicons name="arrow-back" color="white" size={30} />
             </TouchableOpacity>
             <Text style={styles.title}>Change Address</Text>

@@ -13,6 +13,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { getUserWithOrderDetails } from "../../src/api/repositories/userRepository";
 import { MEDIA_BASE_URL } from "../../src/api/apiClient";
 import useUserDataStore from "../../src/store/userData";
+import { useRouter } from "expo-router";
 
 const OrderPage = () => {
   const navigation = useNavigation();
@@ -20,6 +21,7 @@ const OrderPage = () => {
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
   const userId = useUserDataStore((state) => state.users[0]?.id);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -55,11 +57,20 @@ const OrderPage = () => {
       </SafeAreaView>
     );
   }
+  const handleHome = () => {
+    router.push("/profile");
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <TouchableOpacity
-        onPress={() => navigation.goBack()}
+        onPress={() => {
+          if (navigation.canGoBack()) {
+            navigation.goBack(); // Go to the previous screen if available
+          } else {
+            handleHome() // Navigate to the correct route
+          }
+        }}
         style={styles.backButton}
       >
         <Ionicons name="arrow-back" color="white" size={30} />

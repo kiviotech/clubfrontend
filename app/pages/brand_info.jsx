@@ -208,12 +208,21 @@ const brand_info = ({ limit }) => {
   if (isLoading) {
     return <Loading />; // Show Loading component while loading
   }
+  const handleHome = () => {
+    router.push("/home");
+  };
 
   return (
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.headerContainer}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <TouchableOpacity onPress={() => {
+      if (navigation.canGoBack()) {
+        navigation.goBack(); // Go to the previous screen if available
+      } else {
+        handleHome() // Navigate to the correct route
+      }
+    }} style={styles.backButton}>
             <Ionicons name="arrow-back" color="white" size={20} />
           </TouchableOpacity>
           <View style={{ width: '95%'}}>
