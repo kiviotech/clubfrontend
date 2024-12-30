@@ -66,9 +66,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 16,
-    marginBottom: 8,
+    // marginBottom: 8,
     backgroundColor: "#919EAB29",
     borderRadius: 8,
+    marginTop:5
   },
   errorContainer: {
     borderColor: "red",
