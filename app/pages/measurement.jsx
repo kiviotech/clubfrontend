@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 6, // Slightly smaller radius
     fontSize: 14, // Smaller font size
+    marginTop:5,
   },
   multilineInput: {
     height: 100, // Reduced height
