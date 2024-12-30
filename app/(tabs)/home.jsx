@@ -22,15 +22,12 @@ import Brand_page from "../pages/brand_page";
 import useUserDataStore from "../../src/store/userData";
 import { getUserById } from "../../src/api/repositories/userRepository";
 import Header from "../pages/header";
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from "react-native-vector-icons/Ionicons";
 import useTokenExpiryCheck from "../../src/utils/tokenExpiryCheck";
 
-
-
 const Home = () => {
+  useTokenExpiryCheck();
 
-  // useTokenExpiryCheck();
-  
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -43,7 +40,6 @@ const Home = () => {
         const response = await getUserById(userId); // Fetch user data by ID
         // console.log(response.data.username);
         setUser(response.data); // Set the fetched user data to the state
-
       } catch (error) {
         // console.error("Failed to fetch user data", error);
       } finally {
@@ -67,7 +63,6 @@ const Home = () => {
       router.push("/pages/request-design");
     }
   };
-  
 
   const handleNotify = () => {
     router.push("/pages/notification");
@@ -102,10 +97,10 @@ const Home = () => {
           <Nicon />
         </TouchableOpacity>
       </View> */}
-     {/* Header */}  
-<View style={styles.headerContainer}>
-  <Header />
-</View>
+      {/* Header */}
+      <View style={styles.headerContainer}>
+        <Header />
+      </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.welcomeBox}>
@@ -120,7 +115,9 @@ const Home = () => {
         </View>
 
         <View style={styles.mostRatedDesigners}>
-          <Text style={styles.sectionTitle}>Most Rated Creator Clothing lines</Text>
+          <Text style={styles.sectionTitle}>
+            Most Rated Creator Clothing lines
+          </Text>
           {/* <ScrollView horizontal showsHorizontalScrollIndicator={false}> */}
           <BrandIcons />
           {/* </ScrollView> */}
@@ -129,10 +126,16 @@ const Home = () => {
         <View style={styles.card}>
           <Text style={styles.title}>PREMIUM CUSTOM CLOTHING 🛎️</Text>
           <Text style={styles.description}>
-          Create custom, one-of-a-kind designs that express your unique aura or unite your team, all at the touch of a button.
+            Create custom, one-of-a-kind designs that express your unique aura
+            or unite your team, all at the touch of a button.
           </Text>
           <TouchableOpacity style={styles.button} onPress={handleRequest}>
-            <Icon name="cut-outline" size={18} color="#000" style={styles.icon} />
+            <Icon
+              name="cut-outline"
+              size={18}
+              color="#000"
+              style={styles.icon}
+            />
             <Text style={styles.buttonText}>Request Design</Text>
           </TouchableOpacity>
         </View>
@@ -149,12 +152,13 @@ const Home = () => {
         <View style={styles.popularProductsHeader}>
           <Text style={styles.popularProductsTitle}>Popular Products</Text>
           <TouchableOpacity>
-            <Text style={styles.viewAll} onPress={handleView}>View All</Text>
+            <Text style={styles.viewAll} onPress={handleView}>
+              View All
+            </Text>
           </TouchableOpacity>
         </View>
         <View>
           <ProductList limit={4} />
-
         </View>
 
         {/* <View style={styles.sale}>
@@ -173,7 +177,7 @@ const Home = () => {
 
         <View>
           <Text style={styles.popularProductsTitle}>Just For You</Text>
-          <ProductList limit={4}/>
+          <ProductList limit={4} />
         </View>
         <View>
           <Brand_page />
@@ -198,7 +202,7 @@ const styles = StyleSheet.create({
   //   paddingLeft:20, // Adjust padding as needed
   //   backgroundColor: "black", // Matches the theme of your app
   // },
-  
+
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -217,7 +221,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 0,
     fontFamily: fonts["Poppins-SemiBold"],
-
   },
   userName: {
     color: "#8FFA09",
@@ -228,7 +231,7 @@ const styles = StyleSheet.create({
   collaboration: {
     marginBottom: 26,
   },
-  exploreBrand:{
+  exploreBrand: {
     color: "white",
     fontSize: 20,
     fontWeight: "bold",
@@ -236,7 +239,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts["Poppins-Bold"],
   },
   explore: {
-    marginTop:15,
+    marginTop: 15,
     color: "white",
     fontSize: 20,
     fontWeight: "bold",
@@ -292,7 +295,7 @@ const styles = StyleSheet.create({
   },
   sale: {
     margin: 0,
-    padding: 0
+    padding: 0,
   },
   exploreText2: {
     position: "absolute",
@@ -364,39 +367,39 @@ const styles = StyleSheet.create({
     // backgroundColor: '#121212', // Card background color
     borderRadius: 10,
     padding: 15,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
     elevation: 5,
-    borderWidth:0.2,
-    borderColor:"#8FFA09"
+    borderWidth: 0.2,
+    borderColor: "#8FFA09",
     // marginHorizontal: 20,
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    fontWeight: "bold",
+    color: "#FFFFFF",
     marginBottom: 10,
   },
   description: {
     fontSize: 14,
-    color: '#CCCCCC',
+    color: "#CCCCCC",
     marginBottom: 20,
     lineHeight: 20,
   },
   button: {
-    backgroundColor: '#8FFA09', // Neon green
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#8FFA09", // Neon green
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 12,
     borderRadius: 5,
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000', // Black text
+    fontWeight: "bold",
+    color: "#000000", // Black text
     marginLeft: 8,
   },
   icon: {

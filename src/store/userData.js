@@ -26,6 +26,8 @@ const useUserDataStore = create(
         set((state) => ({
           users: state.users.filter((user) => user.id !== userId),
         })),
+
+      clearUsers: () => set({ users: [] }),
     }),
     {
       name: "user-data-storage", // Key for AsyncStorage
