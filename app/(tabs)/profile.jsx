@@ -267,16 +267,16 @@ const Profile = () => {
           <Text style={styles.menuText}>Term of Service</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => handleFeatureNotAvailable('Privacy Policy')}>
+        {/* <TouchableOpacity style={styles.menuItem} onPress={() => handleFeatureNotAvailable('Privacy Policy')}>
           <Icon name="shield-checkmark" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Privacy Policy</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => handleFeatureNotAvailable('Privacy Policy')}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => handleFeatureNotAvailable('Privacy Policy')}> */}
           {/* <Icon name="shield-checkmark" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Privacy Policy</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" /> */}
-        </TouchableOpacity>
+        {/* </TouchableOpacity> */}
       </View>
     </ScrollView>
   );

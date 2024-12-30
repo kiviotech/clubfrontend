@@ -269,7 +269,7 @@ export default function Payment() {
           <View style={styles.info}>
 
             <Text style={styles.linktag} onPress={handlePress}>
-              Edit
+              Change Adress
             </Text>
           </View>
 

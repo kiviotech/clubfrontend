@@ -114,7 +114,7 @@ const BrandPage = () => {
         {/* Products Button */}
 
         <TouchableOpacity style={styles.button} onPress={() => handleIconPress(item.brand_name)}>
-          <Icon name="shopping-bag" size={16} color="#fff" />
+          <Icon name="shopping-bag" size={16} color="#000" />
           <Text style={styles.buttonText}>{item.brand_name} Products</Text>
           {selectedBrand === item.brand_name && <View style={styles.selectedText}></View>}
         </TouchableOpacity>

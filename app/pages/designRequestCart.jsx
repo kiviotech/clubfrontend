@@ -1,16 +1,20 @@
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import RequestCart from "../../components/requestCart/requestCart";
 import { getUserWithDesignRequests } from '../../src/api/repositories/userRepository';
 import useUserDataStore from '../../src/store/userData';
 import { MEDIA_BASE_URL } from '../../src/api/apiClient';
 import logo from "../../assets/logo.png";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation, useRouter } from "expo-router";
 
 const DesignRequestCart = () => {
   const [designRequests, setDesignRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const userId = useUserDataStore((state) => state.users[0]?.id);
+  const navigation = useNavigation();
+  const router = useRouter();
 
   // Function to delete request locally
   const handleDeleteRequest = (requestId) => {
@@ -46,7 +50,6 @@ const DesignRequestCart = () => {
 
         setDesignRequests(uniqueRequests); // Set deduplicated data
       } catch (error) {
-        rese
         setError("Error fetching design requests");
         // console.error(error);
       } finally {
@@ -57,12 +60,31 @@ const DesignRequestCart = () => {
     fetchDesignRequests();
   }, [userId]);
 
-  // console.log(designRequests)
+  const handleprofile = () => {
+    router.push("/profile");
+  };
+  const handleHome = () => {
+    router.push("/home");
+  };
+
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.logo}>
-        <Image source={logo} />
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => {
+          if (navigation.canGoBack()) {
+            navigation.goBack();
+          } else {
+            handleprofile();
+          }
+        }} style={styles.backButton}>
+          <Ionicons name="arrow-back" color="white" size={20} />
+        </TouchableOpacity>
+
+        <View style={styles.logoContainer}>
+          <Image source={logo} />
+        </View>
       </View>
+
       {loading ? (
         <Text>Loading...</Text>
       ) : error ? (
@@ -92,19 +114,52 @@ const DesignRequestCart = () => {
           );
         })
       )}
+
+      {/* After the design requests, add the "Go to Home" section */}
+      <View style={styles.homeContainer}>
+        <TouchableOpacity onPress={handleHome} style={styles.homeButton}>
+          <Ionicons name="home" color="black" size={20} />
+          <Text style={styles.homeText}>Click here to go to the Home Page</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Ensure it takes the full screen height
-    backgroundColor: '#000', // Black background
-    padding: 10, // Optional padding if needed
+    flex: 1,
+    backgroundColor: '#000',
+    padding: 10,
   },
-  logo: {
-    padding: 20
-  }
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  backButton: {
+    padding: 10,
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  homeContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  homeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#8FFA09',
+    padding: 10,
+    borderRadius: 5,
+  },
+  homeText: {
+    color: 'black',
+    marginLeft: 10,
+  },
 });
 
 export default DesignRequestCart;
