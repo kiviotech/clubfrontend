@@ -24,7 +24,8 @@ const CrossPlatformDatePicker = ({ label, value, onChange }) => {
       {Platform.OS === "web" ? (
         <input
           type="date"
-          value={value ? value.toISOString().split("T")[0] : ""} // Ensure valid date format for web
+          value={(value && value != "Invalid Date" )? value.toISOString().split("T")[0] : ""} // Ensure valid date format for web
+          
           onChange={(e) => onChange(new Date(e.target.value))}
           min={todayString} // Disable past dates
           style={styles.webDatePicker}
