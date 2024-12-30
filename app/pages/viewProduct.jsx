@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import ProductList from '../../components/productList';
 import Svgs from "../../constants/svgs";
@@ -7,15 +7,28 @@ import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import SearchBar from '../../components/SearchBar';
 import ProductSearch from './ProductSearch';
 import useCartStore from '../../src/store/useCartStore';
+import Loading from './loading';
 
 const ViewProduct = () => {
   const navigation = useNavigation();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const totalCartItems = useCartStore((state) => state.getTotalItems());
+  const [isLoading, setIsLoading] = useState(true);
   const handleRequest = () => {
     router.push("/pages/cart"); 
   };
+
+  useEffect(() => {
+    // Simulate delay and set loading to false when done
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000); // Adjust the delay as needed
+  }, []);
+
+  if (isLoading) {
+    return <Loading />; // Show Loading component while loading
+  }
 
   return (
     <ScrollView style={styles.container}>

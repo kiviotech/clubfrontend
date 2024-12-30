@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 12,
         fontSize: 16,
-        marginBottom: 15,
+        marginBottom: 5,
     },
     addressInput: {
         maxHeight: 100, // Restricts height to prevent overflow

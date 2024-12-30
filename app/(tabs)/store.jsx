@@ -18,11 +18,12 @@ import BrandIcons from "../../components/BrandIcons";
 import { useRouter } from "expo-router";
 import FilterPanel from "../pages/filter";
 import svgs from "../../constants/svgs";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import ProductSearch from "../pages/ProductSearch";
 import Header from "../pages/header";
 import { Video } from "expo-av";
 import { Asset } from "expo-asset";
+import Loading from "../pages/loading";
 
 
 const categories = ["All", "Men", "Women", "Kids Wear"];
@@ -77,8 +78,16 @@ const [isLoading, setIsLoading] = useState(true);
     }
   };
 
-  // const limitedProducts = products.slice(0, 4); // Get the first 4 products
-  // console.log(limitedProducts);
+  useEffect(() => {
+    // Simulate delay and set loading to false when done
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000); // Adjust the delay as needed
+  }, []);
+
+  if (isLoading) {
+    return <Loading />; // Show Loading component while loading
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>

@@ -23,7 +23,7 @@ const RequestCart = ({ title, budget, colorPreferences, deadline, image, request
       // If deletion is successful, execute the onDelete function passed from parent
       onDelete(requestId);
     } catch (error) {
-      console.error("Error deleting request:", error);
+      // console.error("Error deleting request:", error);
       Alert.alert("Error", "Unable to delete the request. Please try again later.");
     }
   };

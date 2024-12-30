@@ -52,7 +52,7 @@ export default function App() {
             isLooping
             onLoad={handleVideoLoad} // Callback for video load
             onError={(error) => {
-              console.error("Video load error:", error);
+              // console.error("Video load error:", error);
             }}
           />
         )}

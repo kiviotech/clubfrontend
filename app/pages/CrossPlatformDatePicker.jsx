@@ -10,6 +10,8 @@ const CrossPlatformDatePicker = ({ label, value, onChange }) => {
     setShowPicker(false);
     if (selectedDate) {
       onChange(selectedDate);
+    }else {
+      onChange(null); // Handle cleared date case
     }
   };
 

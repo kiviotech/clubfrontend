@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
@@ -14,9 +14,18 @@ const Measurement = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [profileImageId, setProfileImageId] = useState(null); // Track uploaded image ID
   const [uploading, setUploading] = useState(false);
-  const { setUploads } = useFormStore();
+  // const { setUploads } = useFormStore();
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
+  const { setUploads, uploads } = useFormStore();
+
+
+  useEffect(() => {
+    // Retrieve stored imageURI and imageId from the store on mount
+    if (uploads.imageURI) {
+      setImages([uploads.imageURI]);
+    }
+  }, [uploads]);
  
 const pickImage = async () => {
   setError(null);
@@ -70,7 +79,7 @@ const pickImage = async () => {
 
       if (uploadedImageId) {
         setProfileImageId(uploadedImageId);
-        setUploads(uploadedImageId);
+        setUploads(uploadedImageId, uri);
         setError(null);
         setSuccessMessage("Profile image uploaded successfully!");
         Alert.alert("Upload Successful", "Profile image uploaded successfully!");
@@ -87,10 +96,10 @@ const pickImage = async () => {
 };
 
   const handleNextSection = () => {
-    if (!profileImageId) {
-      setError("One image should be uploaded."); // Set error if no image is uploaded
+    if (!uploads.imageId) {
+      setError("One image should be uploaded.");
     } else {
-      setError(null); // Clear any existing error
+      setError(null);
       router.push("../pages/review");
     }
   };
@@ -152,8 +161,9 @@ const pickImage = async () => {
               contentContainerStyle={styles.flatListContainer}
             />
           )}
-          {error && <Text style={styles.errorText}>{error}</Text>}
+          
           {successMessage && <Text style={styles.successMessage}>{successMessage}</Text>}
+          {error && <Text style={styles.errorText}>{error}</Text>}
         </View>
         
         {/* <View style={styles.buttonContainer}>

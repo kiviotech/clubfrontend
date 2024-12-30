@@ -78,7 +78,7 @@ const NewArrival = ({ limit }) => {
         } catch (error) {
           setError("Failed to load products");
         } finally {
-          setLoading(false);
+          // setLoading(false);
         }
       };
     
@@ -113,9 +113,9 @@ const NewArrival = ({ limit }) => {
 
     router.push("../../pages/productDetails");
   };
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
+  // if (loading) {
+  //   return <ActivityIndicator size="large" color="#0000ff" />;
+  // }
 
   if (error) {
     return <Text>{error}</Text>;

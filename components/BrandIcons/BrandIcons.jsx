@@ -23,15 +23,11 @@ const BrandIcons = () => {
     const fetchBrands = async () => {
       try {
         const response = await getBrands(); 
-        setBrands(response.data.data); 
-        // console.log(response.data.data[0].brand_name)
-        // console.log(response.data.data[0].description)
-        // console.log(response.data.data[0].brand_logo.url)
-       
+        setBrands(response.data.data);      
       } catch (error) {
         setError("Failed to load brands"); 
       } finally {
-        setLoading(false); 
+        // setLoading(false); 
       }
     };
 
@@ -56,9 +52,9 @@ const BrandIcons = () => {
     });
   };
 
-  if (loading) {
-    return <Text>Loading brands...</Text>; 
-  }
+  // if (loading) {
+  //   return <Text>Loading brands...</Text>; 
+  // }
 
   if (error) {
     return <Text>{error}</Text>; 

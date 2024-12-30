@@ -18,11 +18,12 @@ import useWishlistStore from '../../src/store/useWishlistStore';
 import Header from './header';
 import { Ionicons } from "@expo/vector-icons";
 import { updateProduct } from '../../src/api/repositories/productRepository';
+import Loading from './loading';
 
 const brand_info = ({ limit }) => {
   const { brandName, brandImage, brandDescription, brandPoster } = useLocalSearchParams();
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
   const setProductDetails = useProductStore((state) => state.setProductDetails);
@@ -80,7 +81,7 @@ const brand_info = ({ limit }) => {
         } catch (error) {
           setError("Failed to load products");
         } finally {
-          setLoading(false);
+          // setLoading(false);
         }
       };
     
@@ -126,9 +127,9 @@ const brand_info = ({ limit }) => {
     router.push("../../pages/productDetails");
   };
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
+  // if (loading) {
+  //   return <ActivityIndicator size="large" color="#0000ff" />;
+  // }
 
   if (error) {
     return <Text>{error}</Text>;
@@ -196,6 +197,17 @@ const brand_info = ({ limit }) => {
       setPopupMessage(""); // Clear the message
     }, 2000);
   };
+
+  useEffect(() => {
+    // Simulate delay and set loading to false when done
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000); // Adjust the delay as needed
+  }, []);
+
+  if (isLoading) {
+    return <Loading />; // Show Loading component while loading
+  }
 
   return (
     <ScrollView>

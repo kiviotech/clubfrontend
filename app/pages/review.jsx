@@ -56,6 +56,8 @@ const Review = () => {
     try {
       // Send the data to the backend via API
       const response = await createNewDesignRequest(data);
+
+      useFormStore.getState().resetFormData();
       
 
       // Handle success response

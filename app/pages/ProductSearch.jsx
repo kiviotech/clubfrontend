@@ -75,7 +75,7 @@ const ProductSearch = ({ limit,searchTerm }) => {
       } catch (error) {
         setError("Failed to load products");
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
   
@@ -113,9 +113,9 @@ const ProductSearch = ({ limit,searchTerm }) => {
     router.push("../../pages/productDetails");
   };
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
+  // if (loading) {
+  //   return <ActivityIndicator size="large" color="#0000ff" />;
+  // }
 
   if (error) {
     return <Text style={styles.errorText}>{error}</Text>;

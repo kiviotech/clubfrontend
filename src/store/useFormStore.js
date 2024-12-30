@@ -25,6 +25,7 @@ const useFormStore = create(
       },
       uploads: {
         imageId: null,
+        imageURI: null,
       },
       // Method to update design details
       setDesignDetails: (details) => set((state) => {
@@ -39,8 +40,8 @@ const useFormStore = create(
         };
       }),
       // Method to update uploads
-      setUploads: (imageId) => set((state) => ({
-        uploads: { ...state.uploads, imageId },
+      setUploads: (imageId, imageURI) => set((state) => ({
+        uploads: { imageId, imageURI }, // Store both ID and URI
       })),
       // Method to reset form data
       resetFormData: () => set({
@@ -62,6 +63,7 @@ const useFormStore = create(
         },
         uploads: {
           imageId: null,
+          imageURI: null,
         },
       }),
     }),

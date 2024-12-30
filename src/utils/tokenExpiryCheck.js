@@ -94,7 +94,7 @@ const useTokenExpiryCheck = () => {
           }
         }
       } catch (error) {
-        console.error("Token check error:", error);
+        // console.error("Token check error:", error);
       }
     };
 
@@ -109,7 +109,7 @@ const useTokenExpiryCheck = () => {
         );
         router.replace("/(auth)/sign-in");
       } catch (error) {
-        console.error("Error clearing storage:", error);
+        // console.error("Error /clearing storage:", error);
       }
     };
 
@@ -123,7 +123,7 @@ export const setTokenWithExpiry = async (token) => {
     await AsyncStorage.setItem("token", token);
     await AsyncStorage.setItem("expiryTime", expiryTime);
   } catch (error) {
-    console.error("Error setting token:", error);
+    // console.error("Error setting token:", error);
   }
 };
 

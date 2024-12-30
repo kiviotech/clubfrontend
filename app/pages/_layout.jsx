@@ -34,6 +34,7 @@ export default function Layout() {
       <Stack.Screen name="viewProduct" options={{ headerShown: false }} />
       <Stack.Screen name="header" options={{ headerShown: false }} />
       <Stack.Screen name="logoutScreen" options={{ headerShown: false }} />
+      <Stack.Screen name="loading" options={{ headerShown: false }} />
     </Stack>
   );
 }

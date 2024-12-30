@@ -95,7 +95,7 @@ const ProductDetails = () => {
     if (selectedSizeObj) {
       // Reset quantity to 1 when size changes
       setQuantity(1);
-      console.log(`Available stock for ${size}: ${selectedSizeObj.number_of_items}`);
+      // console.log(`Available stock for ${size}: ${selectedSizeObj.number_of_items}`);
     }
   };
 

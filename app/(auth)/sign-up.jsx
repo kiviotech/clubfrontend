@@ -208,7 +208,7 @@ const SignUp = () => {
         {emailError ? <Text style={{ color: "red" }}>{emailError}</Text> : null}
       </View>
 
-      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 24, backgroundColor: "black", borderColor: "#919EAB", borderWidth: 1, padding: 12, borderRadius: 8 }}>
+      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 5, backgroundColor: "black", borderColor: "#919EAB", borderWidth: 1, padding: 12, borderRadius: 8 }}>
         <TextInput
           style={{ flex: 1, color: "white" }}
           placeholder="Password"
@@ -231,7 +231,7 @@ const SignUp = () => {
       ) : null}
 
       <TouchableOpacity
-        style={{ width: "100%", backgroundColor: "#8FFA09", padding: 12, borderRadius: 8 }}
+        style={{ width: "100%", backgroundColor: "#8FFA09", padding: 20, borderRadius: 8 }}
         onPress={handleSignup}
       >
         <Text style={{ textAlign: "center", fontWeight: "bold", color: "black" }}>Create Account</Text>
@@ -239,11 +239,11 @@ const SignUp = () => {
 
       <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center", marginTop: 20 }}>
         <Text style={{ color: "white", marginHorizontal: 8 }}>I agree to</Text>
-        <TouchableOpacity onPress={() => router.push("/terms-of-use")}>
+        <TouchableOpacity >
           <Text style={{ color: "#8FFA09" }}>Terms of Use</Text>
         </TouchableOpacity>
         <Text style={{ color: "white", marginHorizontal: 8 }}>and</Text>
-        <TouchableOpacity onPress={() => router.push("/privacy-policy")}>
+        <TouchableOpacity>
           <Text style={{ color: "#8FFA09" }}>Privacy Policy</Text>
         </TouchableOpacity>
       </View>
