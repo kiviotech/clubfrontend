@@ -29,7 +29,7 @@ const TabsLayout = () => {
   const tabScreens = [
     {
       name: "home",
-      title: "Home",
+      title: "Home",  
       SvgIcon: Svgs.homeScreen,
       AfterSvgIcon: Svgs.afterhomeScreen,
       label: "Home",

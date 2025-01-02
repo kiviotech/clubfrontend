@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Animated,SafeAreaView } from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign'; // Ensure this matches correctly
+import { View, Text, StyleSheet, Animated, SafeAreaView } from 'react-native';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import { useRouter } from 'expo-router';
+import useLogoutStateStore from '../../src/store/useLogoutStateStore';
 
 const LoggedOutScreen = () => {
-  // Animated values for opacity and scale
+  const router = useRouter();
   const [opacity] = useState(new Animated.Value(0));
   const [scale] = useState(new Animated.Value(0.8));
+  const { setLoggedOut } = useLogoutStateStore();
 
-  // Animation effect on component mount
+  // UseEffect
   useEffect(() => {
     Animated.timing(opacity, {
       toValue: 1,
@@ -20,7 +23,18 @@ const LoggedOutScreen = () => {
       duration: 800,
       useNativeDriver: true,
     }).start();
-  }, []);
+
+    // Go to sign-in after 3 seconds
+    const timer = setTimeout(() => {
+      // Set isLoggedOut to false before navigating to the sign-in page
+      setLoggedOut(false);
+
+      console.log('Navigating to Sign-In');
+      router.push('/sign-in'); // Ensure the path is correct
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [router, setLoggedOut]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -28,12 +42,12 @@ const LoggedOutScreen = () => {
         style={{
           opacity,
           transform: [{ scale }],
-          flexDirection: 'row', // Align icon and text horizontally
-          alignItems: 'center', // Vertically center content
+          flexDirection: 'row',
+          alignItems: 'center',
         }}
       >
-        <AntDesign name="logout" size={30} color="#8FFA09" /> {/* Green Icon */}
-        <Text style={styles.message}>Successfully Logged Out!</Text> {/* Green Text */}
+        <AntDesign name="logout" size={30} color="#8FFA09" />
+        <Text style={styles.message}>Successfully Logged Out!</Text>
       </Animated.View>
     </SafeAreaView>
   );
@@ -42,15 +56,15 @@ const LoggedOutScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center', // Center content vertically
-    alignItems: 'center', // Center content horizontally
-    backgroundColor: 'black', // Black background
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
   },
   message: {
     fontSize: 22,
-    color: '#8FFA09', // Green text
-    fontWeight: 'bold', // Bold text
-    marginLeft: 10, // Space between icon and text
+    color: '#8FFA09',
+    fontWeight: 'bold',
+    marginLeft: 10,
   },
 });
 

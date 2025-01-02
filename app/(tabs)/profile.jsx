@@ -1,5 +1,5 @@
-import React,{useEffect,useState} from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity,ScrollView,Modal } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import logo from "../../assets/logo.png";
 import Svgs from '../../constants/svgs';
@@ -17,10 +17,12 @@ import useStore from '../../src/store/useStore';
 import { useFocusEffect } from '@react-navigation/native';
 import useWishlistStore from '../../src/store/useWishlistStore';
 import { Alert } from 'react-native';
+import useLogoutStateStore from '../../src/store/useLogoutStateStore';
+import { usePreventBackAfterLogout } from '../../src/middleware/usePreventBackAfterLogout';
 
 
 const Profile = () => {
-  const [user, setUser] = useState(null); 
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const ProfileSvg = Svgs.profile;
   const router = useRouter();
@@ -28,21 +30,25 @@ const Profile = () => {
   const [profile, setProfile] = useState(null);
   const { name, username, image } = useProfileStore((state) => state.profile);
   // console.log('Profile from Zustand:', { name, username, image });
-  const removeItem = useCartStore((state)=> state.removeItem)
-  const removeUser = useUserDataStore((state)=> state.removeUser)
+  const removeItem = useCartStore((state) => state.removeItem)
+  const removeUser = useUserDataStore((state) => state.removeUser)
   const clearShippingInfo = useStore((state) => state.clearShippingInfo);
   const clearCart = useCartStore((state) => state.clearCart);
-  const [modalVisible, setModalVisible] = useState(false); 
+  const [modalVisible, setModalVisible] = useState(false);
   const clearWishlist = useWishlistStore((state) => state.clearWishlist);
   const [logoutMessageVisible, setLogoutMessageVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
+  const setLogoutState = useLogoutStateStore((state) => state.setLoggedOut);
+  const isLoggedOut = useLogoutStateStore((state) => state.isLoggedOut);
 
-   useEffect(() => {
-      if (!userId) {
-        router.push("/sign-in");
-      }
-    }, [userId]);
-    
+  useEffect(() => {
+    if (isLoggedOut) {
+      router.push("/pages/logoutScreen"); // Redirect only once after logout
+    } else if (!userId) {
+      router.push("/sign-in"); // Redirect for guest users
+    }
+  }, [isLoggedOut, userId]);
+
   useFocusEffect(
     React.useCallback(() => {
       fetchProfile();
@@ -85,70 +91,49 @@ const Profile = () => {
         // username: user.username,
         // profile_img: `${MEDIA_BASE_URL}${user.profile_img.url}`,
       },
-      
+
     });
   };
 
-  // const handleSignOut = () => {
-  //   setModalVisible(false);  
+  usePreventBackAfterLogout();
   
-  //   try {
-  //     if (userId) {
-  //       removeUser(userId);  
-  //     }
-  
-  //     removeItem();           
-  //     clearCart();            
-  //     clearWishlist();        
-  //     clearShippingInfo();    
-  //     logout();               
-
-  //     router.push("/pages/logoutScreen");
-  
-  //     setTimeout(() => {
-  //       router.push("/sign-in");
-  //     }, 5000);
-      
-  //   } catch (error) {
-  //     // Handle errors during logout
-  //     console.error("Error during logout:", error);
-  //   }
-  // };
-  
-
-   const handleSignOut = () => {
+  const handleSignOut = () => {
     setModalVisible(false);
+    // setIsLoggedOut(true); 
     try {
       if (userId) {
-        removeUser(userId);
+        useUserDataStore.getState().removeUser(userId);
       }
       removeItem();
       clearCart();
       clearWishlist();
       clearShippingInfo();
       logout();
-      router.push("sign-in");
+      setLogoutState(true); // Update state to indicate logout
+      // router.push("/pages/logoutScreen");
     } catch (error) {
       // console.error("Error during logout:", error);
     }
   };
 
+  
+
 
   const Profile = () => {
-    router.push("/pages/profileScreen"); 
+    router.push("/pages/profileScreen");
   };
 
   const handlePassword = () => {
-    router.push("/pages/ResetPasswordScreen"); 
+    router.push("/pages/ResetPasswordScreen");
   };
   const handleAddress = () => {
-    router.push("/pages/changeAddress"); 
+    router.push("/pages/changeAddress");
   };
   const handleCart = () => {
-    router.push("/pages/orderPage"); 
+    router.push("/pages/orderPage");
   };
   const handleLanguage = () => {
-    router.push("pages/designRequestCart"); 
+    router.push("pages/designRequestCart");
   };
 
   const handleFeatureNotAvailable = (feature) => {
@@ -160,9 +145,9 @@ const Profile = () => {
 
   return (
     <ScrollView style={styles.container}>
-       
 
-<Modal
+
+      <Modal
         visible={modalVisible}
         transparent={true}
         animationType="fade"
@@ -189,7 +174,7 @@ const Profile = () => {
           </View>
         </View>
       </Modal>
-     
+
       {/* Header with Logo and Logout */}
       <View style={styles.headerRow}>
         <Image source={logo} style={styles.logo} />
@@ -211,12 +196,12 @@ const Profile = () => {
           <Text style={styles.profileUsername}>{profile?.username}</Text>
         </View>
       </View>
-     
+
 
       {/* Account Section */}
       <Text style={styles.sectionTitle}>Account</Text>
       <View style={styles.section}>
-      <TouchableOpacity onPress={Profile} style={styles.menuItem}>
+        <TouchableOpacity onPress={Profile} style={styles.menuItem}>
           <Icon name="person" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Profile</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
@@ -226,8 +211,8 @@ const Profile = () => {
           <Text style={styles.menuText}>Change password</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}  onPress={handleAddress}>
-          <Icon name="location" size={20} color="#8FFA09" style={styles.icon}/>
+        <TouchableOpacity style={styles.menuItem} onPress={handleAddress}>
+          <Icon name="location" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Change address</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
@@ -236,7 +221,7 @@ const Profile = () => {
           <Text style={styles.menuText}>Orders</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={handleLanguage }>
+        <TouchableOpacity style={styles.menuItem} onPress={handleLanguage}>
           <Icon name="language" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Design Request</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
@@ -245,14 +230,14 @@ const Profile = () => {
 
       {/* Feedback & Information Section */}
       <Text style={styles.sectionTitle}>Feedback & Information</Text>
-       {/* Show Popup message if available */}
-       {popupMessage ? (
+      {/* Show Popup message if available */}
+      {popupMessage ? (
         <View style={styles.popup}>
           <Text style={styles.popupText}>{popupMessage}</Text>
         </View>
       ) : null}
       <View style={styles.section}>
-      <TouchableOpacity style={styles.menuItem} onPress={() => handleFeatureNotAvailable('Privacy Policy')}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => handleFeatureNotAvailable('Privacy Policy')}>
           <Icon name="shield-checkmark" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Privacy Policy</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
@@ -262,7 +247,7 @@ const Profile = () => {
           <Text style={styles.menuText}>FAQ's</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}  onPress={() => handleFeatureNotAvailable('Term of Service')}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => handleFeatureNotAvailable('Term of Service')}>
           <Icon name="document-text" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Term of Service</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
@@ -273,7 +258,7 @@ const Profile = () => {
           <Icon name="chevron-forward" size={20} color="#8FFA09" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={() => handleFeatureNotAvailable('Privacy Policy')}> */}
-          {/* <Icon name="shield-checkmark" size={20} color="#8FFA09" style={styles.icon} />
+        {/* <Icon name="shield-checkmark" size={20} color="#8FFA09" style={styles.icon} />
           <Text style={styles.menuText}>Privacy Policy</Text>
           <Icon name="chevron-forward" size={20} color="#8FFA09" /> */}
         {/* </TouchableOpacity> */}
@@ -289,15 +274,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 40,
     paddingBottom: 60,
-    flexDirection: 'column', 
-    
+    flexDirection: 'column',
+
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between', // Ensures space between logo and logout button
     marginBottom: 20,
-    marginTop:10,
+    marginTop: 10,
   },
   logoutButton: {
     flexDirection: 'row',
@@ -405,7 +390,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-  buttonText1:{
+  buttonText1: {
     color: '#000',
     fontWeight: 'bold',
   },

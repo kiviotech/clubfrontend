@@ -102,24 +102,24 @@ const SignIn = () => {
       try {
         // Make the login API call
         const response = await login(formValues.username, formValues.password);
-  
+
         // Get the JWT and user data from response
         const { jwt, user } = response;
-  
+
         // Store token and user data
         await saveData("token", jwt);
         await saveData("userId", user.id.toString());
-  
+
         // Update both stores with user data
         const userData = {
           id: user.id,
           username: user.username,
           email: user.email,
         };
-  
+
         addUser(userData);
         setUser(userData);
-  
+
         // Navigate to home screen
         router.replace("/home");
       } catch (error) {
@@ -130,8 +130,11 @@ const SignIn = () => {
       }
     }
   };
-  
 
+  const handleGuestLogin = () => {
+    // Navigate to the home page as a guest
+    router.replace("/home");
+  };
 
 
 
@@ -184,7 +187,7 @@ const SignIn = () => {
         <Text style={styles.errorText}>{formErrors.password}</Text>
       )}
 
-{errorMessage ? (
+      {errorMessage ? (
         <Text style={styles.errorText}>{errorMessage}</Text>
       ) : null}
 
@@ -194,6 +197,13 @@ const SignIn = () => {
       <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
+
+      <View style={styles.guestLoginContainer}>
+        <TouchableOpacity onPress={handleGuestLogin} style={styles.guestLoginButton}>
+          <Icon name="person-outline" size={18} color="#8FFA09" />
+          <Text style={styles.guestLoginText}>Continue as Guest</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* <SocialLoginButtons /> */}
     </SafeAreaView>
@@ -279,6 +289,22 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "black",
     fontWeight: "bold", // Tailwind: text-center font-pbold text-black
+  },
+  guestLoginContainer: {
+    marginTop: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  guestLoginButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 8,
+  },
+  guestLoginText: {
+    color: "#8FFA09",
+    marginLeft: 8,
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

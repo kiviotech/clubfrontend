@@ -95,7 +95,7 @@ const MobilePaymentRazorPay = () => {
                                         "key": "rzp_live_J7INryzPN4waTo", // Use test key if in development
                                         "amount": "${totalAmount * 100}", // Amount in paise
                                         "currency": "INR",
-                                        "name": "Dhairyawan",
+                                        "name": "ClubUnplugged",
                                         "order_id": "${razorpayOrderId}",
                                         "handler": function (response) {
                                             window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -188,7 +188,7 @@ const MobilePaymentRazorPay = () => {
                                     `Payment ID: ${paymentData.payment_id}\n` +
                                     `Order ID: ${razorpayOrderId}\n` +
                                     `Amount: ₹${totalAmount}`,
-                                    [{ text: "OK", onPress: () => navigateToHome() }]
+                                    [{ text: "OK", onPress: () => navigateTrack() }]
                                 );
                             }
                         } else if (paymentData?.status === "cancelled" || paymentData?.status === "error") {
