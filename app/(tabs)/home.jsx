@@ -176,7 +176,14 @@ const Home = () => {
         </View> */}
 
         <View>
+          <View  style={styles.popularProductsHeader}>
           <Text style={styles.popularProductsTitle}>Just For You</Text>
+          <TouchableOpacity>
+            <Text style={styles.viewAll} onPress={handleView}>
+              View All
+            </Text>
+          </TouchableOpacity>
+          </View>
           <ProductList limit={4} />
         </View>
         <View>

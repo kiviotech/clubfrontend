@@ -25,11 +25,11 @@ const Cart = () => {
 
   // console.log(cartItems[0].stockAvailable)
 
-  useEffect(() => {
-    if (!userId) {
-      router.push("/sign-in");
-    }
-  }, [userId]);
+  // useEffect(() => {
+  //   if (!userId) {
+  //     router.push("/sign-in");
+  //   }
+  // }, [userId]);
 
   useEffect(() => {
     setDeliveryCharge(50); // Fixed delivery charge

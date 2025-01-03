@@ -365,7 +365,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
-    padding: 16,
+    padding: 10,
     // borderRadius: 12,
   },
   searchContainer: {

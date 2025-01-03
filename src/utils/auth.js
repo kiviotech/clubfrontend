@@ -74,32 +74,6 @@ export const signup = async (username, email, password) => {
     saveToken(jwt);
     saveUserId(user.id);
 
-    // // Access Zustand stores
-    // const addUser = useUserDataStore.getState().addUser;
-    // const setUser = useStore.getState().setUser;
-
-    // // Check if store functions are available
-    // if (!addUser || !setUser) {
-    //   console.error("Store functions not found");
-    //   throw new Error("Failed to access store functions");
-    // }
-
-    // // Update user data store
-    // addUser({
-    //   id: user.id,
-    //   documentId: user.documentId || "",
-    //   username: user.username,
-    //   email: user.email,
-    // });
-
-    // // Update main user store
-    // setUser({
-    //   id: user.id,
-    //   documentId: user.documentId || "",
-    //   username: user.username,
-    //   email: user.email,
-    // });
-
     return response.data;
   } catch (error) {
     // console.error("Signup error:", error.response?.data || error.message);

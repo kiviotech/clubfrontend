@@ -40,8 +40,15 @@ const Checkout = () => {
   const params = useLocalSearchParams();
   const [shippingInfos, setShippingInfos] = useState([]);
   const cartItems = useCartStore((state) => state.items);
-
+  
   const { addOrderItem } = useOrderStore();
+  const userId = useUserDataStore((state) => state.users[0]?.id);
+
+  useEffect(() => {
+    if (!userId) {
+      router.push("/sign-in");
+    }
+  }, [userId]);
 
   const handlePress = () => {
     router.back();
@@ -52,7 +59,7 @@ const Checkout = () => {
   };
 
 
-  const userId = useUserDataStore((state) => state.users[0]?.id);
+  
   useEffect(() => {
     if (!userId) return; // Ensure userId is available before proceeding
 
