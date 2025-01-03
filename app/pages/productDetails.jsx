@@ -296,32 +296,36 @@ const ProductDetails = () => {
             {productDetails.sizes &&
               productDetails.sizes.map((sizeObj, index) => (
                 <View key={index} style={styles.sizeItem}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setSelectedSize(sizeObj.size);
-                      handleSizeSelection(sizeObj.size)
-                    }}
-                    style={[
-                      styles.sizeButton,
-                      {
-                        backgroundColor:
-                          sizeObj.number_of_items === 0
-                            ? "#4A4A4A" // Disabled color
-                            : selectedSize === sizeObj.size
-                              ? "#8FFA09" // Selected size color
-                              : "#1D2221", // Default button color
-                      },
-                    ]}
-                    disabled={sizeObj.number_of_items === 0} // Disable button if no stock
-                  >
-                    <Text
-                      style={{
-                        color: sizeObj.number_of_items === 0 ? "#A4A4AA" : "#ffffff", // Dim text color if disabled
-                      }}
-                    >
-                      {sizeObj.size}
-                    </Text>
-                  </TouchableOpacity>
+                 <TouchableOpacity
+  onPress={() => {
+    if (selectedSize !== sizeObj.size) { // Only update if the size is different
+      setSelectedSize(sizeObj.size);
+      handleSizeSelection(sizeObj.size);
+      setQuantity(1); // Reset quantity only on size change
+    }
+  }}
+  style={[
+    styles.sizeButton,
+    {
+      backgroundColor:
+        sizeObj.number_of_items === 0
+          ? "#4A4A4A" // Disabled color
+          : selectedSize === sizeObj.size
+          ? "#8FFA09" // Selected size color
+          : "#1D2221", // Default button color
+    },
+  ]}
+  disabled={sizeObj.number_of_items === 0} // Disable button if no stock
+>
+  <Text
+    style={{
+      color: sizeObj.number_of_items === 0 ? "#A4A4AA" : "#ffffff", // Dim text color if disabled
+    }}
+  >
+    {sizeObj.size}
+  </Text>
+</TouchableOpacity>
+
 
                   {/* Display number of products and stock status */}
                   <Text style={styles.sizeInfo}>{`${sizeObj.number_of_items}`}</Text>

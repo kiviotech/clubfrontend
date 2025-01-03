@@ -116,7 +116,7 @@ const RequestDesign = () => {
           />
           {validationErrors.description && <Text style={styles.errorText}>{validationErrors.description}</Text>}
 
-          <Text style={styles.label}>Select Fabric</Text>
+          {/* <Text style={styles.label}>Select Fabric</Text> */}
           <DropDownPicker
             open={fabricOpen}
             value={fabricValue}
