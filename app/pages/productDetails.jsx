@@ -70,13 +70,13 @@ const ProductDetails = () => {
       setQuantity(quantity + 1);
       setStockPopupMessage("");
     } else {
-     const stockMessage = `Maximum available stock is ${selectedSizeObj.number_of_items}`;
-    setStockPopupMessage(stockMessage);
+      const stockMessage = `Maximum available stock is ${selectedSizeObj.number_of_items}`;
+      setStockPopupMessage(stockMessage);
 
-    // Clear the popup message after 3 seconds
-    setTimeout(() => {
-      setStockPopupMessage("");
-    }, 3000);
+      // Clear the popup message after 3 seconds
+      setTimeout(() => {
+        setStockPopupMessage("");
+      }, 3000);
       // alert(`Maximum available stock is ${selectedSizeObj.number_of_items}`);
     }
   };
@@ -184,12 +184,12 @@ const ProductDetails = () => {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => {
-      if (navigation.canGoBack()) {
-        navigation.goBack(); // Go to the previous screen if available
-      } else {
-        handleHome() // Navigate to the correct route
-      }
-    }} style={styles.backButton}>
+          if (navigation.canGoBack()) {
+            navigation.goBack(); // Go to the previous screen if available
+          } else {
+            handleHome() // Navigate to the correct route
+          }
+        }} style={styles.backButton}>
           <Ionicons name="arrow-back" color="white" size={20} />
         </TouchableOpacity>
         <View style={styles.leftIcons}>
@@ -288,43 +288,43 @@ const ProductDetails = () => {
           </View>
         </View>
         <View style={styles.sizeSection}>
-        {stockPopupMessage ? (
-    <Text style={styles.stockPopupMessage}>{stockPopupMessage}</Text>
-  ) : null}
+          {stockPopupMessage ? (
+            <Text style={styles.stockPopupMessage}>{stockPopupMessage}</Text>
+          ) : null}
           <Text style={styles.sizeLabel}>Size</Text>
           <View style={styles.sizeContainer}>
             {productDetails.sizes &&
               productDetails.sizes.map((sizeObj, index) => (
                 <View key={index} style={styles.sizeItem}>
-                 <TouchableOpacity
-  onPress={() => {
-    if (selectedSize !== sizeObj.size) { // Only update if the size is different
-      setSelectedSize(sizeObj.size);
-      handleSizeSelection(sizeObj.size);
-      setQuantity(1); // Reset quantity only on size change
-    }
-  }}
-  style={[
-    styles.sizeButton,
-    {
-      backgroundColor:
-        sizeObj.number_of_items === 0
-          ? "#4A4A4A" // Disabled color
-          : selectedSize === sizeObj.size
-          ? "#8FFA09" // Selected size color
-          : "#1D2221", // Default button color
-    },
-  ]}
-  disabled={sizeObj.number_of_items === 0} // Disable button if no stock
->
-  <Text
-    style={{
-      color: sizeObj.number_of_items === 0 ? "#A4A4AA" : "#ffffff", // Dim text color if disabled
-    }}
-  >
-    {sizeObj.size}
-  </Text>
-</TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (selectedSize !== sizeObj.size) { // Only update if the size is different
+                        setSelectedSize(sizeObj.size);
+                        handleSizeSelection(sizeObj.size);
+                        setQuantity(1); // Reset quantity only on size change
+                      }
+                    }}
+                    style={[
+                      styles.sizeButton,
+                      {
+                        backgroundColor:
+                          sizeObj.number_of_items === 0
+                            ? "#4A4A4A" // Disabled color
+                            : selectedSize === sizeObj.size
+                              ? "#8FFA09" // Selected size color
+                              : "#1D2221", // Default button color
+                      },
+                    ]}
+                    disabled={sizeObj.number_of_items === 0} // Disable button if no stock
+                  >
+                    <Text
+                      style={{
+                        color: sizeObj.number_of_items === 0 ? "#A4A4AA" : "#ffffff", // Dim text color if disabled
+                      }}
+                    >
+                      {sizeObj.size}
+                    </Text>
+                  </TouchableOpacity>
 
 
                   {/* Display number of products and stock status */}
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     gap: 20,
-  
+
   },
   iconContainer: {
     position: "relative", // To position badge on top of the icon

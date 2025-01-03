@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert,Modal,Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { removeDesignRequest } from '../../src/api/services/designRequestService';
 import useRequestStore from '../../src/store/useRequestStore';
@@ -7,7 +7,7 @@ import useRequestStore from '../../src/store/useRequestStore';
 const RequestCart = ({ title, budget, colorPreferences, deadline, image, requestId, onDelete, documentId }) => {
   const { getQuantity, updateQuantity } = useRequestStore();
   const quantity = getQuantity(requestId);
-
+  const [modalVisible, setModalVisible] = useState(false);
   // Increment and Decrement Quantity
   const incrementQuantity = () => updateQuantity(requestId, quantity + 1);
   const decrementQuantity = () => {
@@ -31,7 +31,11 @@ const RequestCart = ({ title, budget, colorPreferences, deadline, image, request
   return (
     <View style={styles.container}>
       {/* Delete Button */}
-      <TouchableOpacity onPress={handleDelete} style={styles.deleteButton}>
+      <TouchableOpacity
+        onPress={() => setModalVisible(true)} // Open confirmation modal
+        style={styles.deleteButton}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} // Adds tappable margin
+      >
         <Ionicons name="trash" size={18} color="white" />
       </TouchableOpacity>
 
@@ -60,6 +64,38 @@ const RequestCart = ({ title, budget, colorPreferences, deadline, image, request
           <Text style={styles.quantityText}>+</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Confirmation Modal */}
+      <Modal
+        transparent={true}
+        visible={modalVisible}
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Confirm Deletion</Text>
+            <Text style={styles.modalMessage}>Are you sure you want to delete this request?</Text>
+            <View style={styles.modalButtonContainer}>
+              <Pressable
+                style={styles.modalButton}
+                onPress={() => setModalVisible(false)} // Close modal
+              >
+                <Text style={styles.modalButtonText}>No</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.modalButton, styles.modalDeleteButton]}
+                onPress={() => {
+                  setModalVisible(false); // Close modal
+                  handleDelete(); // Perform delete action
+                }}
+              >
+                <Text style={styles.modalButtonText}>Yes</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -81,6 +117,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF0000',
     padding: 4,
     borderRadius: 50,
+    zIndex: 10,
   },
   productImage: {
     width: 60,
@@ -138,6 +175,50 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
     marginHorizontal: 8,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    backgroundColor: '#8FFA09',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalMessage: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalButton: {
+    flex: 1,
+    backgroundColor: '#1C1C1C',
+    padding: 10,
+    borderRadius: 5,
+    marginHorizontal: 5,
+    alignItems: 'center',
+  },
+  modalDeleteButton: {
+    backgroundColor: '#1C1C1C',
+  },
+  modalButtonText: {
+    color: '#8FFA09',
+    fontWeight: 'bold',
   },
 });
 

@@ -132,7 +132,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16, // Equivalent to px-4
   },
   reviewContainer: {
-    marginBottom: 160, // Equivalent to mb-40
+    
+    marginBottom: 370, // Equivalent to mb-40
     borderRadius: 16, // Equivalent to rounded-2xl
     // backgroundColor: '#181818',
     paddingHorizontal: 20, // Equivalent to px-5
