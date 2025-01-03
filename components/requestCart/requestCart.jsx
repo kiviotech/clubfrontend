@@ -81,7 +81,7 @@ const RequestCart = ({ title, budget, colorPreferences, deadline, image, request
                 style={styles.modalButton}
                 onPress={() => setModalVisible(false)} // Close modal
               >
-                <Text style={styles.modalButtonText}>No</Text>
+                <Text style={styles.modalButtonText1}>No</Text>
               </Pressable>
               <Pressable
                 style={[styles.modalButton, styles.modalDeleteButton]}
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContainer: {
-    backgroundColor: '#8FFA09',
+    backgroundColor: '#1e1e1e',
     padding: 20,
     borderRadius: 10,
     width: '80%',
@@ -193,10 +193,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#fff',
   },
   modalMessage: {
     fontSize: 14,
-    color: '#333',
+    color: '#ccc',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -207,19 +208,23 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     flex: 1,
-    backgroundColor: '#1C1C1C',
+    backgroundColor: '#444',
     padding: 10,
     borderRadius: 5,
     marginHorizontal: 5,
     alignItems: 'center',
   },
   modalDeleteButton: {
-    backgroundColor: '#1C1C1C',
+    backgroundColor: '#8FFA09',
   },
   modalButtonText: {
-    color: '#8FFA09',
+    color: '#000',
     fontWeight: 'bold',
   },
+  modalButtonText1:{
+    color: '#8FFA09',
+    fontWeight: 'bold',
+  }
 });
 
 export default RequestCart;
