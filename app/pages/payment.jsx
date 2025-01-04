@@ -297,7 +297,7 @@ export default function Payment() {
           <View style={styles.box}>
             <Totalamount
               subtotal={200}
-              delivery={0}
+              delivery={50}
               onTotalChange={setTotalAmount}
             />
           </View>
