@@ -58,7 +58,7 @@ const WebPaymentRazorPay = () => {
             // Send the payment details to your backend service
             const paymentDetailResponse = await createPaymentDetailService(paymentData);
             // console.log("API response:", paymentDetailResponse);
-            router.push({ pathname: "/pages/orderPage" });
+            router.push({ pathname: "/pages/OrderSuccessScreen" });
           } catch (error) {
             // Handle API errors gracefully
             if (error.response) {

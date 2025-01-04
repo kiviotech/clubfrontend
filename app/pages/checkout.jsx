@@ -259,7 +259,7 @@ const Checkout = () => {
         <View style={styles.container}>
           <CheckoutStep currentPosition={0} />
           <View style={styles.box}>
-            <Totalamount subtotal={200} delivery={50} />
+            <Totalamount subtotal={200} delivery={0} />
           </View>
 
           <Text style={styles.sectionText}>Shipping Information</Text>

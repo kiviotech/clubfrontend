@@ -21,7 +21,7 @@ const Cart = () => {
   const userId = useUserDataStore((state) => state.users[0]?.id);
   const cartItems = useCartStore((state) => state.items);
   const subtotal = useCartStore((state) => state.subtotal);
-  const [deliveryCharge, setDeliveryCharge] = useState(50); // Default to 50
+  const [deliveryCharge, setDeliveryCharge] = useState(0); // Default to 50
 
   // console.log(cartItems[0].stockAvailable)
 
@@ -32,7 +32,7 @@ const Cart = () => {
   // }, [userId]);
 
   useEffect(() => {
-    setDeliveryCharge(50); // Fixed delivery charge
+    setDeliveryCharge(0); // Fixed delivery charge
   }, [subtotal]);
 
   const handleBack = () => {

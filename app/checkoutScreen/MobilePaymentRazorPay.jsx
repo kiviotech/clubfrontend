@@ -75,7 +75,7 @@ const MobilePaymentRazorPay = () => {
       router.push("/home"); // Navigate to home
     };
     const navigateTrack = () => {
-        router.push("/pages/orderPage"); // Navigate to home
+        router.push("/pages/OrderSuccessScreen"); // Navigate to home
       };
     return (
         <SafeAreaView style={{ flex: 1 }}>
