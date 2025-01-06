@@ -13,7 +13,6 @@ const Review = () => {
   const userId = useUserDataStore((state) => state.users[0]?.id);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-
   const handlePrevSection = () => {
     router.push("../pages/upload");
   };
@@ -42,15 +41,13 @@ const Review = () => {
         color_preferences: designDetails?.color || "string",
         deadline: designDetails?.formattedDeadline || "2024-11-26",
         budget: designDetails?.budget || 0,
-        bust: measurements?.bust || "XS",
         contactNumber: designDetails?.contactNumber || "Not provided",
-        waist: measurements?.waist || "XS",
-        hip: measurements?.hip || "XS",
-        weight: measurements?.weight || 0,
+        waist: measurements?.waist || "Accoding to size",
+        size:measurements?.size||"M",
+        chest:measurements?.chest || "Accoding to size",
         special_instructions: measurements?.specialInstructions || "string",
         image: uploads.imageId,
         users: userId,
-        height: measurements?.height || "XS",
       }
     }
 

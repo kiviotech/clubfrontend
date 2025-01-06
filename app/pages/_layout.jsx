@@ -36,6 +36,8 @@ export default function Layout() {
       <Stack.Screen name="logoutScreen" options={{ headerShown: false }} />
       <Stack.Screen name="loading" options={{ headerShown: false }} />
       <Stack.Screen name="OrderSuccessScreen" options={{ headerShown: false }} />
+      <Stack.Screen name="DetailRequest" options={{ headerShown: false }} />
+      
     </Stack>
   );
 }

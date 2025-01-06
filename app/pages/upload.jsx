@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
@@ -21,79 +21,85 @@ const Measurement = () => {
 
 
   useEffect(() => {
-    // Retrieve stored imageURI and imageId from the store on mount
-    if (uploads.imageURI) {
-      setImages([uploads.imageURI]);
+    // If the uploads have images, set them to the state to display on the UI
+    if (uploads.imageURI && uploads.imageURI.length > 0) {
+      setImages(uploads.imageURI);
     }
-  }, [uploads]);
- 
-const pickImage = async () => {
-  setError(null);
-  // Request permission to access the media library
-  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  if (status !== "granted") {
-    alert("Sorry, we need camera roll permissions to make this work!");
-    return;
-  }
+  }, [uploads.imageURI]);
+  
 
-  // Launch the image library for selection
-  let result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    allowsEditing: true,
-    aspect: [1, 1],
-    quality: 1,
-  });
-
-  if (!result.canceled) {
-    const uri = result.assets[0].uri;
-    // console.log("Selected Image URI:", uri); // Debugging
-    setImages([uri]);
-
-    try {
-      setUploading(true);
-
-      // Fetch the image as a Blob
-      const imageBlob = await (await fetch(uri)).blob(); // Convert URI to Blob
-      // console.log(imageBlob); // Log Blob for debugging
-
-      // Prepare FormData for upload
-      const formData = new FormData();
-      formData.append("files", imageBlob, "custom-image.jpg"); // Append the blob with a file name
-
-      // console.log("FormData Content:", formData); // Log formData to see its contents
-
-      // Upload image using Axios
-      const uploadResponse = await axios.post(
-        `${BASE_URL}/upload`,
-        formData,
-        {
-          headers: {
-            'Authorization': 'Bearer e243b33014fab23926d9b9079d6c90018b288b84740bb443eb910febdec1b93b6563c2b091a18081788c2bb2eb950ad15bead95e14029283ab2bfd0f4ea563eb590955e3cbbfdc100e9ef8a565993c6bd8e02985ef14df8f83123689c5f139ac50263be891842c8522877b7b73fe5136c56e0ae9823d1e9d96743ebcff502780',
-            'Content-Type': 'multipart/form-data',
-            'Accept': 'application/json',
-          },
+  const pickImage = async () => {
+    setError(null);
+  
+    // Request permission to access media library
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      alert("Sorry, we need camera roll permissions to make this work!");
+      return;
+    }
+  
+    // Launch the image picker
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+      allowsMultipleSelection: true,
+    });
+  
+    if (!result.canceled) {
+      // Get URIs of the selected images
+      const selectedImages = result.assets.map((asset) => asset.uri);
+  
+      setImages((prevImages) => [...prevImages, ...selectedImages]); // Accumulate selected images URIs
+  
+      try {
+        setUploading(true);
+  
+        const formData = new FormData();
+        // Upload images as blobs
+        for (const uri of selectedImages) {
+          const imageBlob = await (await fetch(uri)).blob();
+          formData.append("files", imageBlob, "custom-image.jpg");
         }
-      );
-
-      const uploadedImageId = uploadResponse.data[0]?.id;  // Assuming backend returns image ID
-
-      if (uploadedImageId) {
-        setProfileImageId(uploadedImageId);
-        setUploads(uploadedImageId, uri);
-        setError(null);
-        setSuccessMessage("Profile image uploaded successfully!");
-        Alert.alert("Upload Successful", "Profile image uploaded successfully!");
-      } else {
-        throw new Error("Failed to retrieve uploaded image ID.");
+  
+        // Make API request to upload images
+        const uploadResponse = await axios.post(
+          `${BASE_URL}/upload`,
+          formData,
+          {
+            headers: {
+              Authorization: "Bearer e243b33014fab23926d9b9079d6c90018b288b84740bb443eb910febdec1b93b6563c2b091a18081788c2bb2eb950ad15bead95e14029283ab2bfd0f4ea563eb590955e3cbbfdc100e9ef8a565993c6bd8e02985ef14df8f83123689c5f139ac50263be891842c8522877b7b73fe5136c56e0ae9823d1e9d96743ebcff502780",
+              "Content-Type": "multipart/form-data",
+              Accept: "application/json",
+            },
+          }
+        );
+  
+        // Get image IDs from the server response
+        const uploadedImageIds = uploadResponse.data.map((image) => image.id);
+        if (uploadedImageIds) {
+          // Merge the newly uploaded image IDs with the existing ones
+          setProfileImageId((prevIds) => [...(prevIds || []), ...uploadedImageIds]);
+  
+          // Update the uploads store (you are maintaining both URIs and IDs)
+          setUploads(uploadedImageIds, selectedImages);
+  
+          setSuccessMessage("Profile images uploaded successfully!");
+          Alert.alert("Upload Successful", "Profile images uploaded successfully!");
+        } else {
+          throw new Error("Failed to retrieve uploaded image IDs.");
+        }
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        Alert.alert("Upload Error", "Failed to upload the images.");
+      } finally {
+        setUploading(false);
       }
-    } catch (error) {
-      // console.error("Error uploading image:", error);
-      Alert.alert("Upload Error", "Failed to upload the image.");
-    } finally {
-      setUploading(false);
     }
-  }
-};
+  };
+  
+  
 
   const handleNextSection = () => {
     if (!uploads.imageId) {
@@ -107,8 +113,13 @@ const pickImage = async () => {
   const removeImage = (index) => {
     const newImages = [...images];
     newImages.splice(index, 1);
-    setImages(newImages);
+    setImages(newImages); // Remove from displayed images
+  
+    const newUploads = { ...uploads };
+    newUploads.imageURI = newImages; // Update the uploads state with new image URIs
+    setUploads(newUploads); // Optionally, update `uploads` store if necessary
   };
+  
 
   //  const handleNextSection = () => {
   //    router.push("../pages/review");
@@ -150,8 +161,9 @@ const pickImage = async () => {
                     source={{ uri: item }} // Show image using the URI
                     style={styles.image}
                   />
+                  {/* Remove button */}
                   <TouchableOpacity
-                    onPress={() => removeImage(index)}
+                    onPress={() => removeImage(index)} // Remove image by index
                     style={styles.removeButton}
                   >
                     <Text style={styles.removeButtonText}>X</Text>
@@ -161,7 +173,7 @@ const pickImage = async () => {
               contentContainerStyle={styles.flatListContainer}
             />
           )}
-          
+
           {successMessage && <Text style={styles.successMessage}>{successMessage}</Text>}
           {error && <Text style={styles.errorText}>{error}</Text>}
         </View>
@@ -218,7 +230,7 @@ const styles = StyleSheet.create({
     height: 128, // Equivalent to h-32
     width: 128, // Equivalent to w-32
     backgroundColor: '#1E1E1E',
-    borderRadius: 10,     
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -321,7 +333,7 @@ export default Measurement;
 
 
 
- {/* <View style={styles.buttonContainer}>
+{/* <View style={styles.buttonContainer}>
           <TouchableOpacity
             // onPress={onRemoveAll}
             style={styles.removeAllButton}

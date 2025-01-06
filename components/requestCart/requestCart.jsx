@@ -3,11 +3,19 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Alert,Modal,Pressable 
 import { Ionicons } from '@expo/vector-icons';
 import { removeDesignRequest } from '../../src/api/services/designRequestService';
 import useRequestStore from '../../src/store/useRequestStore';
+import { useRouter } from 'expo-router';
+import useRequestDetailsStore from '../../src/store/useRequestDetailsStore';
 
-const RequestCart = ({ title, budget, colorPreferences, deadline, image, requestId, onDelete, documentId }) => {
+const RequestCart = ({ title, budget, colorPreferences, deadline, image, requestId, onDelete, documentId,description,selectType,contactNumber,special_instructions,waist,size,chest }) => {
   const { getQuantity, updateQuantity } = useRequestStore();
   const quantity = getQuantity(requestId);
   const [modalVisible, setModalVisible] = useState(false);
+  const router = useRouter();
+  const setRequestDetails = useRequestDetailsStore((state) => state.setRequestDetails); // Access the setter from Zustand store
+
+// console.log(image[0])
+  // console.log(title, budget, colorPreferences, deadline, image, documentId,description,selectType,contactNumber,special_instructions,waist,size,chest)
+  
   // Increment and Decrement Quantity
   const incrementQuantity = () => updateQuantity(requestId, quantity + 1);
   const decrementQuantity = () => {
@@ -27,6 +35,25 @@ const RequestCart = ({ title, budget, colorPreferences, deadline, image, request
       Alert.alert("Error", "Unable to delete the request. Please try again later.");
     }
   };
+  const handleViewDetails = () => {
+    setRequestDetails({
+      title,
+      budget,
+      colorPreferences,
+      deadline,
+      image,
+      documentId,
+      description,
+      selectType,
+      contactNumber,
+      special_instructions,
+      waist,
+      size,
+      chest,
+    });
+
+    router.push("/pages/DetailRequest");
+  };
 
   return (
     <View style={styles.container}>
@@ -41,9 +68,10 @@ const RequestCart = ({ title, budget, colorPreferences, deadline, image, request
 
       {/* Product Image */}
       <Image
-        source={{ uri: image || 'https://via.placeholder.com/100x100' }} // Fallback if no image is provided
-        style={styles.productImage}
-      />
+  source={{ uri: Array.isArray(image) && image.length > 0 ? image[0] : 'https://via.placeholder.com/100x100' }} // Fallback if no image or not an array
+  style={styles.productImage}
+/>
+
 
       {/* Product Details */}
       <View style={styles.details}>
@@ -52,10 +80,13 @@ const RequestCart = ({ title, budget, colorPreferences, deadline, image, request
         <Text style={styles.productColor}>Color Preferences: {colorPreferences}</Text>
         <Text style={styles.deliveryText}>Expected Delivery:</Text>
         <Text style={styles.datePlaceholder}>{deadline}</Text>
+        <TouchableOpacity onPress={handleViewDetails} style={styles.viewDetailsButton}>
+          <Text style={styles.viewDetailsText}>View Details</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Quantity Controls */}
-      <View style={styles.quantityContainer}>
+      {/* <View style={styles.quantityContainer}>
         <TouchableOpacity onPress={decrementQuantity} style={styles.quantityButton}>
           <Text style={styles.quantityText}>-</Text>
         </TouchableOpacity>
@@ -63,7 +94,8 @@ const RequestCart = ({ title, budget, colorPreferences, deadline, image, request
         <TouchableOpacity onPress={incrementQuantity} style={styles.quantityButton}>
           <Text style={styles.quantityText}>+</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
+
 
       {/* Confirmation Modal */}
       <Modal
@@ -175,6 +207,19 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
     marginHorizontal: 8,
+  },
+  viewDetailsButton: {
+    marginTop: 10,
+    backgroundColor: '#8FFA09',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  viewDetailsText: {
+    color: '#000',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   modalOverlay: {
     flex: 1,

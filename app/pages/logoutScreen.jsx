@@ -29,7 +29,7 @@ const LoggedOutScreen = () => {
       // Set isLoggedOut to false before navigating to the sign-in page
       setLoggedOut(false);
 
-      console.log('Navigating to Sign-In');
+      // console.log('Navigating to Sign-In');
       router.push('/sign-in'); // Ensure the path is correct
     }, 3000);
 

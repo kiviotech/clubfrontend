@@ -13,21 +13,17 @@ const RequestDesign = () => {
   const [fabricOpen, setFabricOpen] = useState(false);
   const [fabricValue, setFabricValue] = useState(null);
   const [fabricItems, setFabricItems] = useState([
-    { label: "Cotton", value: "Cotton" },
-    { label: "Cotton Blends", value: "Cotton Blends" },
-    { label: "Polyester", value: "Polyester" },
-    { label: "Silk", value: "silk" },
-    { label: "Spandex(Elastane)", value: "Spandex(Elastane)" },
-    { label: "Bamboo Fiber", value: "Bamboo Fiber" },
-    { label: "Lycra", value: "Lycra" },
-    { label: "Organic Cotton", value: "Organic Cotton" },
-    { label: "Terrycloth", value: "Terrycloth" },
-    { label: "Wool Blends", value: "Wool Blends" },
+    { label: "Jackets", value: "Jackets" },
+    { label: "T-shirts", value: "T-shirts" },
+    { label: "Hoodies", value: "Hoodies" },
+    { label: "Sweatpants", value: "Sweatpants" },
+    { label: "Shorts", value: "Shorts" },
+    { label: "Polo Shirts", value: "Polo Shirts" },
+    { label: "Athletic Wear", value: "Athletic Wear" },
+    { label: "Shirts(Formal/Casual)", value: "Shirts(Formal/Casual)" },
+    { label: "Outerwear(e.g. Coats,Windbreakers)", value: "Outerwear(e.g. Coats,Windbreakers)" },
     { label: "Denim(Jean)", value: "Denim(Jean)" },
-    { label: "Leather", value: "Leather" },
-    { label: "Canvas", value: "Canvas" },
-    { label: "Suede", value: "Suede" },
-    { label: "Velvet", value: "Velvet" },
+    { label: "Accessories(e.g. Caps,Beanies,Scarves)", value: "Accessories(e.g. Caps,Beanies,Scarves)" },
     { label: "Others", value: "Others" },
   ]);
   const [startDate, setStartDate] = useState(null);
@@ -124,7 +120,7 @@ const RequestDesign = () => {
             setOpen={setFabricOpen}
             setValue={setFabricValue}
             setItems={setFabricItems}
-            placeholder="Select Fabric"
+            placeholder="Select Type"
             placeholderStyle={styles.placeholderStyle}
             style={styles.dropdown}
             dropDownContainerStyle={styles.dropdownContainer}

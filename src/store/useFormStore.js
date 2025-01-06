@@ -17,20 +17,19 @@ const useFormStore = create(
         contactNumber: '',
       },
       measurements: {
-        bust: '',
+        size: '',
+        chest: '',
         waist: '',
-        hip: '',
-        height: '',
-        weight: '',
         specialInstructions: '',
       },
       uploads: {
         imageId: null,
         imageURI: null,
       },
-      
+
       // Method to update design details
       setDesignDetails: (details) => set((state) => {
+        
         return {
           designDetails: { ...state.designDetails, ...details },
         };
@@ -42,9 +41,14 @@ const useFormStore = create(
         };
       }),
       // Method to update uploads
-      setUploads: (imageId, imageURI) => set((state) => ({
-        uploads: { imageId, imageURI }, // Store both ID and URI
-      })),
+      setUploads: (imageId, imageURI) => set((state) => {
+        // console.log('Setting uploads state:', imageId, imageURI); // Logs the IDs and URIs that are being saved
+        const updatedState = {
+          uploads: { imageId, imageURI },
+        };
+        // console.log('Updated uploads state:', updatedState); // Logs the updated uploads state before setting it
+        return updatedState;
+      }),
       // Method to reset form data
       resetFormData: () => set({
         designDetails: {
@@ -57,11 +61,9 @@ const useFormStore = create(
           contactNumber: '',
         },
         measurements: {
-          bust: '',
+          size: '',
+          chest: '',
           waist: '',
-          hip: '',
-          height: '',
-          weight: '',
           specialInstructions: '',
         },
         uploads: {

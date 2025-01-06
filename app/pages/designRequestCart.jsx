@@ -91,13 +91,22 @@ const DesignRequestCart = () => {
         <Text>{error}</Text>
       ) : (
         designRequests.map((designRequest) => {
+          // console.log("hello",designRequest.image[0].url)
           const title = designRequest.title || "Untitled";
-          const budget = designRequest.budget || "0.00";
+          const description = designRequest.description || "Untitled";
+          const selectType = designRequest.fabric_preferences || "Untitled";
           const colorPreferences = designRequest.color_preferences || "N/A";
           const deadline = designRequest.deadline || "Not set";
-          const imageUrl = `${MEDIA_BASE_URL}${designRequest.image?.url}`;
+          const contactNumber = designRequest.contactNumber || "0.00";
+          const budget = designRequest.budget || "0.00"; 
+          const special_instructions = designRequest.special_instructions || "Not set"; 
+          const waist = designRequest.waist || "Not set"; 
+          const size = designRequest.size || "Not set"; 
+          const chest = designRequest.chest || "Not set";
+          const imageUrls = designRequest.image?.map(image => `${MEDIA_BASE_URL}${image.url}`); // Handling multiple images
           const requestId = designRequest.id; // Extract the requestId here
           const documentId = designRequest.documentId;
+          // console.log(imageUrls)
 
           return (
             <RequestCart
@@ -108,7 +117,14 @@ const DesignRequestCart = () => {
               budget={budget}
               colorPreferences={colorPreferences}
               deadline={deadline}
-              image={imageUrl}
+              image={imageUrls}
+              description={description}
+              selectType={selectType}
+              contactNumber={contactNumber}
+              special_instructions={special_instructions}
+              waist={waist}
+              size={size}
+              chest={chest}
               onDelete={handleDeleteRequest} // Pass the delete handler to the RequestCart component
             />
           );
