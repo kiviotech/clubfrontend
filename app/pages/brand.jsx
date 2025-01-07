@@ -1,8 +1,8 @@
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Image, SafeAreaView,ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Image, SafeAreaView, ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import ProductList from '../../components/productList/ProductList';
 import { useBrandStore } from "../../src/store/brandStore";
-import { useRouter,useNavigation } from 'expo-router'; 
+import { useRouter, useNavigation } from 'expo-router';
 import { getProducts } from '../../src/api/repositories/productRepository';
 import { MEDIA_BASE_URL } from '../../src/api/apiClient';
 import useProductStore from '../../src/store/useProductStore';
@@ -27,18 +27,18 @@ const Brand = ({ limit }) => {
   const [popupProductId, setPopupProductId] = useState(null);
   const navigation = useNavigation();
   const totalCartItems = useCartStore((state) => state.getTotalItems());
-  
+
   const imagesArray =
     typeof products.images === "string"
       ? [`${MEDIA_BASE_URL}${products.images}`]
       : (products.images || []).map((img) => `${MEDIA_BASE_URL}${img}`);
 
-      const getImageUrl = (images) => {
-        if (Array.isArray(images) && images.length > 0) {
-          return `${MEDIA_BASE_URL}${images[0].url}`; // Assuming each image has a `url` field
-        }
-        return null; // Fallback if no images
-      };
+  const getImageUrl = (images) => {
+    if (Array.isArray(images) && images.length > 0) {
+      return `${MEDIA_BASE_URL}${images[0].url}`; // Assuming each image has a `url` field
+    }
+    return null; // Fallback if no images
+  };
 
   const increment = () => {
     setQuantity(quantity + 1);
@@ -50,56 +50,56 @@ const Brand = ({ limit }) => {
     }
   };
   const handleRequest = () => {
-    router.push("/pages/cart"); 
+    router.push("/pages/cart");
   };
 
- useEffect(() => {
-     const fetchProducts = async () => {
-       try {
-         const response = await getProducts();
-         setProducts(response.data.data);
-   
-         const updatedProducts = [...response.data.data];
-   
-         for (let i = 0; i < updatedProducts.length; i++) {
-           const product = updatedProducts[i];
-   
-           // Check if any size has available stock
-           const hasAvailableStock = product.sizes.some(
-             (size) => size.number_of_items > 0
-           );
-   
-           // If any size has stock, mark the product as in stock
-           const updatedProductData = {
-             data: {
-               in_stock: hasAvailableStock,
-             },
-           };
-   
-           // Update product stock locally first
-           if (hasAvailableStock !== product.in_stock) {
-             updatedProducts[i] = {
-               ...product,
-               in_stock: hasAvailableStock, // Update the in_stock property immediately
-             };
-   
-             setProducts(updatedProducts); // Update the state immediately for the UI
-   
-             // Then, send the updated data to the server
-             await updateProduct(product.documentId, updatedProductData);
-             // console.log(`Product ${product.name} stock status updated.`);
-           }
-         }
-   
-       } catch (error) {
-         setError("Failed to load products");
-       } finally {
-         setLoading(false);
-       }
-     };
-   
-     fetchProducts();
-   }, [selectedBrand]);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await getProducts();
+        setProducts(response.data.data);
+
+        const updatedProducts = [...response.data.data];
+
+        for (let i = 0; i < updatedProducts.length; i++) {
+          const product = updatedProducts[i];
+
+          // Check if any size has available stock
+          const hasAvailableStock = product.sizes.some(
+            (size) => size.number_of_items > 0
+          );
+
+          // If any size has stock, mark the product as in stock
+          const updatedProductData = {
+            data: {
+              in_stock: hasAvailableStock,
+            },
+          };
+
+          // Update product stock locally first
+          if (hasAvailableStock !== product.in_stock) {
+            updatedProducts[i] = {
+              ...product,
+              in_stock: hasAvailableStock, // Update the in_stock property immediately
+            };
+
+            setProducts(updatedProducts); // Update the state immediately for the UI
+
+            // Then, send the updated data to the server
+            await updateProduct(product.documentId, updatedProductData);
+            // console.log(`Product ${product.name} stock status updated.`);
+          }
+        }
+
+      } catch (error) {
+        setError("Failed to load products");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [selectedBrand]);
 
   const filteredProducts = selectedBrand
     ? products.filter((product) => product.brand?.brand_name === selectedBrand)
@@ -108,9 +108,9 @@ const Brand = ({ limit }) => {
 
   const handleProductDetails = (product) => {
     // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
-    
+
     const images = product.product_image.map(img => `${MEDIA_BASE_URL}${img.url}`);
-  // console.log(sizes)
+    // console.log(sizes)
     setProductDetails({
       id: product.id,
       images: images,
@@ -118,10 +118,10 @@ const Brand = ({ limit }) => {
       price: product.price,
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
-      documentId:product.documentId,
-      description:product.description
+      documentId: product.documentId,
+      description: product.description
     });
-  
+
     router.push("../../pages/productDetails");
   };
   if (loading) {
@@ -132,9 +132,9 @@ const Brand = ({ limit }) => {
     return <Text>{error}</Text>;
   }
 
- 
+
   const handleWishlistAdd = (product) => {
-    const imageUrl =getImageUrl(product.product_image);
+    const imageUrl = getImageUrl(product.product_image);
     const item = {
       id: product.id,
       name: product.name,
@@ -201,112 +201,112 @@ const Brand = ({ limit }) => {
 
   return (
     <ScrollView>
-    <SafeAreaView style={styles.area}>
-      <View style={styles.header}>
-        <View style={styles.backSection}>
-          <TouchableOpacity onPress={() => {
-      if (navigation.canGoBack()) {
-        navigation.goBack(); // Go to the previous screen if available
-      } else {
-        handleHome() // Navigate to the correct route
-      }
-    }} style={styles.backButton}>
-            <Ionicons name="arrow-back" color="white" size={20} />
-          </TouchableOpacity>
-          <Text style={styles.brandTitle}>
-          {selectedBrand ? `${selectedBrand} Products` : "All Products"}
-        </Text>
+      <SafeAreaView style={styles.area}>
+        <View style={styles.header}>
+          <View style={styles.backSection}>
+            <TouchableOpacity onPress={() => {
+              if (navigation.canGoBack()) {
+                navigation.goBack(); // Go to the previous screen if available
+              } else {
+                handleHome() // Navigate to the correct route
+              }
+            }} style={styles.backButton}>
+              <Ionicons name="arrow-back" color="white" size={20} />
+            </TouchableOpacity>
+            <Text style={styles.brandTitle}>
+              {selectedBrand ? `${selectedBrand} Products` : "All Products"}
+            </Text>
+          </View>
+          <View style={styles.leftIcons}>
+            <View style={styles.iconContainer}>
+              <TouchableOpacity onPress={handleRequest} style={styles.iconButton}>
+                <Svgs.cartIcon width={18} height={18} />
+              </TouchableOpacity>
+              {totalCartItems > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{totalCartItems}</Text>
+                </View>
+              )}
+            </View>
+            <TouchableOpacity onPress={() => router.push("/pages/wishlist")}>
+              <Svgs.wishlistIcon width={18} height={18} />
+            </TouchableOpacity>
+          </View>
         </View>
-       <View style={styles.leftIcons}>
-                 <View style={styles.iconContainer}>
-                   <TouchableOpacity onPress={handleRequest} style={styles.iconButton}>
-                     <Svgs.cartIcon width={18} height={18} />
-                   </TouchableOpacity>
-                   {totalCartItems > 0 && (
-                     <View style={styles.badge}>
-                       <Text style={styles.badgeText}>{totalCartItems}</Text>
-                     </View>
-                   )}
-                 </View>
-                 <TouchableOpacity onPress={() => router.push("/pages/wishlist")}>
-                   <Svgs.wishlistIcon width={18} height={18} />
-                 </TouchableOpacity>
-               </View>
-      </View>
-      {/* <View style={styles.titleContainer}>
+        {/* <View style={styles.titleContainer}>
         <Text style={styles.brandTitle}>
           {selectedBrand ? `${selectedBrand} Products` : "All Products"}
         </Text>
       </View> */}
-    <View style={styles.container}>
-    {/* {popupMessage ? (
+        <View style={styles.container}>
+          {/* {popupMessage ? (
       <View style={styles.popup}>
         <Text style={styles.popupText}>{popupMessage}</Text>
       </View>
     ) : null} */}
-    {displayedProducts.map((product, index) => {
-      // const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
-      const imageUrl = getImageUrl(product.product_image);
-      const isOutOfStock = !product.in_stock;
-      const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
-      const isPopupVisible = popupProductId === product.id;
-      return (
-        <View key={index} style={styles.productCard}>
-          {isPopupVisible && popupMessage !== ""  && (
-            <View style={styles.popup}>
-              <Text style={styles.popupText}>{popupMessage}</Text>
-            </View>
-          )}
-          <Image
-            source={{ uri: imageUrl }}
-            style={styles.productimage}
-            resizeMode="contain"
-          />
-          <View style={styles.buttonContainer}>
-            {/* Wishlist Button */}
-            <TouchableOpacity style={styles.wishlistButton} onPress={() => handleWishlistAdd(product)}>
-              <Text style={styles.heartIcon}>{isInWishlist ? '❤️' : '🤍'}</Text>
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity onPress={() => handleProductDetails(product)}>
-            <View style={styles.imageWrapper}>
-              <Text style={styles.productName}>{product.name}</Text>
-              {/* <Text style={styles.productdiscount}>{product.discount}% discount</Text> */}
-              <Text style={styles.productBrand}>
-                {product.brand?.brand_name}
-              </Text>
-              <Text style={styles.productDescription}>
-                {product.product_Details}
-              </Text>
-              <Text style={styles.productPrice}>₹{product.price}</Text>
-              {/* {isOutOfStock && <Text style={styles.stockText}></Text>} */}
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.addToCartButton,
-              isOutOfStock && styles.disabledButton,
-            ]}
-            onPress={() => !isOutOfStock && handleCartAdd(product)}
-            disabled={isOutOfStock}
-          >
-            <Text style={styles.cartText}>
-              {isOutOfStock ? "Out of Stock" : "Add to Cart"}
-            </Text>
-          </TouchableOpacity>
+          {displayedProducts.map((product, index) => {
+            // const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
+            const imageUrl = getImageUrl(product.product_image);
+            const isOutOfStock = !product.in_stock;
+            const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
+            const isPopupVisible = popupProductId === product.id;
+            return (
+              <View key={index} style={styles.productCard}>
+                {isPopupVisible && popupMessage !== "" && (
+                  <View style={styles.popup}>
+                    <Text style={styles.popupText}>{popupMessage}</Text>
+                  </View>
+                )}
+                <Image
+                  source={{ uri: imageUrl }}
+                  style={styles.productimage}
+                  resizeMode="contain"
+                />
+                <View style={styles.buttonContainer}>
+                  {/* Wishlist Button */}
+                  <TouchableOpacity style={styles.wishlistButton} onPress={() => handleWishlistAdd(product)}>
+                    <Text style={styles.heartIcon}>{isInWishlist ? '❤️' : '🤍'}</Text>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity onPress={() => handleProductDetails(product)}>
+                  <View style={styles.imageWrapper}>
+                    <Text style={styles.productName}>{product.name}</Text>
+                    {/* <Text style={styles.productdiscount}>{product.discount}% discount</Text> */}
+                    <Text style={styles.productBrand}>
+                      {product.brand?.brand_name}
+                    </Text>
+                    <Text style={styles.productDescription}>
+                      {product.product_Details}
+                    </Text>
+                    <Text style={styles.productPrice}>₹{product.price}</Text>
+                    {/* {isOutOfStock && <Text style={styles.stockText}></Text>} */}
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.addToCartButton,
+                    isOutOfStock && styles.disabledButton,
+                  ]}
+                  onPress={() => !isOutOfStock && handleCartAdd(product)}
+                  disabled={isOutOfStock}
+                >
+                  <Text style={styles.cartText}>
+                    {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            );
+          })}
         </View>
-      );
-    })}
-  </View>
-  </SafeAreaView>
-  </ScrollView>
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  area:{
+  area: {
     flex: 1,
-    backgroundColor:"#000"
+    backgroundColor: "#000"
   },
   titleContainer: {
     padding: 16,
@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
     paddingHorizontal: 10,
-    paddingTop:20,
+    paddingTop: 20,
   },
   backSection: {
     flexDirection: "row",

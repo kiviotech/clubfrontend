@@ -6,7 +6,7 @@ import useRequestStore from '../../src/store/useRequestStore';
 import { useRouter } from 'expo-router';
 import useRequestDetailsStore from '../../src/store/useRequestDetailsStore';
 
-const RequestCart = ({ title, budget, colorPreferences, deadline, image, requestId, onDelete, documentId,description,selectType,contactNumber,special_instructions,waist,size,chest }) => {
+const RequestCart = ({ title, budget, colorPreferences, deadline, image, requestId, onDelete, documentId,description,selectType,contactNumber,special_instructions,waist,size,chest,customDesignName }) => {
   const { getQuantity, updateQuantity } = useRequestStore();
   const quantity = getQuantity(requestId);
   const [modalVisible, setModalVisible] = useState(false);
@@ -50,6 +50,7 @@ const RequestCart = ({ title, budget, colorPreferences, deadline, image, request
       waist,
       size,
       chest,
+      customDesignName,
     });
 
     router.push("/pages/DetailRequest");

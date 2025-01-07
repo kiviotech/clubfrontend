@@ -175,7 +175,7 @@ const Measurement = () => {
           )}
 
           {successMessage && <Text style={styles.successMessage}>{successMessage}</Text>}
-          {error && <Text style={styles.errorText}>{error}</Text>}
+          {/* {error && <Text style={styles.errorText}>{error}</Text>} */}
         </View>
 
         {/* Buttons Section */}

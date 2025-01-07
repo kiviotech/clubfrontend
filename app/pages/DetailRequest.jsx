@@ -10,6 +10,7 @@ const DetailRequest = () => {
     const requestDetails = useRequestDetailsStore((state) => state.requestDetails); // Access stored details
     const navigation = useNavigation();
     const [currentIndex, setCurrentIndex] = useState(0); // To track the current image in the carousel
+    console.log(requestDetails.customDesignName)
 
     const handleImageScroll = (event) => {
         const contentOffsetX = event.nativeEvent.contentOffset.x;
@@ -30,6 +31,8 @@ const DetailRequest = () => {
             >
                 <Ionicons name="arrow-back" color="white" size={20} />
             </TouchableOpacity>
+
+             <Text style={styles.customDesignNameHeading}>{requestDetails.customDesignName}</Text>
 
             {/* Carousel Section */}
             <View style={styles.carouselContainer}>
@@ -102,6 +105,14 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         marginTop: 10,
         fontSize: 16,
+    },
+    customDesignNameHeading: {
+        color: '#8FFA09', // Custom heading color
+        fontSize: 22,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 20,
+        // textDecorationLine: 'underline', // Optional underline effect
     },
     details: {
         marginBottom: 20,

@@ -26,6 +26,10 @@ const useFormStore = create(
         imageId: null,
         imageURI: null,
       },
+      selectedProduct: { // New state to store the selected product details
+        id: null,
+        documentId: null,
+      },
 
       // Method to update design details
       setDesignDetails: (details) => set((state) => {
@@ -49,6 +53,13 @@ const useFormStore = create(
         // console.log('Updated uploads state:', updatedState); // Logs the updated uploads state before setting it
         return updatedState;
       }),
+
+      setSelectedProduct: (id, documentId) => {
+        console.log('Setting selected product:', { id, documentId }); // Log the data to check
+        set(() => ({
+          selectedProduct: { id, documentId },
+        }));
+      },
       // Method to reset form data
       resetFormData: () => set({
         designDetails: {
@@ -69,6 +80,10 @@ const useFormStore = create(
         uploads: {
           imageId: null,
           imageURI: null,
+        },
+        selectedProduct: { // Reset selected product details
+          id: null,
+          documentId: null,
         },
       }),
     }),

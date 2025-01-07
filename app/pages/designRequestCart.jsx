@@ -38,6 +38,7 @@ const DesignRequestCart = () => {
         let requests = [];
         if (response.data?.design_requests) {
           requests = response.data.design_requests;
+          
         } else if (response.data?.attributes?.design_requests) {
           requests = response.data.attributes.design_requests;
         }
@@ -91,7 +92,7 @@ const DesignRequestCart = () => {
         <Text>{error}</Text>
       ) : (
         designRequests.map((designRequest) => {
-          // console.log("hello",designRequest.image[0].url)
+          console.log("hello",designRequest.custom_design.name)
           const title = designRequest.title || "Untitled";
           const description = designRequest.description || "Untitled";
           const selectType = designRequest.fabric_preferences || "Untitled";
@@ -106,6 +107,7 @@ const DesignRequestCart = () => {
           const imageUrls = designRequest.image?.map(image => `${MEDIA_BASE_URL}${image.url}`); // Handling multiple images
           const requestId = designRequest.id; // Extract the requestId here
           const documentId = designRequest.documentId;
+          const customDesignName = designRequest.custom_design?.name || "No Name"; 
           // console.log(imageUrls)
 
           return (
@@ -125,6 +127,7 @@ const DesignRequestCart = () => {
               waist={waist}
               size={size}
               chest={chest}
+              customDesignName={customDesignName}
               onDelete={handleDeleteRequest} // Pass the delete handler to the RequestCart component
             />
           );

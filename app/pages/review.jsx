@@ -9,9 +9,11 @@ import { createNewDesignRequest } from '../../src/api/services/designRequestServ
 import useUserDataStore from '../../src/store/userData';
 
 const Review = () => {
-  const { designDetails, measurements, uploads } = useFormStore(state => state); // Access Zustand store
+  const { designDetails, measurements, uploads,selectedProduct } = useFormStore(state => state); // Access Zustand store
   const userId = useUserDataStore((state) => state.users[0]?.id);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // console.log(selectedProduct)
 
   const handlePrevSection = () => {
     router.push("../pages/upload");
@@ -48,6 +50,7 @@ const Review = () => {
         special_instructions: measurements?.specialInstructions || "string",
         image: uploads.imageId,
         users: userId,
+        custom_design:selectedProduct?.id || selectedProduct?.documentId
       }
     }
 

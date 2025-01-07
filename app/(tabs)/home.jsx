@@ -60,7 +60,7 @@ const Home = () => {
     if (!userId) {
       router.push("/sign-in");
     } else {
-      router.push("/pages/request-design");
+      router.push("/pages/CustomizePage");
     }
   };
 
