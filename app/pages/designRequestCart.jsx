@@ -92,7 +92,7 @@ const DesignRequestCart = () => {
         <Text>{error}</Text>
       ) : (
         designRequests.map((designRequest) => {
-          console.log("hello",designRequest.custom_design.name)
+          // console.log("hello",designRequest.custom_design.name)
           const title = designRequest.title || "Untitled";
           const description = designRequest.description || "Untitled";
           const selectType = designRequest.fabric_preferences || "Untitled";

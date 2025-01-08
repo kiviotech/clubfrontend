@@ -218,12 +218,14 @@ import { TextInput } from "react-native";
 import StepIndicator from "../../components/StepIndicator";
 import { router } from "expo-router";
 import useFormStore from "../../src/store/useFormStore";
+import ColorPickerExample from "./ColorPickerExample";
+import useColorStore from "../../src/store/useColorStore";
 
 const measurement = () => {
   const { measurements, setMeasurements } = useFormStore();
   const [validationErrors, setValidationErrors] = useState({});
   const [selectedSize, setSelectedSize] = useState(measurements.size);
-
+  const { selectedColor } = useColorStore();
   // const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL', 'Custom Size'];
 
   const handleNextSection = () => {
@@ -335,6 +337,21 @@ const measurement = () => {
             <Text style={styles.errorText}>{validationErrors.specialInstructions}</Text>
           )}
         </View>
+
+        {measurements.color && (
+          <View style={styles.colorContainer}>
+            <Text style={styles.selectedColorText}>Selected Color:</Text>
+            <View style={[styles.colorBox, { backgroundColor: measurements.color }]} />
+          </View>
+        )}
+       <ColorPickerExample
+  onColorSelect={(color) => {
+    handleMeasurementsChange('color', color); // Updates global measurements state
+    setValidationErrors((prev) => ({ ...prev, color: '' })); // Clears color validation errors
+  }}
+/>
+
+
 
         {/* Buttons Section */}
         <View style={styles.buttonContainer}>
@@ -465,6 +482,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginBottom: 16,
     fontSize: 16,
+  },
+  colorContainer: {
+    marginTop: 20,
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: '#EEE',
+    alignItems: 'center',
+  },
+  selectedColorText: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  colorBox: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
   },
 });
 

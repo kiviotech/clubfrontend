@@ -10,7 +10,7 @@ const DetailRequest = () => {
     const requestDetails = useRequestDetailsStore((state) => state.requestDetails); // Access stored details
     const navigation = useNavigation();
     const [currentIndex, setCurrentIndex] = useState(0); // To track the current image in the carousel
-    console.log(requestDetails.customDesignName)
+    // console.log(requestDetails.customDesignName)
 
     const handleImageScroll = (event) => {
         const contentOffsetX = event.nativeEvent.contentOffset.x;

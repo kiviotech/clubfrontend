@@ -68,7 +68,7 @@ const RequestDesign = () => {
     }
     if (!designDetails.description) errors.description = "Description is required.";
     if (!fabricValue) errors.fabric = "Fabric selection is required.";
-    if (!designDetails.color) errors.color = "Color preference is required.";
+    // if (!designDetails.color) errors.color = "Color preference is required.";
     if (!startDate) errors.deadline = "Deadline is required.";
     else if (startDate < new Date()) errors.deadline = "Deadline must be a future date.";
     if (!designDetails.budget) {
@@ -88,6 +88,7 @@ const RequestDesign = () => {
         <TouchableOpacity onPress={handleGoHome}>
           {/* Ensure svgs.back renders a valid component */}
           {svgs.back ? <svgs.back /> : <Text style={styles.backText}>Back</Text>}
+
         </TouchableOpacity>
         <StepIndicator currentPosition={0} />
 
@@ -145,14 +146,14 @@ const RequestDesign = () => {
           {validationErrors.fabric && <Text style={styles.errorText}>{validationErrors.fabric}</Text>}
 
 
-          <TextInput
+          {/* <TextInput
             style={styles.input}
             placeholder="Colour Preferences"
             placeholderTextColor="#ccc"
             value={designDetails.color}
             onChangeText={(text) => handleDesignDetailsChange("color", text)}
           />
-          {validationErrors.color && <Text style={styles.errorText}>{validationErrors.color}</Text>}
+          {validationErrors.color && <Text style={styles.errorText}>{validationErrors.color}</Text>} */}
 
           <CrossPlatformDatePicker
             label="Select Deadline"

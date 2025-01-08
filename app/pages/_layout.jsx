@@ -38,7 +38,7 @@ export default function Layout() {
       <Stack.Screen name="OrderSuccessScreen" options={{ headerShown: false }} />
       <Stack.Screen name="DetailRequest" options={{ headerShown: false }} />
       <Stack.Screen name="CustomizePage" options={{ headerShown: false }} />
-      
+      <Stack.Screen name="ColorPicker" options={{ headerShown: false }} />
       
     </Stack>
   );

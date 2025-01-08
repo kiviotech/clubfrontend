@@ -11,7 +11,6 @@ const useFormStore = create(
         title: '',
         description: '',
         fabric: '',
-        color: '',
         deadline: '',
         budget: '',
         contactNumber: '',
@@ -21,6 +20,7 @@ const useFormStore = create(
         chest: '',
         waist: '',
         specialInstructions: '',
+        color: '',
       },
       uploads: {
         imageId: null,
@@ -40,10 +40,16 @@ const useFormStore = create(
       }),
       // Method to update measurements
       setMeasurements: (measurements) => set((state) => {
+        // console.log('Before Update: ', state.measurements);  // Logs the state before the update
+        const updatedMeasurements = { ...state.measurements, ...measurements };
+        // console.log('Updates being applied: ', measurements);  // Logs the incoming updates
+        // console.log('After Update: ', updatedMeasurements);  // Logs the state after the update
+      
         return {
-          measurements: { ...state.measurements, ...measurements },
+          measurements: updatedMeasurements,
         };
       }),
+      
       // Method to update uploads
       setUploads: (imageId, imageURI) => set((state) => {
         // console.log('Setting uploads state:', imageId, imageURI); // Logs the IDs and URIs that are being saved
@@ -55,7 +61,7 @@ const useFormStore = create(
       }),
 
       setSelectedProduct: (id, documentId) => {
-        console.log('Setting selected product:', { id, documentId }); // Log the data to check
+        // console.log('Setting selected product:', { id, documentId }); // Log the data to check
         set(() => ({
           selectedProduct: { id, documentId },
         }));
@@ -66,7 +72,6 @@ const useFormStore = create(
           title: '',
           description: '',
           fabric: '',
-          color: '',
           deadline: '',
           budget: '',
           contactNumber: '',
@@ -76,6 +81,7 @@ const useFormStore = create(
           chest: '',
           waist: '',
           specialInstructions: '',
+          color: '',
         },
         uploads: {
           imageId: null,

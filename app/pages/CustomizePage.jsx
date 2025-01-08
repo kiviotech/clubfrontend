@@ -11,7 +11,7 @@ const CustomizePage = () => {
     const [products, setProducts] = useState([]);
     const navigation = useNavigation();
     const router = useRouter();
-    // const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
     
     
@@ -32,7 +32,7 @@ const CustomizePage = () => {
                 }));
                 setProducts(fetchedProducts);
             } catch (error) {
-                console.error('Failed to fetch products:', error);
+                // console.error('Failed to fetch products:', error);
             }
         };
 
@@ -43,16 +43,16 @@ const CustomizePage = () => {
         router.push("/home");
     };
 
-    // useEffect(() => {
-    //     // Simulate delay and set loading to false when done
-    //     setTimeout(() => {
-    //       setIsLoading(false);
-    //     }, 2000); // Adjust the delay as needed
-    //   }, []);
+    useEffect(() => {
+        // Simulate delay and set loading to false when done
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 2000); // Adjust the delay as needed
+      }, []);
     
-    //   if (isLoading) {
-    //     return <Loading />; // Show Loading component while loading
-    //   }
+      if (isLoading) {
+        return <Loading />; // Show Loading component while loading
+      }
 
     return (
         <ScrollView style={styles.container}>

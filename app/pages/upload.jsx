@@ -91,7 +91,7 @@ const Measurement = () => {
           throw new Error("Failed to retrieve uploaded image IDs.");
         }
       } catch (error) {
-        console.error("Error uploading image:", error);
+        // console.error("Error uploading image:", error);
         Alert.alert("Upload Error", "Failed to upload the images.");
       } finally {
         setUploading(false);

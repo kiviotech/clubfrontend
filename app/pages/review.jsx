@@ -13,7 +13,7 @@ const Review = () => {
   const userId = useUserDataStore((state) => state.users[0]?.id);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // console.log(selectedProduct)
+  console.log(measurements)
 
   const handlePrevSection = () => {
     router.push("../pages/upload");
@@ -40,7 +40,7 @@ const Review = () => {
         title: designDetails?.title || "string",
         description: designDetails?.description || "string",
         fabric_preferences: designDetails?.fabricPreferences || "Cotton",
-        color_preferences: designDetails?.color || "string",
+        color_preferences: measurements?.color || "string",
         deadline: designDetails?.formattedDeadline || "2024-11-26",
         budget: designDetails?.budget || 0,
         contactNumber: designDetails?.contactNumber || "Not provided",

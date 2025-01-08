@@ -15,6 +15,7 @@ const CustomizeCard = ( { id, documentId,title, description, image, onLearnMore,
     handleProductSelect();
     router.push("/pages/request-design");  // Navigate to the request design page
   };
+  
 
     return (
         <View style={styles.card}>
