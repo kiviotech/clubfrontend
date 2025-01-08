@@ -10,22 +10,22 @@ import useFormStore from "../../src/store/useFormStore";
 import { Ionicons } from "@expo/vector-icons";
 
 const RequestDesign = () => {
-  const [fabricOpen, setFabricOpen] = useState(false);
-  const [fabricValue, setFabricValue] = useState(null);
-  const [fabricItems, setFabricItems] = useState([
-    { label: "Jackets", value: "Jackets" },
-    { label: "T-shirts", value: "T-shirts" },
-    { label: "Hoodies", value: "Hoodies" },
-    { label: "Sweatpants", value: "Sweatpants" },
-    { label: "Shorts", value: "Shorts" },
-    { label: "Polo Shirts", value: "Polo Shirts" },
-    { label: "Athletic Wear", value: "Athletic Wear" },
-    { label: "Shirts(Formal/Casual)", value: "Shirts(Formal/Casual)" },
-    { label: "Outerwear(e.g. Coats,Windbreakers)", value: "Outerwear(e.g. Coats,Windbreakers)" },
-    { label: "Denim(Jean)", value: "Denim(Jean)" },
-    { label: "Accessories(e.g. Caps,Beanies,Scarves)", value: "Accessories(e.g. Caps,Beanies,Scarves)" },
-    { label: "Others", value: "Others" },
-  ]);
+  // const [fabricOpen, setFabricOpen] = useState(false);
+  // const [fabricValue, setFabricValue] = useState(null);
+  // const [fabricItems, setFabricItems] = useState([
+  //   { label: "Jackets", value: "Jackets" },
+  //   { label: "T-shirts", value: "T-shirts" },
+  //   { label: "Hoodies", value: "Hoodies" },
+  //   { label: "Sweatpants", value: "Sweatpants" },
+  //   { label: "Shorts", value: "Shorts" },
+  //   { label: "Polo Shirts", value: "Polo Shirts" },
+  //   { label: "Athletic Wear", value: "Athletic Wear" },
+  //   { label: "Shirts(Formal/Casual)", value: "Shirts(Formal/Casual)" },
+  //   { label: "Outerwear(e.g. Coats,Windbreakers)", value: "Outerwear(e.g. Coats,Windbreakers)" },
+  //   { label: "Denim(Jean)", value: "Denim(Jean)" },
+  //   { label: "Accessories(e.g. Caps,Beanies,Scarves)", value: "Accessories(e.g. Caps,Beanies,Scarves)" },
+  //   { label: "Others", value: "Others" },
+  // ]);
   const [startDate, setStartDate] = useState(null);
   const { designDetails, setDesignDetails } = useFormStore();
   const [validationErrors, setValidationErrors] = useState({});
@@ -67,7 +67,7 @@ const RequestDesign = () => {
       errors.title = "Design Title can only contain letters and spaces.";
     }
     if (!designDetails.description) errors.description = "Description is required.";
-    if (!fabricValue) errors.fabric = "Fabric selection is required.";
+    // if (!fabricValue) errors.fabric = "Fabric selection is required.";
     // if (!designDetails.color) errors.color = "Color preference is required.";
     if (!startDate) errors.deadline = "Deadline is required.";
     else if (startDate < new Date()) errors.deadline = "Deadline must be a future date.";
@@ -114,7 +114,7 @@ const RequestDesign = () => {
           {validationErrors.description && <Text style={styles.errorText}>{validationErrors.description}</Text>}
 
           {/* <Text style={styles.label}>Select Fabric</Text> */}
-          <DropDownPicker
+          {/* <DropDownPicker
             open={fabricOpen}
             value={fabricValue}
             items={fabricItems}
@@ -143,7 +143,7 @@ const RequestDesign = () => {
           />
 
 
-          {validationErrors.fabric && <Text style={styles.errorText}>{validationErrors.fabric}</Text>}
+          {validationErrors.fabric && <Text style={styles.errorText}>{validationErrors.fabric}</Text>} */}
 
 
           {/* <TextInput

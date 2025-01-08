@@ -10,7 +10,7 @@ const useFormStore = create(
       designDetails: {
         title: '',
         description: '',
-        fabric: '',
+        
         deadline: '',
         budget: '',
         contactNumber: '',
@@ -71,7 +71,7 @@ const useFormStore = create(
         designDetails: {
           title: '',
           description: '',
-          fabric: '',
+          
           deadline: '',
           budget: '',
           contactNumber: '',

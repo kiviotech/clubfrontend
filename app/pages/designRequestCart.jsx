@@ -95,7 +95,7 @@ const DesignRequestCart = () => {
           // console.log("hello",designRequest.custom_design.name)
           const title = designRequest.title || "Untitled";
           const description = designRequest.description || "Untitled";
-          const selectType = designRequest.fabric_preferences || "Untitled";
+          // const selectType = designRequest.fabric_preferences || "Untitled";
           const colorPreferences = designRequest.color_preferences || "N/A";
           const deadline = designRequest.deadline || "Not set";
           const contactNumber = designRequest.contactNumber || "0.00";
@@ -121,7 +121,7 @@ const DesignRequestCart = () => {
               deadline={deadline}
               image={imageUrls}
               description={description}
-              selectType={selectType}
+              // selectType={selectType}
               contactNumber={contactNumber}
               special_instructions={special_instructions}
               waist={waist}

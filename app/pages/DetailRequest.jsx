@@ -64,7 +64,7 @@ const DetailRequest = () => {
                 <Text style={styles.heading}>Design Details :</Text>
                 <Text style={styles.detailText}><Text style={styles.label}>Title :</Text> {requestDetails.title}</Text>
                 <Text style={styles.detailText}><Text style={styles.label}>Description : </Text> {requestDetails.description}</Text>
-                <Text style={styles.detailText}><Text style={styles.label}>Select Type : </Text>{requestDetails.selectType}</Text>
+                {/* <Text style={styles.detailText}><Text style={styles.label}>Select Type : </Text>{requestDetails.selectType}</Text> */}
                 <Text style={styles.detailText}><Text style={styles.label}>Color : </Text> {requestDetails.colorPreferences}</Text>
                 <Text style={styles.detailText}><Text style={styles.label}>Deadline : </Text> {requestDetails.deadline}</Text>
                 <Text style={styles.detailText}><Text style={styles.label}>Budget : </Text> {requestDetails.budget}</Text>
