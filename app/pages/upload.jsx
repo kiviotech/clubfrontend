@@ -55,6 +55,8 @@ const Measurement = () => {
   
       try {
         setUploading(true);
+        setSuccessMessage(""); // Clear success message before starting upload
+      setError(null);
   
         const formData = new FormData();
         // Upload images as blobs
@@ -62,6 +64,8 @@ const Measurement = () => {
           const imageBlob = await (await fetch(uri)).blob();
           formData.append("files", imageBlob, "custom-image.jpg");
         }
+
+        setSuccessMessage("Uploading...");
   
         // Make API request to upload images
         const uploadResponse = await axios.post(
@@ -92,7 +96,8 @@ const Measurement = () => {
         }
       } catch (error) {
         // console.error("Error uploading image:", error);
-        Alert.alert("Upload Error", "Failed to upload the images.");
+        setError("Error uploading the images, please try again.");
+        setSuccessMessage("");
       } finally {
         setUploading(false);
       }

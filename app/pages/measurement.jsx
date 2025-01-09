@@ -225,7 +225,7 @@ const measurement = () => {
   const { measurements, setMeasurements } = useFormStore();
   const [validationErrors, setValidationErrors] = useState({});
   const [selectedSize, setSelectedSize] = useState(measurements.size);
-  const { selectedColor } = useColorStore();
+  const { selectedColor, selectedColorName } = useColorStore();
   // const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL', 'Custom Size'];
 
   const handleNextSection = () => {
@@ -338,18 +338,20 @@ const measurement = () => {
           )}
         </View>
 
-        {measurements.color && (
+        {selectedColor&& (
           <View style={styles.colorContainer}>
             <Text style={styles.selectedColorText}>Selected Color:</Text>
-            <View style={[styles.colorBox, { backgroundColor: measurements.color }]} />
+            <View style={[styles.colorBox, { backgroundColor: selectedColor }]} />
           </View>
         )}
-       <ColorPickerExample
-  onColorSelect={(color) => {
-    handleMeasurementsChange('color', color); // Updates global measurements state
-    setValidationErrors((prev) => ({ ...prev, color: '' })); // Clears color validation errors
-  }}
-/>
+
+        {/* Color Picker */}
+        <ColorPickerExample
+          onColorSelect={(color) => {
+            handleMeasurementsChange("color", color); // Updates global measurements state
+            // setValidationErrors((prev) => ({ ...prev, color: "" })); // Clears color validation errors
+          }}
+        />
 
 
 
@@ -380,7 +382,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14, // Reduced padding
   },
   measurementContainer: {
-    marginBottom: 32, // Reduced spacing
+    // marginBottom: 32, // Reduced spacing
     borderRadius: 12, // Slightly smaller radius
     // backgroundColor: "#181818",
     paddingVertical: 16, // Reduced padding
@@ -400,6 +402,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 8, // Reduced spacing
+    marginBottom: 50,
   },
   goBackButton: {
     backgroundColor: "white",

@@ -46,7 +46,8 @@ const ColorPickerExample = ({ onColorSelect }) => {
               style={[styles.colorBox, { backgroundColor: col }]}
               onPress={() => {
                 setColor(col);
-                setSelectedColorName(col);
+      setSelectedColorName(col);
+      setSelectedColor(col, col);
               }}
             />
           ))}
@@ -147,3 +148,4 @@ const styles = StyleSheet.create({
 });
 
 export default ColorPickerExample;
+

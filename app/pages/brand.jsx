@@ -11,6 +11,7 @@ import Svgs from '../../constants/svgs';
 import { Ionicons } from "@expo/vector-icons";
 import useCartStore from '../../src/store/useCartStore';
 import { updateProduct } from '../../src/api/repositories/productRepository';
+import Loading from './loading';
 
 const Brand = ({ limit }) => {
   const [products, setProducts] = useState([]);
@@ -27,6 +28,7 @@ const Brand = ({ limit }) => {
   const [popupProductId, setPopupProductId] = useState(null);
   const navigation = useNavigation();
   const totalCartItems = useCartStore((state) => state.getTotalItems());
+  const [isLoading, setIsLoading] = useState(true);
 
   const imagesArray =
     typeof products.images === "string"
@@ -100,6 +102,17 @@ const Brand = ({ limit }) => {
 
     fetchProducts();
   }, [selectedBrand]);
+
+  useEffect(() => {
+    // Simulate delay and set loading to false when done
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000); // Adjust the delay as needed
+  }, []);
+
+  if (isLoading) {
+    return <Loading />; // Show Loading component while loading
+  }
 
   const filteredProducts = selectedBrand
     ? products.filter((product) => product.brand?.brand_name === selectedBrand)

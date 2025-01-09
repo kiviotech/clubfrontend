@@ -209,7 +209,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
   }, [fetchedBrandCollabs]);
 
   const openWhatsApp = () => {
-    const phoneNumber = "+917788920072"; // Replace with your WhatsApp phone number
+    const phoneNumber = "+919611717711"; // Replace with your WhatsApp phone number
     const message = "Hello, I am interested in your brand collaborations.";
     const url = `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(
       message

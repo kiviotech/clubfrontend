@@ -30,9 +30,9 @@ const CustomizeCard = ( { id, documentId,title, description, image, onLearnMore,
             <Text style={styles.title}>{title}</Text>
             <Text style={styles.description}>{description}</Text>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity onPress={onLearnMore} style={styles.learnMoreButton}>
+              {/* <TouchableOpacity onPress={onLearnMore} style={styles.learnMoreButton}>
                 <Text style={styles.learnMoreText}>Learn More</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               <TouchableOpacity onPress={() => { handleStartCustomizing(); handleProductSelect(); }} style={styles.customizeButton}>
             <Text style={styles.customizeText}>Start Customizing</Text>
           </TouchableOpacity>
@@ -89,10 +89,10 @@ const CustomizeCard = ( { id, documentId,title, description, image, onLearnMore,
         fontSize: 14,
       },
       customizeButton: {
-        backgroundColor: '#00ff00',
+        backgroundColor: '#8FFA09',
         borderRadius: 5,
-        paddingHorizontal: 15,
-        paddingVertical: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
       },
       customizeText: {
         color: '#000',
