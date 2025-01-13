@@ -1,17 +1,26 @@
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Image, SafeAreaView, ScrollView } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import ProductList from '../../components/productList/ProductList';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  Image,
+  SafeAreaView,
+  ScrollView,
+} from "react-native";
+import React, { useState, useEffect } from "react";
+import ProductList from "../../components/productList/ProductList";
 import { useBrandStore } from "../../src/store/brandStore";
-import { useRouter, useNavigation } from 'expo-router';
-import { getProducts } from '../../src/api/repositories/productRepository';
-import { MEDIA_BASE_URL } from '../../src/api/apiClient';
-import useProductStore from '../../src/store/useProductStore';
-import useWishlistStore from '../../src/store/useWishlistStore';
-import Svgs from '../../constants/svgs';
+import { useRouter, useNavigation } from "expo-router";
+import { getProducts } from "../../src/api/repositories/productRepository";
+import { MEDIA_BASE_URL } from "../../src/api/apiClient";
+import useProductStore from "../../src/store/useProductStore";
+import useWishlistStore from "../../src/store/useWishlistStore";
+import Svgs from "../../constants/svgs";
 import { Ionicons } from "@expo/vector-icons";
-import useCartStore from '../../src/store/useCartStore';
-import { updateProduct } from '../../src/api/repositories/productRepository';
-import Loading from './loading';
+import useCartStore from "../../src/store/useCartStore";
+import { updateProduct } from "../../src/api/repositories/productRepository";
+import Loading from "./loading";
 
 const Brand = ({ limit }) => {
   const [products, setProducts] = useState([]);
@@ -92,7 +101,6 @@ const Brand = ({ limit }) => {
             // console.log(`Product ${product.name} stock status updated.`);
           }
         }
-
       } catch (error) {
         setError("Failed to load products");
       } finally {
@@ -117,12 +125,16 @@ const Brand = ({ limit }) => {
   const filteredProducts = selectedBrand
     ? products.filter((product) => product.brand?.brand_name === selectedBrand)
     : products;
-  const displayedProducts = limit ? filteredProducts.slice(0, limit) : filteredProducts;
+  const displayedProducts = limit
+    ? filteredProducts.slice(0, limit)
+    : filteredProducts;
 
   const handleProductDetails = (product) => {
     // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
 
-    const images = product.product_image.map(img => `${MEDIA_BASE_URL}${img.url}`);
+    const images = product.product_image.map(
+      (img) => `${MEDIA_BASE_URL}${img.url}`
+    );
     // console.log(sizes)
     setProductDetails({
       id: product.id,
@@ -132,7 +144,7 @@ const Brand = ({ limit }) => {
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
       documentId: product.documentId,
-      description: product.description
+      description: product.description,
     });
 
     router.push("../../pages/productDetails");
@@ -144,7 +156,6 @@ const Brand = ({ limit }) => {
   if (error) {
     return <Text>{error}</Text>;
   }
-
 
   const handleWishlistAdd = (product) => {
     const imageUrl = getImageUrl(product.product_image);
@@ -188,9 +199,9 @@ const Brand = ({ limit }) => {
     };
 
     // Check if the product is already in the cart
-    const isProductInCart = useCartStore.getState().items.some(
-      (cartItem) => cartItem.id === product.id
-    );
+    const isProductInCart = useCartStore
+      .getState()
+      .items.some((cartItem) => cartItem.id === product.id);
 
     if (isProductInCart) {
       setPopupProductId(product.id); // Show popup for this product
@@ -217,13 +228,16 @@ const Brand = ({ limit }) => {
       <SafeAreaView style={styles.area}>
         <View style={styles.header}>
           <View style={styles.backSection}>
-            <TouchableOpacity onPress={() => {
-              if (navigation.canGoBack()) {
-                navigation.goBack(); // Go to the previous screen if available
-              } else {
-                handleHome() // Navigate to the correct route
-              }
-            }} style={styles.backButton}>
+            <TouchableOpacity
+              onPress={() => {
+                if (navigation.canGoBack()) {
+                  navigation.goBack(); // Go to the previous screen if available
+                } else {
+                  handleHome(); // Navigate to the correct route
+                }
+              }}
+              style={styles.backButton}
+            >
               <Ionicons name="arrow-back" color="white" size={20} />
             </TouchableOpacity>
             <Text style={styles.brandTitle}>
@@ -232,7 +246,10 @@ const Brand = ({ limit }) => {
           </View>
           <View style={styles.leftIcons}>
             <View style={styles.iconContainer}>
-              <TouchableOpacity onPress={handleRequest} style={styles.iconButton}>
+              <TouchableOpacity
+                onPress={handleRequest}
+                style={styles.iconButton}
+              >
                 <Svgs.cartIcon width={18} height={18} />
               </TouchableOpacity>
               {totalCartItems > 0 && (
@@ -261,7 +278,9 @@ const Brand = ({ limit }) => {
             // const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
             const imageUrl = getImageUrl(product.product_image);
             const isOutOfStock = !product.in_stock;
-            const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
+            const isInWishlist = wishlist.some(
+              (wishItem) => wishItem.id === product.id
+            );
             const isPopupVisible = popupProductId === product.id;
             return (
               <View key={index} style={styles.productCard}>
@@ -277,8 +296,13 @@ const Brand = ({ limit }) => {
                 />
                 <View style={styles.buttonContainer}>
                   {/* Wishlist Button */}
-                  <TouchableOpacity style={styles.wishlistButton} onPress={() => handleWishlistAdd(product)}>
-                    <Text style={styles.heartIcon}>{isInWishlist ? '❤️' : '🤍'}</Text>
+                  <TouchableOpacity
+                    style={styles.wishlistButton}
+                    onPress={() => handleWishlistAdd(product)}
+                  >
+                    <Text style={styles.heartIcon}>
+                      {isInWishlist ? "❤️" : "🤍"}
+                    </Text>
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity onPress={() => handleProductDetails(product)}>
@@ -319,7 +343,7 @@ const Brand = ({ limit }) => {
 const styles = StyleSheet.create({
   area: {
     flex: 1,
-    backgroundColor: "#000"
+    backgroundColor: "#000",
   },
   titleContainer: {
     padding: 16,
@@ -334,7 +358,6 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     gap: 20,
-
   },
   iconContainer: {
     position: "relative", // To position badge on top of the icon
@@ -385,7 +408,7 @@ const styles = StyleSheet.create({
     fontSize: 16, // Font size
     fontWeight: "bold",
     marginTop: 6, // Reduced margin for less height
-    textAlign: 'center',
+    textAlign: "center",
   },
   productdiscount: {
     color: "red",
@@ -399,7 +422,7 @@ const styles = StyleSheet.create({
     color: "#9CA3AF",
     fontSize: 12, // Font size
     marginTop: 2, // Reduced margin for less height
-    textAlign: 'center',
+    textAlign: "center",
   },
   productPrice: {
     color: "#ffffff",
@@ -447,11 +470,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   popup: {
-    position: 'absolute',
-    top: '10%',
-    left: '50%',
+    position: "absolute",
+    top: "10%",
+    left: "50%",
     transform: [{ translateX: -50 }],
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     padding: 12, // Padding for popup
     borderRadius: 8,
     zIndex: 100,
@@ -465,8 +488,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   popupText: {
-    color: '#fff',
-    textAlign: 'center',
+    color: "#fff",
+    textAlign: "center",
   },
   disabledButton: {
     backgroundColor: "#D3D3D3",
@@ -489,8 +512,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 16, // Adjust size as needed
-    fontWeight: 'bold', // Make the text bold
-    color: '#8FFA09', // Set text color to white
+    fontWeight: "bold", // Make the text bold
+    color: "#8FFA09", // Set text color to white
   },
   rightIcons: {
     flexDirection: "row",

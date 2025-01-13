@@ -39,7 +39,8 @@ export default function Layout() {
       <Stack.Screen name="DetailRequest" options={{ headerShown: false }} />
       <Stack.Screen name="CustomizePage" options={{ headerShown: false }} />
       <Stack.Screen name="ColorPicker" options={{ headerShown: false }} />
-      
+      <Stack.Screen name="GalleryPage" options={{ headerShown: false }} />
+      <Stack.Screen name="GalleryDetail" options={{ headerShown: false }} />
     </Stack>
   );
 }

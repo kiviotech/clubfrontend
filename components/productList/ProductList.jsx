@@ -31,7 +31,6 @@ const ProductList = ({ limit }) => {
   const [popupProductId, setPopupProductId] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
 
-
   const imagesArray =
     typeof products.images === "string"
       ? [`${MEDIA_BASE_URL}${products.images}`]
@@ -45,8 +44,6 @@ const ProductList = ({ limit }) => {
     return null; // Fallback if no images
   };
 
-
-
   const increment = () => {
     setQuantity(quantity + 1);
   };
@@ -57,64 +54,61 @@ const ProductList = ({ limit }) => {
     }
   };
 
-  
-
- useEffect(() => {
-     const fetchProducts = async () => {
-       try {
-         const response = await getProducts();
-         setProducts(response.data.data);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await getProducts();
+        setProducts(response.data.data);
         //  console.log(response.data.data[0].sizes[1].number_of_items)
-   
-         const updatedProducts = [...response.data.data];
-   
-         for (let i = 0; i < updatedProducts.length; i++) {
-           const product = updatedProducts[i];
-   
-           // Check if any size has available stock
-           const hasAvailableStock = product.sizes.some(
-             (size) => size.number_of_items > 0
-           );
-   
-           // If any size has stock, mark the product as in stock
-           const updatedProductData = {
-             data: {
-               in_stock: hasAvailableStock,
-             },
-           };
-   
-           // Update product stock locally first
-           if (hasAvailableStock !== product.in_stock) {
-             updatedProducts[i] = {
-               ...product,
-               in_stock: hasAvailableStock, // Update the in_stock property immediately
-             };
-   
-             setProducts(updatedProducts); // Update the state immediately for the UI
-   
-             // Then, send the updated data to the server
-             await updateProduct(product.documentId, updatedProductData);
-             // console.log(`Product ${product.name} stock status updated.`);
-           }
-         }
-   
-       } catch (error) {
-         setError("Failed to load products");
-       } finally {
-        //  setLoading(false);
-       }
-     };
-   
-     fetchProducts();
-   }, [selectedBrand]);
 
+        const updatedProducts = [...response.data.data];
+
+        for (let i = 0; i < updatedProducts.length; i++) {
+          const product = updatedProducts[i];
+
+          // Check if any size has available stock
+          const hasAvailableStock = product.sizes.some(
+            (size) => size.number_of_items > 0
+          );
+
+          // If any size has stock, mark the product as in stock
+          const updatedProductData = {
+            data: {
+              in_stock: hasAvailableStock,
+            },
+          };
+
+          // Update product stock locally first
+          if (hasAvailableStock !== product.in_stock) {
+            updatedProducts[i] = {
+              ...product,
+              in_stock: hasAvailableStock, // Update the in_stock property immediately
+            };
+
+            setProducts(updatedProducts); // Update the state immediately for the UI
+
+            // Then, send the updated data to the server
+            await updateProduct(product.documentId, updatedProductData);
+            // console.log(`Product ${product.name} stock status updated.`);
+          }
+        }
+      } catch (error) {
+        setError("Failed to load products");
+      } finally {
+        //  setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [selectedBrand]);
 
   const displayedProducts = limit ? products.slice(0, limit) : products;
 
-
   const handleProductDetails = (product) => {
     // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
-    const images = product.product_image.map(img => `${MEDIA_BASE_URL}${img.url}`);
+    const images = product.product_image.map(
+      (img) => `${MEDIA_BASE_URL}${img.url}`
+    );
 
     // console.log(sizes)
     setProductDetails({
@@ -125,12 +119,11 @@ const ProductList = ({ limit }) => {
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
       documentId: product.documentId,
-      description: product.description
+      description: product.description,
     });
 
     router.push("../../pages/productDetails");
   };
-
 
   // if (loading) {
   //   return <ActivityIndicator size="large" color="#0000ff" />;
@@ -139,7 +132,6 @@ const ProductList = ({ limit }) => {
   if (error) {
     return <Text>{error}</Text>;
   }
-
 
   const handleWishlistAdd = (product) => {
     const imageUrl = getImageUrl(product.product_image);
@@ -183,9 +175,9 @@ const ProductList = ({ limit }) => {
     };
 
     // Check if the product is already in the cart
-    const isProductInCart = useCartStore.getState().items.some(
-      (cartItem) => cartItem.id === product.id
-    );
+    const isProductInCart = useCartStore
+      .getState()
+      .items.some((cartItem) => cartItem.id === product.id);
 
     if (isProductInCart) {
       setPopupProductId(product.id); // Show popup for this product
@@ -203,14 +195,15 @@ const ProductList = ({ limit }) => {
     }, 2000);
   };
 
-
   return (
     <View style={styles.container}>
       {displayedProducts.map((product, index) => {
         const imageUrl = getImageUrl(product.product_image);
         // const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
         const isOutOfStock = !product.in_stock;
-        const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
+        const isInWishlist = wishlist.some(
+          (wishItem) => wishItem.id === product.id
+        );
         const isPopupVisible = popupProductId === product.id;
         return (
           <View key={index} style={styles.productCard}>
@@ -228,8 +221,13 @@ const ProductList = ({ limit }) => {
             )}
             <View style={styles.buttonContainer}>
               {/* Wishlist Button */}
-              <TouchableOpacity style={styles.wishlistButton} onPress={() => handleWishlistAdd(product)}>
-                <Text style={styles.heartIcon}>{isInWishlist ? '❤️' : '🤍'}</Text>
+              <TouchableOpacity
+                style={styles.wishlistButton}
+                onPress={() => handleWishlistAdd(product)}
+              >
+                <Text style={styles.heartIcon}>
+                  {isInWishlist ? "❤️" : "🤍"}
+                </Text>
               </TouchableOpacity>
             </View>
             <TouchableOpacity onPress={() => handleProductDetails(product)}>
@@ -286,14 +284,13 @@ const styles = StyleSheet.create({
   imageWrapper: {
     position: "relative",
     alignItems: "center", // Center image horizontally
-
   },
   productName: {
     color: "#ffffff",
     fontSize: 16, // Font size
     fontWeight: "bold",
     marginTop: 6, // Reduced margin for less height
-    textAlign: 'center',
+    textAlign: "center",
   },
   productdiscount: {
     color: "red",
@@ -307,7 +304,7 @@ const styles = StyleSheet.create({
     color: "#9CA3AF",
     fontSize: 12, // Font size
     marginTop: 2, // Reduced margin for less height
-    textAlign: 'center',
+    textAlign: "center",
   },
   productPrice: {
     color: "#ffffff",
@@ -355,11 +352,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   popup: {
-    position: 'absolute',
-    top: '50%',
-    left: '35%',
+    position: "absolute",
+    top: "50%",
+    left: "35%",
     transform: [{ translateX: -50 }, { translateY: -50 }],
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     padding: 12, // Padding for popup
     borderRadius: 8,
     zIndex: 100,
@@ -371,11 +368,11 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    width: '80%', // Adjust width as needed
+    width: "80%", // Adjust width as needed
   },
   popupText: {
-    color: '#fff',
-    textAlign: 'center',
+    color: "#fff",
+    textAlign: "center",
   },
   disabledButton: {
     backgroundColor: "#D3D3D3",

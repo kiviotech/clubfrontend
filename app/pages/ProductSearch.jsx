@@ -17,7 +17,7 @@ import useCartStore from "../../src/store/useCartStore";
 import useWishlistStore from "../../src/store/useWishlistStore";
 import { updateProduct } from "../../src/api/repositories/productRepository";
 
-const ProductSearch = ({ limit,searchTerm }) => {
+const ProductSearch = ({ limit, searchTerm }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,66 +39,68 @@ const ProductSearch = ({ limit,searchTerm }) => {
       try {
         const response = await getProducts();
         setProducts(response.data.data);
-  
+
         const updatedProducts = [...response.data.data];
-  
+
         for (let i = 0; i < updatedProducts.length; i++) {
           const product = updatedProducts[i];
-  
+
           // Check if any size has available stock
           const hasAvailableStock = product.sizes.some(
             (size) => size.number_of_items > 0
           );
-  
+
           // If any size has stock, mark the product as in stock
           const updatedProductData = {
             data: {
               in_stock: hasAvailableStock,
             },
           };
-  
+
           // Update product stock locally first
           if (hasAvailableStock !== product.in_stock) {
             updatedProducts[i] = {
               ...product,
               in_stock: hasAvailableStock, // Update the in_stock property immediately
             };
-  
+
             setProducts(updatedProducts); // Update the state immediately for the UI
-  
+
             // Then, send the updated data to the server
             await updateProduct(product.documentId, updatedProductData);
             // console.log(`Product ${product.name} stock status updated.`);
           }
         }
-  
       } catch (error) {
         setError("Failed to load products");
       } finally {
         // setLoading(false);
       }
     };
-  
+
     fetchProducts();
   }, [selectedBrand]);
-  
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const displayedProducts = limit ? filteredProducts.slice(0, limit) : filteredProducts;
+  const displayedProducts = limit
+    ? filteredProducts.slice(0, limit)
+    : filteredProducts;
   const getImageUrl = (images) => {
     if (Array.isArray(images) && images.length > 0) {
       return `${MEDIA_BASE_URL}${images[0].url}`; // Assuming each image has a `url` field
     }
     return null; // Fallback if no images
   };
-  
+
   const handleProductDetails = (product) => {
     // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
-    const images = product.product_image.map(img => `${MEDIA_BASE_URL}${img.url}`);
-  // console.log(sizes)
+    const images = product.product_image.map(
+      (img) => `${MEDIA_BASE_URL}${img.url}`
+    );
+    // console.log(sizes)
     setProductDetails({
       id: product.id,
       images: images,
@@ -106,10 +108,10 @@ const ProductSearch = ({ limit,searchTerm }) => {
       price: product.price,
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
-      documentId:product.documentId,
-      description:product.description
+      documentId: product.documentId,
+      description: product.description,
     });
-  
+
     router.push("../../pages/productDetails");
   };
 
@@ -120,7 +122,7 @@ const ProductSearch = ({ limit,searchTerm }) => {
   if (error) {
     return <Text style={styles.errorText}>{error}</Text>;
   }
-  
+
   const handleWishlistAdd = (product) => {
     const imageUrl = getImageUrl(product.product_image);
     const item = {
@@ -150,7 +152,7 @@ const ProductSearch = ({ limit,searchTerm }) => {
   };
 
   const handleCartAdd = (product) => {
-    const imageUrl =getImageUrl(product.product_image);
+    const imageUrl = getImageUrl(product.product_image);
     const sizeStock = product.sizes[1]?.number_of_items || 0;
     const item = {
       id: product.id,
@@ -159,13 +161,13 @@ const ProductSearch = ({ limit,searchTerm }) => {
       quantity: quantity,
       image: imageUrl,
       size: "S",
-      stockAvailable: sizeStock,  
+      stockAvailable: sizeStock,
     };
 
     // Check if the product is already in the cart
-    const isProductInCart = useCartStore.getState().items.some(
-      (cartItem) => cartItem.id === product.id
-    );
+    const isProductInCart = useCartStore
+      .getState()
+      .items.some((cartItem) => cartItem.id === product.id);
 
     if (isProductInCart) {
       setPopupProductId(product.id); // Show popup for this product
@@ -183,8 +185,6 @@ const ProductSearch = ({ limit,searchTerm }) => {
     }, 2000);
   };
 
-
-
   return (
     <ScrollView style={styles.scrollContainer}>
       <View style={styles.container}>
@@ -192,7 +192,9 @@ const ProductSearch = ({ limit,searchTerm }) => {
           // const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
           const imageUrl = getImageUrl(product.product_image);
           const isOutOfStock = !product.in_stock;
-          const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
+          const isInWishlist = wishlist.some(
+            (wishItem) => wishItem.id === product.id
+          );
           const isPopupVisible = popupProductId === product.id;
 
           return (
@@ -212,15 +214,21 @@ const ProductSearch = ({ limit,searchTerm }) => {
                   style={styles.wishlistButton}
                   onPress={() => handleWishlistAdd(product)}
                 >
-                  <Text style={styles.heartIcon}>{isInWishlist ? "❤️" : "🤍"}</Text>
+                  <Text style={styles.heartIcon}>
+                    {isInWishlist ? "❤️" : "🤍"}
+                  </Text>
                 </TouchableOpacity>
               </View>
               <TouchableOpacity onPress={() => handleProductDetails(product)}>
                 <View style={styles.imageWrapper}>
                   <Text style={styles.productName}>{product.name}</Text>
                   {/* <Text style={styles.productDiscount}>{product.discount}% discount</Text> */}
-                  <Text style={styles.productBrand}>{product.brand?.brand_name}</Text>
-                  <Text style={styles.productDescription}>{product.product_Details}</Text>
+                  <Text style={styles.productBrand}>
+                    {product.brand?.brand_name}
+                  </Text>
+                  <Text style={styles.productDescription}>
+                    {product.product_Details}
+                  </Text>
                   <Text style={styles.productPrice}>₹{product.price}</Text>
                   {/* {isOutOfStock && <Text style={styles.stockText}>Out of Stock</Text>} */}
                 </View>
@@ -275,7 +283,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginTop: 6,
-    textAlign: 'center',
+    textAlign: "center",
   },
   productDiscount: {
     color: "red",
@@ -289,7 +297,7 @@ const styles = StyleSheet.create({
     color: "#9CA3AF",
     fontSize: 12,
     marginTop: 2,
-    textAlign: 'center',
+    textAlign: "center",
   },
   productPrice: {
     color: "#ffffff",

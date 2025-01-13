@@ -1,27 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  Image,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+} from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 import logo from "../../assets/logo.png";
-import { useRouter,useNavigation } from 'expo-router';
-import { useLocalSearchParams } from 'expo-router';
-import NewArrival from '../../components/productList/NewArrival';
-import Slider from "../pages/slider"
-import Category from './category';
-import ProductList from '../../components/productList';
-import Brand_page from './brand_page';
+import { useRouter, useNavigation } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
+import NewArrival from "../../components/productList/NewArrival";
+import Slider from "../pages/slider";
+import Category from "./category";
+import ProductList from "../../components/productList";
+import Brand_page from "./brand_page";
 import { useBrandStore } from "../../src/store/brandStore";
-import { getProducts } from '../../src/api/repositories/productRepository';
-import { MEDIA_BASE_URL } from '../../src/api/apiClient';
-import useProductStore from '../../src/store/useProductStore';
-import useCartStore from '../../src/store/useCartStore';
-import useWishlistStore from '../../src/store/useWishlistStore';
-import Header from './header';
+import { getProducts } from "../../src/api/repositories/productRepository";
+import { MEDIA_BASE_URL } from "../../src/api/apiClient";
+import useProductStore from "../../src/store/useProductStore";
+import useCartStore from "../../src/store/useCartStore";
+import useWishlistStore from "../../src/store/useWishlistStore";
+import Header from "./header";
 import { Ionicons } from "@expo/vector-icons";
-import { updateProduct } from '../../src/api/repositories/productRepository';
-import Loading from './loading';
+import { updateProduct } from "../../src/api/repositories/productRepository";
+import Loading from "./loading";
 
 const brand_info = ({ limit }) => {
-  const { brandName, brandImage, brandDescription, brandPoster } = useLocalSearchParams();
+  const { brandName, brandImage, brandDescription, brandPoster } =
+    useLocalSearchParams();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,73 +46,74 @@ const brand_info = ({ limit }) => {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupProductId, setPopupProductId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
- const navigation = useNavigation();
-
+  const navigation = useNavigation();
 
   // console.log("brand poster is", brandDescription)
 
   useEffect(() => {
-      const fetchProducts = async () => {
-        try {
-          const response = await getProducts();
-          setProducts(response.data.data);
-    
-          const updatedProducts = [...response.data.data];
-    
-          for (let i = 0; i < updatedProducts.length; i++) {
-            const product = updatedProducts[i];
-    
-            // Check if any size has available stock
-            const hasAvailableStock = product.sizes.some(
-              (size) => size.number_of_items > 0
-            );
-    
-            // If any size has stock, mark the product as in stock
-            const updatedProductData = {
-              data: {
-                in_stock: hasAvailableStock,
-              },
-            };
-    
-            // Update product stock locally first
-            if (hasAvailableStock !== product.in_stock) {
-              updatedProducts[i] = {
-                ...product,
-                in_stock: hasAvailableStock, // Update the in_stock property immediately
-              };
-    
-              setProducts(updatedProducts); // Update the state immediately for the UI
-    
-              // Then, send the updated data to the server
-              await updateProduct(product.documentId, updatedProductData);
-              // console.log(`Product ${product.name} stock status updated.`);
-            }
-          }
-    
-        } catch (error) {
-          setError("Failed to load products");
-        } finally {
-          // setLoading(false);
-        }
-      };
-    
-      fetchProducts();
-    }, [selectedBrand]);
+    const fetchProducts = async () => {
+      try {
+        const response = await getProducts();
+        setProducts(response.data.data);
 
+        const updatedProducts = [...response.data.data];
+
+        for (let i = 0; i < updatedProducts.length; i++) {
+          const product = updatedProducts[i];
+
+          // Check if any size has available stock
+          const hasAvailableStock = product.sizes.some(
+            (size) => size.number_of_items > 0
+          );
+
+          // If any size has stock, mark the product as in stock
+          const updatedProductData = {
+            data: {
+              in_stock: hasAvailableStock,
+            },
+          };
+
+          // Update product stock locally first
+          if (hasAvailableStock !== product.in_stock) {
+            updatedProducts[i] = {
+              ...product,
+              in_stock: hasAvailableStock, // Update the in_stock property immediately
+            };
+
+            setProducts(updatedProducts); // Update the state immediately for the UI
+
+            // Then, send the updated data to the server
+            await updateProduct(product.documentId, updatedProductData);
+            // console.log(`Product ${product.name} stock status updated.`);
+          }
+        }
+      } catch (error) {
+        setError("Failed to load products");
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [selectedBrand]);
 
   const filteredProducts = selectedBrand
     ? products
-      .filter((product) => product.brand?.brand_name === selectedBrand) // Filter by selectedBrand
-      .filter((product) =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) // Case-insensitive search
-      )
-    : products.filter((product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) // Case-insensitive search
-    );
+        .filter((product) => product.brand?.brand_name === selectedBrand) // Filter by selectedBrand
+        .filter(
+          (product) =>
+            product.name.toLowerCase().includes(searchQuery.toLowerCase()) // Case-insensitive search
+        )
+    : products.filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchQuery.toLowerCase()) // Case-insensitive search
+      );
 
   // console.log('filtered', selectedBrand)
 
-  const displayedProducts = limit ? filteredProducts.slice(0, limit) : filteredProducts;
+  const displayedProducts = limit
+    ? filteredProducts.slice(0, limit)
+    : filteredProducts;
   const getImageUrl = (images) => {
     if (Array.isArray(images) && images.length > 0) {
       return `${MEDIA_BASE_URL}${images[0].url}`; // Assuming each image has a `url` field
@@ -111,7 +123,9 @@ const brand_info = ({ limit }) => {
 
   const handleProductDetails = (product) => {
     // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
-    const images = product.product_image.map(img => `${MEDIA_BASE_URL}${img.url}`);
+    const images = product.product_image.map(
+      (img) => `${MEDIA_BASE_URL}${img.url}`
+    );
     // console.log(sizes)
     setProductDetails({
       id: product.id,
@@ -121,7 +135,7 @@ const brand_info = ({ limit }) => {
       in_stock: product.in_stock,
       sizes: product.sizes, // Include sizes in the details
       documentId: product.documentId,
-      description: product.description
+      description: product.description,
     });
 
     router.push("../../pages/productDetails");
@@ -134,7 +148,6 @@ const brand_info = ({ limit }) => {
   if (error) {
     return <Text>{error}</Text>;
   }
-
 
   const handleWishlistAdd = (product) => {
     const imageUrl = getImageUrl(product.product_image);
@@ -178,9 +191,9 @@ const brand_info = ({ limit }) => {
     };
 
     // Check if the product is already in the cart
-    const isProductInCart = useCartStore.getState().items.some(
-      (cartItem) => cartItem.id === product.id
-    );
+    const isProductInCart = useCartStore
+      .getState()
+      .items.some((cartItem) => cartItem.id === product.id);
 
     if (isProductInCart) {
       setPopupProductId(product.id); // Show popup for this product
@@ -216,16 +229,19 @@ const brand_info = ({ limit }) => {
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.headerContainer}>
-          <TouchableOpacity onPress={() => {
-      if (navigation.canGoBack()) {
-        navigation.goBack(); // Go to the previous screen if available
-      } else {
-        handleHome() // Navigate to the correct route
-      }
-    }} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => {
+              if (navigation.canGoBack()) {
+                navigation.goBack(); // Go to the previous screen if available
+              } else {
+                handleHome(); // Navigate to the correct route
+              }
+            }}
+            style={styles.backButton}
+          >
             <Ionicons name="arrow-back" color="white" size={20} />
           </TouchableOpacity>
-          <View style={{ width: '95%'}}>
+          <View style={{ width: "95%" }}>
             <Header />
           </View>
         </View>
@@ -243,15 +259,9 @@ const brand_info = ({ limit }) => {
 
         {/* Main image with logo overlay */}
         <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: brandPoster }}
-            style={styles.mainImage}
-          />
+          <Image source={{ uri: brandPoster }} style={styles.mainImage} />
           <View style={styles.logoContainer}>
-            <Image
-              source={{ uri: brandImage }}
-              style={styles.logoImage}
-            />
+            <Image source={{ uri: brandImage }} style={styles.logoImage} />
           </View>
         </View>
 
@@ -282,7 +292,9 @@ const brand_info = ({ limit }) => {
                 const imageUrl = getImageUrl(product.product_image);
                 // console.log(imageUrl)
                 const isOutOfStock = !product.in_stock;
-                const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
+                const isInWishlist = wishlist.some(
+                  (wishItem) => wishItem.id === product.id
+                );
                 const isPopupVisible = popupProductId === product.id;
                 return (
                   <View key={index} style={styles.productCard}>
@@ -300,11 +312,18 @@ const brand_info = ({ limit }) => {
                     )}
                     <View style={styles.buttonContainer}>
                       {/* Wishlist Button */}
-                      <TouchableOpacity style={styles.wishlistButton} onPress={() => handleWishlistAdd(product)}>
-                        <Text style={styles.heartIcon}>{isInWishlist ? '❤️' : '🤍'}</Text>
+                      <TouchableOpacity
+                        style={styles.wishlistButton}
+                        onPress={() => handleWishlistAdd(product)}
+                      >
+                        <Text style={styles.heartIcon}>
+                          {isInWishlist ? "❤️" : "🤍"}
+                        </Text>
                       </TouchableOpacity>
                     </View>
-                    <TouchableOpacity onPress={() => handleProductDetails(product)}>
+                    <TouchableOpacity
+                      onPress={() => handleProductDetails(product)}
+                    >
                       <View style={styles.imageWrapper}>
                         <Text style={styles.productName}>{product.name}</Text>
                         {/* <Text style={styles.productdiscount}>{product.discount}% discount</Text> */}
@@ -314,7 +333,9 @@ const brand_info = ({ limit }) => {
                         <Text style={styles.productDescription}>
                           {product.product_Details}
                         </Text>
-                        <Text style={styles.productPrice}>₹{product.price}</Text>
+                        <Text style={styles.productPrice}>
+                          ₹{product.price}
+                        </Text>
                         {/* {isOutOfStock && <Text style={styles.stockText}></Text>} */}
                       </View>
                     </TouchableOpacity>
@@ -355,23 +376,22 @@ const brand_info = ({ limit }) => {
         <View>
           <Brand_page />
         </View>
-
       </View>
     </ScrollView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     padding: 10,
     // borderRadius: 12,
   },
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#161B1B',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#161B1B",
     borderRadius: 25,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -380,8 +400,8 @@ const styles = StyleSheet.create({
     height: 50,
   },
   headerContainer: {
-    flexDirection: 'row', // Align items horizontally
-    alignItems: 'center', // Vertically center align items
+    flexDirection: "row", // Align items horizontally
+    alignItems: "center", // Vertically center align items
     // justifyContent: 'space-between', // Adjust spacing; use 'space-between' if needed
     paddingHorizontal: 10, // Add some padding on the sides
     marginTop: 10, // Add top margin if required
@@ -392,35 +412,33 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     marginLeft: 8,
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
     flex: 1,
   },
   imageContainer: {
-    position: 'relative',
+    position: "relative",
     marginBottom: 16,
   },
   mainImage: {
-    width: '100%',
+    width: "100%",
     height: 198,
     borderRadius: 8,
   },
   logoContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: -25,
     left: 16,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 35,
     padding: 2,
-
   },
   logoImage: {
     width: 70,
     height: 70,
     borderRadius: 35,
     borderWidth: 2, // Adjust the width as needed
-    borderColor: '#8FFA09',
-
+    borderColor: "#8FFA09",
   },
   brandInfoContainer: {
     // backgroundColor: '#222222',
@@ -429,47 +447,47 @@ const styles = StyleSheet.create({
     marginTop: 24, // Adjusted to give space for the overlaid logo
   },
   brandName: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   brandDescription: {
-    color: '#B3B3B3',
+    color: "#B3B3B3",
     fontSize: 14,
     marginTop: 4,
   },
   shareIcon: {
-    position: 'absolute',
+    position: "absolute",
     right: 16,
     top: 16,
   },
   followButton: {
-    backgroundColor: '#8FFA09',
+    backgroundColor: "#8FFA09",
     width: 110,
     height: 30,
     borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: 16,
     marginLeft: 15,
     marginBottom: 20,
   },
   followButtonText: {
-    color: '#111111',
+    color: "#111111",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   popularProductsTitle: {
     fontSize: 24,
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     marginVertical: 8,
     paddingLeft: 10,
     marginBottom: 20,
-    marginTop: 30
+    marginTop: 30,
   },
   slider: {
-    marginTop: 30
+    marginTop: 30,
   },
 
   // area:{
@@ -504,7 +522,7 @@ const styles = StyleSheet.create({
     fontSize: 16, // Font size
     fontWeight: "bold",
     marginTop: 6, // Reduced margin for less height
-    textAlign: 'center',
+    textAlign: "center",
   },
   productdiscount: {
     color: "red",
@@ -518,7 +536,7 @@ const styles = StyleSheet.create({
     color: "#9CA3AF",
     fontSize: 12, // Font size
     marginTop: 2, // Reduced margin for less height
-    textAlign: 'center',
+    textAlign: "center",
   },
   productPrice: {
     color: "#ffffff",
@@ -566,11 +584,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   popup: {
-    position: 'absolute',
-    top: '10%',
-    left: '50%',
+    position: "absolute",
+    top: "10%",
+    left: "50%",
     transform: [{ translateX: -50 }],
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     padding: 12, // Padding for popup
     borderRadius: 8,
     zIndex: 100,
@@ -584,8 +602,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   popupText: {
-    color: '#fff',
-    textAlign: 'center',
+    color: "#fff",
+    textAlign: "center",
   },
   disabledButton: {
     backgroundColor: "#D3D3D3",
@@ -593,5 +611,4 @@ const styles = StyleSheet.create({
   },
 });
 
-
-export default brand_info
+export default brand_info;

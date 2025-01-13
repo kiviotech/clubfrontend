@@ -225,17 +225,11 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
 
 
   const handleImagePress = async (index) => {
-    if (index === 0) {
-      // const url = "https://new.express.adobe.com/webpage/cv645dfNQJYKt";
-      // try {
-      //   await Linking.openURL(url);
-      // } catch (error) {
-      //   console.error("Failed to open URL:", error);
-      // }
-      // router.push("/pages/request-design");
+    if (index === 2) {
+      router.push("/pages/GalleryPage");
     } else if (index === 4) {
       router.push("/pages/request-design");
-    } else if (index === 1 || index === 2 || index === 3) {
+    } else if (index === 1 ||index === 3) {
       const brandId = "lagbzfc1r1ltzf7pobf893q4";
       if (brandId) {
         try {
