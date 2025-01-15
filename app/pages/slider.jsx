@@ -225,11 +225,11 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
 
 
   const handleImagePress = async (index) => {
-    if (index === 2) {
+    if (index === 5) {
       router.push("/pages/GalleryPage");
-    } else if (index === 4) {
+    } else if (index === 3) {
       router.push("/pages/request-design");
-    } else if (index === 1 ||index === 3) {
+    } else if (index === 1 || index === 2) {
       const brandId = "lagbzfc1r1ltzf7pobf893q4";
       if (brandId) {
         try {
@@ -259,7 +259,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
           // console.error("Failed to fetch brand details:", error);
         }
       }
-    }else if(index === 5){
+    }else if(index === 4){
       const brandId = "o3palnwfu9qs18guh09a1it1";
       if (brandId) {
         try {
