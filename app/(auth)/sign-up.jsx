@@ -131,7 +131,7 @@ const SignUp = () => {
       
       if (error.response && error.response.status === 400) {
        
-          setEmailError("Email already exists. Please use a different email.");
+          setEmailError("Email or username already exists. Please use a different email.");
         
           // console.error("Signup error:", error);
           // Alert.alert("Error", "Something went wrong. Please try again later.");

@@ -89,7 +89,7 @@ const Measurement = () => {
           // Update the uploads store (you are maintaining both URIs and IDs)
           setUploads(uploadedImageIds, selectedImages);
   
-          setSuccessMessage("Profile images uploaded successfully!");
+          setSuccessMessage("images uploaded successfully!");
           Alert.alert("Upload Successful", "Profile images uploaded successfully!");
         } else {
           throw new Error("Failed to retrieve uploaded image IDs.");

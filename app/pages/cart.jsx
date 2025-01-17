@@ -8,7 +8,7 @@ import {
   Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
+import { useNavigation,useRouter } from 'expo-router';
 import CartList from "../../components/CartList";
 import logo from "../../assets/logo.png";
 import { Ionicons } from "@expo/vector-icons";
@@ -22,7 +22,7 @@ const Cart = () => {
   const cartItems = useCartStore((state) => state.items);
   const subtotal = useCartStore((state) => state.subtotal);
   const [deliveryCharge, setDeliveryCharge] = useState(50); // Default to 50
-
+ const navigation = useNavigation();
   // console.log(cartItems[0].stockAvailable)
 
   // useEffect(() => {
@@ -54,10 +54,20 @@ const Cart = () => {
     });
   };
 
+  const handleHome = () => {
+    router.push("/home");
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack}>
+        <TouchableOpacity onPress={() => {
+              if (navigation.canGoBack()) {
+                navigation.goBack(); // Go to the previous screen if available
+              } else {
+                handleHome() // Navigate to the correct route
+              }
+            }} style={styles.backButton}>
           <Ionicons name="arrow-back" color="white" size={30} />
         </TouchableOpacity>
         <Image style={styles.logo} source={logo} />
