@@ -30,26 +30,13 @@ const BrandPage = () => {
 
   
   const handleInfo = (brand) => {
-    // Check if brand_poster is available and use fallback if missing
-    const brandPosterUrl = brand.brand_poster?.[0]?.url
-      ? `${MEDIA_BASE_URL}${brand.brand_poster[0].url}`
-      : 'https://example.com/fallback-image.jpg';  // Fallback URL if brand poster is missing
   
-    // Log the URL being passed to ensure it's correct
-    // console.log("Passing brandPoster:", brandPosterUrl);
-  
-    // Set selected brand
     setSelectedBrand(brand?.brand_name);
   
-    // Navigate to the brand_info page with the brand details
     router.push({
       pathname: "/pages/brand_info",
       params: {
-        brandName: brand?.brand_name,
-        brandId: brand.id,
-        brandImage: `${MEDIA_BASE_URL}${brand.brand_logo.url}`,
-        brandDescription: brand.description,
-        brandPoster: brandPosterUrl, // Pass the constructed URL
+        documentId:brand?.documentId,
       },
     });
   };

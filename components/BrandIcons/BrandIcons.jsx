@@ -23,7 +23,7 @@ const BrandIcons = () => {
     const fetchBrands = async () => {
       try {
         const response = await getBrands(); 
-        setBrands(response.data.data);      
+        setBrands(response.data.data);     
       } catch (error) {
         setError("Failed to load brands"); 
       } finally {
@@ -35,19 +35,13 @@ const BrandIcons = () => {
   }, []);
 
   const handleIconPress = (brand) => {
-     const brandPosterUrl = brand.brand_poster?.[0]?.url
-          ? `${MEDIA_BASE_URL}${brand.brand_poster[0].url}`
-          : 'https://example.com/fallback-image.jpg';
+
     
     setSelectedBrand(brand?.brand_name);
     router.push({
       pathname: "/pages/brand_info",
       params: {
-        brandName: brand?.brand_name,
-        brandId: brand.id,
-        brandImage: `${MEDIA_BASE_URL}${brand.brand_logo.url}`,
-        brandDescription: brand.description,
-        brandPoster: brandPosterUrl,
+        documentId: brand.documentId,
       },
     });
   };

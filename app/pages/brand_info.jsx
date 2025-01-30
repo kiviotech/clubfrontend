@@ -11,12 +11,10 @@ import {
   SafeAreaView,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import logo from "../../assets/logo.png";
 import { useRouter, useNavigation } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 import NewArrival from "../../components/productList/NewArrival";
 import Slider from "../pages/slider";
-import Category from "./category";
 import ProductList from "../../components/productList";
 import Brand_page from "./brand_page";
 import { useBrandStore } from "../../src/store/brandStore";
@@ -29,10 +27,10 @@ import Header from "./header";
 import { Ionicons } from "@expo/vector-icons";
 import { updateProduct } from "../../src/api/repositories/productRepository";
 import Loading from "./loading";
+import { getBrandById } from "../../src/api/repositories/brandRepository";
 
 const brand_info = ({ limit }) => {
-  const { brandName, brandImage, brandDescription, brandPoster } =
-    useLocalSearchParams();
+  const { documentId } =useLocalSearchParams();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -47,8 +45,38 @@ const brand_info = ({ limit }) => {
   const [popupProductId, setPopupProductId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const navigation = useNavigation();
+  const [brand, setBrand] = useState(null);
 
-  // console.log("brand poster is", brandDescription)
+  // console.log(documentId)
+  
+  useEffect(() => {
+    const fetchBrand = async () => {
+      try {
+        const response = await getBrandById(documentId); // Fetch brand details
+        const brandData = response.data.data;
+  
+        if (brandData) {
+          setBrand({
+            name: brandData.brand_name,
+            poster: `${MEDIA_BASE_URL}${brandData.brand_poster?.[0]?.url || ""}`,
+            description: brandData.description,
+            logo: `${MEDIA_BASE_URL}${brandData.brand_logo?.url || ""}`,
+          });
+        }
+      } catch (error) {
+        setError("Failed to load brand details");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    if (documentId) fetchBrand();
+  }, [documentId]);
+  
+
+
+
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -259,16 +287,16 @@ const brand_info = ({ limit }) => {
 
         {/* Main image with logo overlay */}
         <View style={styles.imageContainer}>
-          <Image source={{ uri: brandPoster }} style={styles.mainImage} />
+          <Image source={{ uri: brand?.poster }} style={styles.mainImage} />
           <View style={styles.logoContainer}>
-            <Image source={{ uri: brandImage }} style={styles.logoImage} />
+            <Image source={{ uri: brand?.logo }} style={styles.logoImage} />
           </View>
         </View>
 
         {/* Brand info */}
         <View style={styles.brandInfoContainer}>
-          <Text style={styles.brandName}>{brandName}</Text>
-          <Text style={styles.brandDescription}>{brandDescription}</Text>
+          <Text style={styles.brandName}>{brand?.name}</Text>
+          <Text style={styles.brandDescription}>{brand?.description}</Text>
           {/* <FontAwesome name="share" size={24} color="#8FFA09" style={styles.shareIcon} /> */}
         </View>
 
