@@ -26,18 +26,18 @@ const Measurement = () => {
       setImages(uploads.imageURI);
     }
   }, [uploads.imageURI]);
-  
+
 
   const pickImage = async () => {
     setError(null);
-  
+
     // Request permission to access media library
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       alert("Sorry, we need camera roll permissions to make this work!");
       return;
     }
-  
+
     // Launch the image picker
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -46,18 +46,18 @@ const Measurement = () => {
       quality: 1,
       allowsMultipleSelection: true,
     });
-  
+
     if (!result.canceled) {
       // Get URIs of the selected images
       const selectedImages = result.assets.map((asset) => asset.uri);
-  
+
       setImages((prevImages) => [...prevImages, ...selectedImages]); // Accumulate selected images URIs
-  
+      setError(null);
       try {
         setUploading(true);
         setSuccessMessage(""); // Clear success message before starting upload
-      setError(null);
-  
+        setError(null);
+
         const formData = new FormData();
         // Upload images as blobs
         for (const uri of selectedImages) {
@@ -66,7 +66,7 @@ const Measurement = () => {
         }
 
         setSuccessMessage("Uploading...");
-  
+
         // Make API request to upload images
         const uploadResponse = await axios.post(
           `${BASE_URL}/upload`,
@@ -79,16 +79,16 @@ const Measurement = () => {
             },
           }
         );
-  
+
         // Get image IDs from the server response
         const uploadedImageIds = uploadResponse.data.map((image) => image.id);
         if (uploadedImageIds) {
           // Merge the newly uploaded image IDs with the existing ones
           setProfileImageId((prevIds) => [...(prevIds || []), ...uploadedImageIds]);
-  
+
           // Update the uploads store (you are maintaining both URIs and IDs)
           setUploads(uploadedImageIds, selectedImages);
-  
+
           setSuccessMessage("images uploaded successfully!");
           Alert.alert("Upload Successful", "Profile images uploaded successfully!");
         } else {
@@ -103,28 +103,33 @@ const Measurement = () => {
       }
     }
   };
-  
-  
+
+
 
   const handleNextSection = () => {
-    if (!uploads.imageId) {
+    if (images.length === 0) {
       setError("One image should be uploaded.");
+      setSuccessMessage(""); // Clear success message if there's an error
     } else {
-      setError(null);
+      setError(null); // Clear error if images are uploaded
       router.push("../pages/review");
     }
   };
 
+
   const removeImage = (index) => {
     const newImages = [...images];
     newImages.splice(index, 1);
-    setImages(newImages); // Remove from displayed images
-  
+    setImages(newImages);
+
     const newUploads = { ...uploads };
-    newUploads.imageURI = newImages; // Update the uploads state with new image URIs
-    setUploads(newUploads); // Optionally, update `uploads` store if necessary
+    newUploads.imageURI = newImages;
+    setUploads(newUploads);
+
+    if (newImages.length === 0) {
+      setSuccessMessage(""); // Clear success message when all images are removed
+    }
   };
-  
 
   //  const handleNextSection = () => {
   //    router.push("../pages/review");
@@ -179,8 +184,9 @@ const Measurement = () => {
             />
           )}
 
-          {successMessage && <Text style={styles.successMessage}>{successMessage}</Text>}
-          {/* {error && <Text style={styles.errorText}>{error}</Text>} */}
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          {!error && successMessage ? <Text style={styles.successMessage}>{successMessage}</Text> : null}
+
         </View>
 
         {/* Buttons Section */}

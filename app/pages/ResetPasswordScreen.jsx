@@ -85,7 +85,7 @@ const ResetPasswordScreen = () => {
             style={styles.eyeIcon}
             onPress={() => setShowCurrentPassword(!showCurrentPassword)}
           >
-            <Ionicons name={showCurrentPassword ? "eye-off" : "eye"} color="white" size={24} />
+            <Ionicons name={showCurrentPassword ? "eye" : "eye-off"} color="white" size={24} />
           </TouchableOpacity>
         </View>
         {errors.currentPassword && <Text style={styles.errorText}>{errors.currentPassword}</Text>}
@@ -104,7 +104,7 @@ const ResetPasswordScreen = () => {
             style={styles.eyeIcon}
             onPress={() => setShowNewPassword(!showNewPassword)}
           >
-            <Ionicons name={showNewPassword ? "eye-off" : "eye"} color="white" size={24} />
+            <Ionicons name={showNewPassword ? "eye" : "eye-off"} color="white" size={24} />
           </TouchableOpacity>
         </View>
         {errors.newPassword && <Text style={styles.errorText}>{errors.newPassword}</Text>}
@@ -123,7 +123,7 @@ const ResetPasswordScreen = () => {
             style={styles.eyeIcon}
             onPress={() => setShowConfirmPassword(!showConfirmPassword)}
           >
-            <Ionicons name={showConfirmPassword ? "eye-off" : "eye"} color="white" size={24} />
+            <Ionicons name={showConfirmPassword ? "eye" : "eye-off"} color="white" size={24} />
           </TouchableOpacity>
         </View>
         {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}

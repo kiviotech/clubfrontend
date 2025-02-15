@@ -247,10 +247,17 @@ const measurement = () => {
     router.push("/(tabs)/home");
   };
 
-  const handleMeasurementsChange = (key, value) => {
-    // console.log(`${key}:`, value);
+   const handleMeasurementsChange = (key, value) => {
     setMeasurements({ [key]: value }); // Update global state
+
+    // Clear validation error when user starts typing
+    setValidationErrors((prevErrors) => {
+      const newErrors = { ...prevErrors };
+      delete newErrors[key];
+      return newErrors;
+    });
   };
+
 
 
   const handleSizeSelection = (size) => {
@@ -260,10 +267,35 @@ const measurement = () => {
 
   const validateFields = () => {
     const errors = {};
-    if (!measurements.size) errors.size = 'Please select a size.';
-    if (!measurements.specialInstructions) errors.specialInstructions = "Special instructions are required.";
+    const specialCharRegex = /^[a-zA-Z0-9 ]*$/; // Only letters, numbers, and spaces
+  
+    if (!measurements.size) errors.size = "Please select a size.";
+  
+    // Validate special instructions
+    if (!measurements.specialInstructions) {
+      errors.specialInstructions = "Special instructions are required.";
+    } else if (!specialCharRegex.test(measurements.specialInstructions)) {
+      errors.specialInstructions = "Special instructions should not contain special characters.";
+    }
+  
+    if (selectedSize === "Custom Size") {
+      // Validate Chest measurement
+      if (!measurements.chest) {
+        errors.chest = "Chest measurement is required.";
+      } else if (!specialCharRegex.test(measurements.chest)) {
+        errors.chest = "Chest measurement should not contain special characters.";
+      }
+  
+      // Validate Waist measurement
+      if (!measurements.waist) {
+        errors.waist = "Waist measurement is required.";
+      } else if (!specialCharRegex.test(measurements.waist)) {
+        errors.waist = "Waist measurement should not contain special characters.";
+      }
+    }
     return errors;
   };
+  
 
 
   return (
@@ -309,6 +341,7 @@ const measurement = () => {
                   value={measurements.chest}
                   onChangeText={(value) => handleMeasurementsChange('chest', value)}
                 />
+                 {validationErrors.chest && <Text style={styles.errorText}>{validationErrors.chest}</Text>}
                 <TextInput
                   style={styles.input}
                   placeholder="Waist measurement"
@@ -316,12 +349,11 @@ const measurement = () => {
                   value={measurements.waist}
                   onChangeText={(value) => handleMeasurementsChange('waist', value)}
                 />
+                 {validationErrors.waist && <Text style={styles.errorText}>{validationErrors.waist}</Text>}
               </View>
             )}
 
-            {validationErrors.specialInstructions && (
-              <Text style={styles.errorText}>{validationErrors.size}</Text>
-            )}
+           
           </View>
 
           <TextInput

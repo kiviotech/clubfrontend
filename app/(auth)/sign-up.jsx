@@ -237,7 +237,7 @@ const SignUp = () => {
         <Text style={{ textAlign: "center", fontWeight: "bold", color: "black" }}>Create Account</Text>
       </TouchableOpacity>
 
-      <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center", marginTop: 20 }}>
+      {/* <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center", marginTop: 20 }}>
         <Text style={{ color: "white", marginHorizontal: 8 }}>I agree to</Text>
         <TouchableOpacity >
           <Text style={{ color: "#8FFA09" }}>Terms of Use</Text>
@@ -246,7 +246,7 @@ const SignUp = () => {
         <TouchableOpacity>
           <Text style={{ color: "#8FFA09" }}>Privacy Policy</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* <SocialLoginButtons /> */}
     </SafeAreaView>

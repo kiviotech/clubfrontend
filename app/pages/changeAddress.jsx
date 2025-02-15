@@ -45,19 +45,25 @@ const ChangeAddress = () => {
         fetchShippingInfos();
     }, [userId]);
 
+    
+
     const handleAddOrUpdateAddress = async () => {
         setErrors({ fullName: '', address: '', state: '', pincode: '', phoneNo: '' });
 
         let valid = true;
         const errorMessages = {};
 
-        if (!fullName) {
+        if (!fullName.trim()) {
             valid = false;
             errorMessages.fullName = "Name is required";
         } else if (!/^[a-zA-Z\s]+$/.test(fullName)) {
             valid = false;
             errorMessages.fullName = "Name should contain only alphabets and spaces";
+        } else if (/^\s+$/.test(fullName)) {
+            valid = false;
+            errorMessages.fullName = "Name cannot contain only spaces";
         }
+        
 
         // Validate address (alphabets, numbers, spaces, and some punctuation allowed)
         if (!address) {
@@ -77,14 +83,14 @@ const ChangeAddress = () => {
             errorMessages.state = "State should contain only alphabets and spaces";
         }
 
-        if (!pincode || pincode.length !== 6) {
+        if (!/^\d{6}$/.test(pincode)) {
             valid = false;
-            errorMessages.pincode = "Pincode should be 6 digits";
+            errorMessages.pincode = "Pincode should be exactly 6 digits and contain only numbers";
         }
-
-        if (!phoneNo || phoneNo.length !== 10) {
+        
+        if (!/^\d{10}$/.test(phoneNo)) {
             valid = false;
-            errorMessages.phoneNo = "Phone number should be 10 digits";
+            errorMessages.phoneNo = "Phone number should be exactly 10 digits and contain only numbers";
         }
 
         if (!valid) {
@@ -185,7 +191,10 @@ const ChangeAddress = () => {
                 placeholder="Enter your name"
                 placeholderTextColor="#AAAAAA"
                 value={fullName}
-                onChangeText={setFullName}
+                onChangeText={(text) => {
+                    setFullName(text);
+                    setErrors((prevErrors) => ({ ...prevErrors, fullName: "" }));
+                }}
             />
             {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
 
@@ -196,7 +205,10 @@ const ChangeAddress = () => {
                 placeholder="Enter your address"
                 placeholderTextColor="#AAAAAA"
                 value={address}
-                onChangeText={setAddress}
+                onChangeText={(text) => {
+                    setAddress(text);
+                    setErrors((prevErrors) => ({ ...prevErrors, address: "" }));
+                }}
                 multiline={true}
             />
             {errors.address && <Text style={styles.errorText}>{errors.address}</Text>}
@@ -210,7 +222,10 @@ const ChangeAddress = () => {
                         placeholder="Enter state"
                         placeholderTextColor="#AAAAAA"
                         value={state}
-                        onChangeText={setState}
+                        onChangeText={(text) => {
+                            setState(text);
+                            setErrors((prevErrors) => ({ ...prevErrors, state: "" }));
+                        }}
                     />
                     {errors.state && <Text style={styles.errorText}>{errors.state}</Text>}
                 </View>
@@ -221,7 +236,10 @@ const ChangeAddress = () => {
                         placeholder="Enter pincode"
                         placeholderTextColor="#AAAAAA"
                         value={pincode}
-                        onChangeText={setPincode}
+                        onChangeText={(text) => {
+                            setPincode(text);
+                            setErrors((prevErrors) => ({ ...prevErrors, pincode: "" }));
+                        }}
                         keyboardType="numeric"
                     />
                     {errors.pincode && <Text style={styles.errorText}>{errors.pincode}</Text>}
@@ -235,7 +253,10 @@ const ChangeAddress = () => {
                 placeholder="Enter phone number"
                 placeholderTextColor="#AAAAAA"
                 value={phoneNo}
-                onChangeText={setPhoneNo}
+                onChangeText={(text) => {
+                    setPhoneNo(text);
+                    setErrors((prevErrors) => ({ ...prevErrors, phoneNo: "" }));
+                }}
                 keyboardType="phone-pad"
             />
             {errors.phoneNo && <Text style={styles.errorText}>{errors.phoneNo}</Text>}

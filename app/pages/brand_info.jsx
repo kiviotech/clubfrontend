@@ -77,7 +77,6 @@ const brand_info = ({ limit }) => {
 
 
 
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -289,7 +288,7 @@ const brand_info = ({ limit }) => {
         <View style={styles.imageContainer}>
           <Image source={{ uri: brand?.poster }} style={styles.mainImage} />
           <View style={styles.logoContainer}>
-            <Image source={{ uri: brand?.logo }} style={styles.logoImage} />
+            <Image source={{ uri: brand?.logo }} style={styles.logoImage} resizeMode="contain" />
           </View>
         </View>
 
@@ -457,13 +456,15 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: -25,
     left: 16,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#000",
     borderRadius: 35,
     padding: 2,
-  },
-  logoImage: {
     width: 70,
     height: 70,
+  },
+  logoImage: {
+    width: "100%",
+    height:  "100%",
     borderRadius: 35,
     borderWidth: 2, // Adjust the width as needed
     borderColor: "#8FFA09",

@@ -31,6 +31,8 @@ const ProductDetails = () => {
   const { images, name, price, products, in_stock, size } = params;
   const allProducts = products ? JSON.parse(products) : [];
 
+ 
+
   const imagesArray = Array.isArray(productDetails.images)
     ? productDetails.images.map((img) => {
       // If the image path already contains the full URL, use it as is
@@ -180,6 +182,9 @@ const ProductDetails = () => {
     router.push("/home");
   };
 
+
+
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>

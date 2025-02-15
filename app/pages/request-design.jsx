@@ -10,22 +10,6 @@ import useFormStore from "../../src/store/useFormStore";
 import { Ionicons } from "@expo/vector-icons";
 
 const RequestDesign = () => {
-  // const [fabricOpen, setFabricOpen] = useState(false);
-  // const [fabricValue, setFabricValue] = useState(null);
-  // const [fabricItems, setFabricItems] = useState([
-  //   { label: "Jackets", value: "Jackets" },
-  //   { label: "T-shirts", value: "T-shirts" },
-  //   { label: "Hoodies", value: "Hoodies" },
-  //   { label: "Sweatpants", value: "Sweatpants" },
-  //   { label: "Shorts", value: "Shorts" },
-  //   { label: "Polo Shirts", value: "Polo Shirts" },
-  //   { label: "Athletic Wear", value: "Athletic Wear" },
-  //   { label: "Shirts(Formal/Casual)", value: "Shirts(Formal/Casual)" },
-  //   { label: "Outerwear(e.g. Coats,Windbreakers)", value: "Outerwear(e.g. Coats,Windbreakers)" },
-  //   { label: "Denim(Jean)", value: "Denim(Jean)" },
-  //   { label: "Accessories(e.g. Caps,Beanies,Scarves)", value: "Accessories(e.g. Caps,Beanies,Scarves)" },
-  //   { label: "Others", value: "Others" },
-  // ]);
   const [startDate, setStartDate] = useState(null);
   const { designDetails, setDesignDetails } = useFormStore();
   const [validationErrors, setValidationErrors] = useState({});
@@ -44,9 +28,18 @@ const RequestDesign = () => {
   };
 
   const handleDesignDetailsChange = (key, value) => {
-    // console.log(`${key}:`, value);
     setDesignDetails({ [key]: value });
+  
+    // Remove error message for the field as user types
+    if (validationErrors[key]) {
+      setValidationErrors((prevErrors) => {
+        const updatedErrors = { ...prevErrors };
+        delete updatedErrors[key];
+        return updatedErrors;
+      });
+    }
   };
+  
 
   const handleNextSection = () => {
     const errors = validateFields();
@@ -67,14 +60,14 @@ const RequestDesign = () => {
       errors.title = "Design Title can only contain letters and spaces.";
     }
     if (!designDetails.description) errors.description = "Description is required.";
-    // if (!fabricValue) errors.fabric = "Fabric selection is required.";
-    // if (!designDetails.color) errors.color = "Color preference is required.";
     if (!startDate) errors.deadline = "Deadline is required.";
     else if (startDate < new Date()) errors.deadline = "Deadline must be a future date.";
     if (!designDetails.budget) {
       errors.budget = "Budget is required.";
     } else if (!/^\d+$/.test(designDetails.budget)) {
       errors.budget = "Budget must be a valid number.";
+    } else if (/^0+$/.test(designDetails.budget)) {  // Prevents 0000, 00000, etc.
+      errors.budget = "Budget cannot be all zeros.";
     }
     if (!designDetails.contactNumber) errors.contactNumber = "Contact number is required."; // Corrected field reference
     else if (!/^\d{10}$/.test(designDetails.contactNumber)) errors.contactNumber = "Contact number must be 10 digits."; // Validates that it's a 10-digit number.
@@ -112,48 +105,6 @@ const RequestDesign = () => {
             onChangeText={(text) => handleDesignDetailsChange("description", text)}
           />
           {validationErrors.description && <Text style={styles.errorText}>{validationErrors.description}</Text>}
-
-          {/* <Text style={styles.label}>Select Fabric</Text> */}
-          {/* <DropDownPicker
-            open={fabricOpen}
-            value={fabricValue}
-            items={fabricItems}
-            setOpen={setFabricOpen}
-            setValue={setFabricValue}
-            setItems={setFabricItems}
-            placeholder="Select Type"
-            placeholderStyle={styles.placeholderStyle}
-            style={styles.dropdown}
-            dropDownContainerStyle={styles.dropdownContainer}
-            textStyle={styles.dropdownText}
-            itemStyle={{
-              justifyContent: 'flex-start',
-            }}
-            listItemContainerStyle={{
-              backgroundColor: '#181818', // Set the background for items to black
-            }}
-
-            ArrowDownIconComponent={({ style }) => (
-              <Ionicons name="chevron-down" size={20} color="white" style={style} />
-            )}
-            ArrowUpIconComponent={({ style }) => (
-              <Ionicons name="chevron-up" size={20} color="white" style={style} />
-            )}
-            onChangeValue={(value) => handleDesignDetailsChange("fabric", value)}
-          />
-
-
-          {validationErrors.fabric && <Text style={styles.errorText}>{validationErrors.fabric}</Text>} */}
-
-
-          {/* <TextInput
-            style={styles.input}
-            placeholder="Colour Preferences"
-            placeholderTextColor="#ccc"
-            value={designDetails.color}
-            onChangeText={(text) => handleDesignDetailsChange("color", text)}
-          />
-          {validationErrors.color && <Text style={styles.errorText}>{validationErrors.color}</Text>} */}
 
           <CrossPlatformDatePicker
             label="Select Deadline"

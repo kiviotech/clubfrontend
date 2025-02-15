@@ -28,7 +28,7 @@ const ProfileScreen = () => {
   const [profileData,setProfileData]=useState("")
   const { setProfile } = useProfileStore();
   const router = useRouter();
-  
+  const [errors, setErrors] = useState({});
   // console.log('id', id, 'userid',userId)
 
   useEffect(() => {
@@ -143,6 +143,7 @@ const ProfileScreen = () => {
   
 
   const handleUpdateProfile = async () => {
+    if (!validateFields()) return;
     try {
       setUploading(true);
       
@@ -179,6 +180,17 @@ const ProfileScreen = () => {
     router.push("/profile");
   };
 
+
+
+  const validateFields = () => {
+    let validationErrors = {};
+    if (!name.trim()) validationErrors.name = 'Name is required';
+    if (!username.trim()) validationErrors.username = 'Username is required';
+    setErrors(validationErrors);
+    return Object.keys(validationErrors).length === 0;
+  };
+
+
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity onPress={() => {
@@ -212,20 +224,32 @@ const ProfileScreen = () => {
         <TextInput
           style={styles.input}
           value={name}
-          onChangeText={setName}
+          onChangeText={(text) => {
+            setName(text);
+            if (errors.name) {
+              setErrors((prevErrors) => ({ ...prevErrors, name: '' }));
+            }
+          }}
           placeholder="Enter Name"
           placeholderTextColor="#aaa"
         />
+         {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
       </View>
 
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
           value={username}
-          onChangeText={setUsername}
+          onChangeText={(text) => {
+            setUsername(text);
+            if (errors.username) {
+              setErrors((prevErrors) => ({ ...prevErrors, username: '' }));
+            }
+          }}
           placeholder="Enter Username"
           placeholderTextColor="#aaa"
         />
+          {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
       </View>
 
       <TouchableOpacity style={styles.saveButton} onPress={handleUpdateProfile} disabled={uploading}>
@@ -306,6 +330,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  errorText: { color: 'red', fontSize: 12, marginTop: 5 },
 });
 
 export default ProfileScreen;
