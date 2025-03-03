@@ -4,7 +4,7 @@ import {
     getAllFiles,
     getFileById,
     deleteFileById,
-  } from "../api/repositories/uploadRepositories";
+  } from "../repositories/uploadRepositary";
   
   // Upload a file without specifying an ID
   export const uploadNewFile = async (file) => {
