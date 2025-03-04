@@ -84,7 +84,7 @@ const TrackOrderScreen = () => {
     Animated.timing(trackingProgress, {
       toValue: currentStep,
       duration: 800,
-      useNativeDriver: false,
+      useNativeDriver: Platform.OS !== 'web',
     }).start();
   }, [currentStep]);
 

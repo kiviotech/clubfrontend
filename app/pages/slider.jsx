@@ -215,7 +215,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
       bounces={false}
       onScroll={Animated.event(
         [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-        { useNativeDriver: true }
+        { useNativeDriver: Platform.OS !== 'web' }
       )}
       scrollEventThrottle={16}
       inverted={direction === "right-to-left"}
