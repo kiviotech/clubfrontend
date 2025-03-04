@@ -75,7 +75,7 @@ const BrandPage = () => {
           <View style={styles.header}>
             <View style={styles.logoContainer}>
               <Image
-                source={getImageSource(logoUrl)}
+                source={{ uri: logoUrl || '/assets/Picture2.png' }}
                 style={styles.brandLogo}
                 resizeMode="contain"
               />
@@ -93,7 +93,7 @@ const BrandPage = () => {
           {/* Image */}
           <View style={styles.imageContainer}>
             <Image
-              source={getImageSource(brandPosterUrl)}
+              source={{ uri: brandPosterUrl || '/assets/Picture2.png' }}
               style={styles.image}
             />
           </View>

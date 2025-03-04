@@ -11,7 +11,7 @@ const BrandCard = ({ mainImage, brandName, handleIconPress }) => (
   <TouchableOpacity style={styles.cardContainer} onPress={() => handleIconPress(brandName)}>
     <View style={styles.upperContainer}>
       <Image 
-        source={getImageSource(mainImage)} 
+        source={{ uri: mainImage || '/assets/Picture2.png' }} 
         style={styles.mainImage} 
       />
     </View>

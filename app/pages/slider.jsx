@@ -184,7 +184,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
           activeOpacity={0.9}
         >
           <Image
-            source={getImageSource(imageUrl)}
+            source={{ uri: imageUrl || '/assets/Picture2.png' }}
             style={styles.image}
           />
         </TouchableOpacity>

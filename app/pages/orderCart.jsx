@@ -39,7 +39,7 @@ const OrderCart = ({ imageUrl, productName, productPrice, level, id, documentId,
     <View style={styles.card}>
       <View style={styles.row}>
         <Image
-          source={getImageSource(imageUrl)}
+          source={{ uri: imageUrl || '/assets/Picture2.png' }}
           style={styles.productImage}
         />
         <View style={styles.details}>

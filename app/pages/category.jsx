@@ -61,10 +61,9 @@ const Category = () => {
           return (
             <View style={styles.card}>
               <Image 
-                source={imageSource}
+                source={item.image?.uri ? item.image : { uri: '/assets/Picture2.png' }} 
                 style={styles.image} 
                 resizeMode="contain"
-                onError={(e) => console.error('[DEBUG] Image loading error:', e.nativeEvent.error)}
               />
               <Text style={styles.categoryText}>{item.category}</Text>
             </View>

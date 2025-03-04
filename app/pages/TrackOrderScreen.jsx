@@ -125,7 +125,7 @@ const TrackOrderScreen = () => {
             
             return (
               <Image
-                source={source}
+                source={{ uri: imageUrl || '/assets/Picture2.png' }}
                 style={styles.productImage}
                 onError={(e) => console.error('[DEBUG] Image loading error:', e.nativeEvent.error)}
               />
