@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Animated, SafeAreaView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Animated, SafeAreaView, Dimensions, Platform } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 import { getAnimationConfig } from '../../src/utils/animationConfig';

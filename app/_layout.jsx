@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import { ErrorBoundary } from 'react-error-boundary';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -26,6 +26,16 @@ const RootLayout = () => {
 
     if (fontsLoaded) {
       SplashScreen.hideAsync();
+    }
+
+    if (Platform.OS === 'web') {
+      console.log('Running on web platform');
+      // Add special handling for iOS Safari
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      if (isIOS) {
+        console.log('Running on iOS Safari');
+        // Reduce animations or special handling for iOS
+      }
     }
   }, [fontsLoaded, error]);
 
