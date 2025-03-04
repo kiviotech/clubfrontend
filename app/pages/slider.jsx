@@ -329,7 +329,7 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
         >
           {imageUrl ? (
             <Image
-              source={{ uri: imageUrl || "https://example.com/fallback.png" }}
+              source={{ uri: imageUrl || "g" }}
               style={styles.image}
             />
           ) : (

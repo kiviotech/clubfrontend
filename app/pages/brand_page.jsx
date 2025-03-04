@@ -59,7 +59,7 @@ const BrandPage = () => {
     const logoUrl = `${MEDIA_BASE_URL}${item.brand_logo.url}`;
     const brandPosterUrl = item.brand_poster?.[0]?.url
       ? `${MEDIA_BASE_URL}${item.brand_poster[0].url}`
-      : 'https://example.com/fallback.png';
+      : '';
 
     return (
       <View style={styles.container}>

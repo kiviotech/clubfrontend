@@ -65,7 +65,7 @@ const Profile = () => {
           setProfile({
             name: data.profile.name || '',
             username: data.profile.username || '',
-            profileImage: data.profile.image?.url ? `${MEDIA_BASE_URL}${data.profile.image.url}` : 'https://example.com/fallback.png'
+            profileImage: data.profile.image?.url ? `${MEDIA_BASE_URL}${data.profile.image.url}` : ''
           });
         }
       }
