@@ -38,7 +38,7 @@ const OrderCart = ({ imageUrl, productName, productPrice, level, id, documentId,
     <View style={styles.card}>
       <View style={styles.row}>
         <Image
-          source={{ uri: imageUrl || 'https://example.com/fallback.png' }} // Use dynamic image URL
+          source={{ uri: imageUrl || require('../../assets/Picture2.png') }} // Use dynamic image URL
           style={styles.productImage}
         />
         <View style={styles.details}>

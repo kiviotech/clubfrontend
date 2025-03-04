@@ -116,7 +116,7 @@ const TrackOrderScreen = () => {
       {/* Product Information */}
       <View style={styles.productContainer}>
         <Image
-          source={{ uri: imageUrl || "https://example.com/fallback.png" }}
+          source={{ uri: imageUrl || require('../../assets/Picture2.png') }}
           style={styles.productImage}
         />
         <View style={styles.productDetails}>

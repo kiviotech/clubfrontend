@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, FlatList, Dimensions } from 'react-native';
 import useProductStore from '../../src/store/useProductStore';
@@ -45,7 +42,7 @@ const Category = () => {
         data={limitedProductDetails}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Image source={item.image  ||'https://example.com/fallback.png'} style={styles.image} resizeMode="contain" />
+            <Image source={item.image || require('../../assets/Picture2.png')} style={styles.image} resizeMode="contain" />
             <Text style={styles.categoryText}>{item.category}</Text>
           </View>
         )}

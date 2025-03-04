@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Animated, SafeAreaView, Dimensions } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
+import { getAnimationConfig } from '../../src/utils/animationConfig';
 
 const { width } = Dimensions.get('window'); // Get the screen width for responsive text size
 
@@ -14,29 +15,25 @@ const OrderSuccessScreen = () => {
 
     // UseEffect
     useEffect(() => {
-        Animated.timing(opacity, {
+        Animated.timing(opacity, getAnimationConfig({
             toValue: 1,
             duration: 800,
-            useNativeDriver: true,
-        }).start();
+        })).start();
 
-        Animated.timing(scale, {
+        Animated.timing(scale, getAnimationConfig({
             toValue: 1,
             duration: 800,
-            useNativeDriver: true,
-        }).start();
+        })).start();
 
         Animated.sequence([
-            Animated.timing(bounce, {
-                toValue: 1.5, // Increased bounce value for bigger effect
+            Animated.timing(bounce, getAnimationConfig({
+                toValue: 1.5,
                 duration: 500,
-                useNativeDriver: true,
-            }),
-            Animated.timing(bounce, {
+            })),
+            Animated.timing(bounce, getAnimationConfig({
                 toValue: 1,
                 duration: 300,
-                useNativeDriver: true,
-            }),
+            })),
         ]).start();
 
         // Go to order page after 5 seconds
