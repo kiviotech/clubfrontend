@@ -42,7 +42,11 @@ const Category = () => {
         data={limitedProductDetails}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Image source={item.image || require('../../assets/Picture2.png')} style={styles.image} resizeMode="contain" />
+            <Image 
+              source={item.image?.uri ? item.image : require('../../assets/Picture2.png')} 
+              style={styles.image} 
+              resizeMode="contain" 
+            />
             <Text style={styles.categoryText}>{item.category}</Text>
           </View>
         )}

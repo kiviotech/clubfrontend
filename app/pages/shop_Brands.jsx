@@ -5,11 +5,20 @@ import useProductStore from '../../src/store/useProductStore';
 import { MEDIA_BASE_URL } from '../../src/api/apiClient';
 import { useBrandStore } from '../../src/store/brandStore';
 import { useRouter } from 'expo-router';
+import { Image as RNImage } from 'react-native';
+
+const getFallbackImage = () => {
+  const imageSource = require('../../assets/Picture2.png');
+  return RNImage.resolveAssetSource(imageSource).uri;
+};
 
 const BrandCard = ({ mainImage, brandName, handleIconPress }) => (
   <TouchableOpacity style={styles.cardContainer} onPress={() => handleIconPress(brandName)}>
     <View style={styles.upperContainer}>
-      <Image source={{ uri: mainImage || require('../../assets/Picture2.png')}} style={styles.mainImage} />
+      <Image 
+        source={{ uri: mainImage || getFallbackImage() }} 
+        style={styles.mainImage} 
+      />
     </View>
     <View style={styles.logoBottomContainer}>
       <Text style={styles.brandName}>{brandName}</Text>

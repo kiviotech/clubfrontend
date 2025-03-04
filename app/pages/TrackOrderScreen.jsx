@@ -16,6 +16,12 @@ import { useLocalSearchParams } from "expo-router";
 import { updateOrderDetailById, fetchOrderDetailById } from "../../src/api/services/orderDetailService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useOrderStorelevel from "../../src/store/useOrderStorelevel"
+import { Image as RNImage } from 'react-native';
+
+const getFallbackImage = () => {
+  const imageSource = require('../../assets/Picture2.png');
+  return RNImage.resolveAssetSource(imageSource).uri;
+};
 
 const TrackOrderScreen = () => {
   const trackingProgress = useRef(new Animated.Value(0)).current;
@@ -116,7 +122,7 @@ const TrackOrderScreen = () => {
       {/* Product Information */}
       <View style={styles.productContainer}>
         <Image
-          source={{ uri: imageUrl || require('../../assets/Picture2.png') }}
+          source={{ uri: imageUrl || getFallbackImage() }}
           style={styles.productImage}
         />
         <View style={styles.productDetails}>

@@ -5,6 +5,12 @@ import { getBrands } from '../../src/api/repositories/brandRepository';
 import { MEDIA_BASE_URL } from '../../src/api/apiClient';
 import { useRouter } from "expo-router";
 import { useBrandStore } from '../../src/store/brandStore';
+import { Image as RNImage } from 'react-native';
+
+const getFallbackImage = () => {
+  const imageSource = require('../../assets/Picture2.png');
+  return RNImage.resolveAssetSource(imageSource).uri;
+};
 
 const BrandPage = () => {
 
@@ -59,7 +65,7 @@ const BrandPage = () => {
     const logoUrl = `${MEDIA_BASE_URL}${item.brand_logo.url}`;
     const brandPosterUrl = item.brand_poster?.[0]?.url
       ? `${MEDIA_BASE_URL}${item.brand_poster[0].url}`
-      : require('../../assets/Picture2.png');
+      : getFallbackImage();
 
     return (
       <View style={styles.container}>
