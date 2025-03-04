@@ -3,6 +3,7 @@ import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import { ErrorBoundary } from 'react-error-boundary';
 import { View, Text, StyleSheet, Platform } from 'react-native';
+import { PlatformProvider } from '../src/context/PlatformContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -59,6 +60,48 @@ const RootLayout = () => {
           }
         `;
         document.head.appendChild(style);
+
+        // Add this section to observe images and unload those not in view
+        setTimeout(() => {
+          try {
+            const observer = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                if (entry.target instanceof HTMLImageElement) {
+                  if (!entry.isIntersecting) {
+                    // Lower resolution of off-screen images to save memory
+                    if (!entry.target._originalSrc) {
+                      entry.target._originalSrc = entry.target.src;
+                    }
+                    entry.target.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; // 1px transparent GIF
+                  } else if (entry.target._originalSrc) {
+                    // Restore original when back in view
+                    entry.target.src = entry.target._originalSrc;
+                  }
+                }
+              });
+            }, { rootMargin: '200px' });
+            
+            // Observe all images
+            document.querySelectorAll('img').forEach(img => {
+              observer.observe(img);
+            });
+            
+            // Periodically check for new images
+            const checkInterval = setInterval(() => {
+              document.querySelectorAll('img:not([observed])').forEach(img => {
+                img.setAttribute('observed', 'true');
+                observer.observe(img);
+              });
+            }, 2000);
+            
+            return () => {
+              clearInterval(checkInterval);
+              observer.disconnect();
+            };
+          } catch (e) {
+            console.error('Error setting up IntersectionObserver', e);
+          }
+        }, 1000);
       }
     }
   }, [fontsLoaded, error]);
@@ -67,12 +110,14 @@ const RootLayout = () => {
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{headerShown: false}} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="pages" options={{ headerShown: false }} />
-      </Stack>
+      <PlatformProvider>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{headerShown: false}} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="pages" options={{ headerShown: false }} />
+        </Stack>
+      </PlatformProvider>
     </ErrorBoundary>
   );
 };

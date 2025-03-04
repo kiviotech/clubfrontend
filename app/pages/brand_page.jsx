@@ -6,6 +6,8 @@ import { MEDIA_BASE_URL } from '../../src/api/apiClient';
 import { useRouter } from "expo-router";
 import { useBrandStore } from '../../src/store/brandStore';
 import { getImageSource } from '../utils/imageUtils';
+import { usePlatform } from '../../src/context/PlatformContext';
+import { ErrorBoundary } from 'react-error-boundary';
 
 const BrandPage = () => {
 
@@ -13,6 +15,8 @@ const BrandPage = () => {
   const router = useRouter();
   const selectedBrand = useBrandStore((state) => state.selectedBrand);
   const setSelectedBrand = useBrandStore((state) => state.setSelectedBrand);
+  const { isIOSWeb } = usePlatform();
+  const [visibleBrands, setVisibleBrands] = useState([]);
 
   const fetchBrands = async () => {
     try {
@@ -28,6 +32,22 @@ const BrandPage = () => {
   useEffect(() => {
     fetchBrands(); // Fetch brands when component mounts
   }, []);
+
+  useEffect(() => {
+    // On iOS Web, load brands in batches to prevent memory issues
+    if (isIOSWeb && brands.length > 6) {
+      setVisibleBrands(brands.slice(0, 6));
+      
+      // Load more brands after a delay
+      const timer = setTimeout(() => {
+        setVisibleBrands(brands);
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    } else {
+      setVisibleBrands(brands);
+    }
+  }, [brands, isIOSWeb]);
 
   
   const handleInfo = (brand) => {
@@ -112,7 +132,7 @@ const BrandPage = () => {
 
   return (
     <FlatList
-      data={brands}
+      data={visibleBrands}
       keyExtractor={(item) => item.id.toString()}
       renderItem={renderBrand}
     />

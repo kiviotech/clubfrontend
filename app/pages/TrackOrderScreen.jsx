@@ -18,6 +18,7 @@ import { updateOrderDetailById, fetchOrderDetailById } from "../../src/api/servi
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useOrderStorelevel from "../../src/store/useOrderStorelevel"
 import { getImageSource } from '../utils/imageUtils';
+import { getAnimationConfig } from '../../src/utils/animationConfig';
 
 const TrackOrderScreen = () => {
   const trackingProgress = useRef(new Animated.Value(0)).current;

@@ -18,6 +18,7 @@ import { MEDIA_BASE_URL } from "../../src/api/apiClient";
 import { getBrandById } from "../../src/api/repositories/brandRepository";
 import { useBrandStore } from "../../src/store/brandStore";
 import { getImageSource } from '../utils/imageUtils';
+import { ErrorBoundary } from 'react-error-boundary';
 
 const { width } = Dimensions.get("window"); // Fetch the screen width
 const ITEM_SPACING = 5; // Spacing between items
@@ -202,24 +203,30 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
   };
 
   return (
-    <Animated.FlatList
-      ref={scrollRef}
-      data={fetchedBrandCollabs}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id.toString()}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.carouselContainer}
-      snapToInterval={ITEM_WIDTH + ITEM_SPACING}
-      decelerationRate="fast"
-      bounces={false}
-      onScroll={Animated.event(
-        [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-        { useNativeDriver: Platform.OS !== 'web' }
-      )}
-      scrollEventThrottle={16}
-      inverted={direction === "right-to-left"}
-    />
+    <ErrorBoundary FallbackComponent={({ error }) => (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Error loading slider: {error.message}</Text>
+      </View>
+    )}>
+      <Animated.FlatList
+        ref={scrollRef}
+        data={fetchedBrandCollabs}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.carouselContainer}
+        snapToInterval={ITEM_WIDTH + ITEM_SPACING}
+        decelerationRate="fast"
+        bounces={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: Platform.OS !== 'web' }
+        )}
+        scrollEventThrottle={16}
+        inverted={direction === "right-to-left"}
+      />
+    </ErrorBoundary>
   );
 };
 
@@ -268,6 +275,16 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 14,
     fontWeight: "bold",
+  },
+  errorContainer: {
+    padding: 20,
+    backgroundColor: '#222',
+    borderRadius: 8,
+    marginVertical: 10,
+  },
+  errorText: {
+    color: '#fff',
+    textAlign: 'center',
   },
 });
 
