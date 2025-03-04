@@ -30,7 +30,10 @@
           "tag": "script",
           "src": "https://checkout.razorpay.com/v1/checkout.js"
         }
-      ]
+      ],
+      "meta": {
+        "jsc-JSC_useJIT": "0"
+      }
     },
     "plugins": [
       "expo-router",

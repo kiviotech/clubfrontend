@@ -102,6 +102,80 @@ const RootLayout = () => {
             console.error('Error setting up IntersectionObserver', e);
           }
         }, 1000);
+
+        // Global config for iOS Safari
+        window.iosSafariConfig = {
+          // Limit the number of simultaneous network requests
+          maxConcurrentRequests: 4,
+          // Limit images displayed at once
+          maxImagesPerScreen: 6,
+          // Throttle animations
+          reduceAnimations: true
+        };
+        
+        // Patch fetch to limit concurrent requests
+        const originalFetch = window.fetch;
+        let activeRequests = 0;
+        const requestQueue = [];
+        
+        window.fetch = function(...args) {
+          if (activeRequests >= window.iosSafariConfig.maxConcurrentRequests) {
+            // Queue this request for later
+            return new Promise((resolve) => {
+              requestQueue.push(() => {
+                originalFetch(...args).then(resolve);
+              });
+            });
+          }
+          
+          activeRequests++;
+          return originalFetch(...args).finally(() => {
+            activeRequests--;
+            if (requestQueue.length > 0) {
+              const nextRequest = requestQueue.shift();
+              nextRequest();
+            }
+          });
+        };
+
+        // Monitor large network responses
+        const originalXHROpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function(...args) {
+          this.addEventListener('load', function() {
+            if (this.responseText && this.responseText.length > 1000000) {
+              console.warn('Large XHR response detected:', 
+                Math.round(this.responseText.length / 1024), 'KB');
+            }
+          });
+          return originalXHROpen.apply(this, args);
+        };
+
+        // Add viewport meta tag with specific settings for iOS Safari
+        const meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no';
+        document.head.appendChild(meta);
+        
+        // Force hardware acceleration
+        const styleHardwareAccel = document.createElement('style');
+        styleHardwareAccel.innerHTML = `
+          * {
+            -webkit-transform: translateZ(0);
+            -moz-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            -o-transform: translateZ(0);
+            transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
+            -moz-backface-visibility: hidden;
+            -ms-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-perspective: 1000;
+            -moz-perspective: 1000;
+            -ms-perspective: 1000;
+            perspective: 1000;
+          }
+        `;
+        document.head.appendChild(styleHardwareAccel);
       }
     }
   }, [fontsLoaded, error]);
