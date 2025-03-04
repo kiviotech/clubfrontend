@@ -117,10 +117,28 @@ const TrackOrderScreen = () => {
 
       {/* Product Information */}
       <View style={styles.productContainer}>
-        <Image
-          source={getImageSource(imageUrl)}
-          style={styles.productImage}
-        />
+        {(() => {
+          try {
+            console.log('[DEBUG] TrackOrderScreen rendering image with URL:', imageUrl);
+            const source = getImageSource(imageUrl);
+            console.log('[DEBUG] Image source resolved:', source);
+            
+            return (
+              <Image
+                source={source}
+                style={styles.productImage}
+                onError={(e) => console.error('[DEBUG] Image loading error:', e.nativeEvent.error)}
+              />
+            );
+          } catch (error) {
+            console.error('[DEBUG] Error rendering image:', error);
+            return (
+              <View style={[styles.productImage, {backgroundColor: '#333'}]}>
+                <Text style={{color: '#fff', textAlign: 'center'}}>Image Error</Text>
+              </View>
+            );
+          }
+        })()}
         <View style={styles.productDetails}>
           <Text style={styles.productName}>{productName}</Text>
          

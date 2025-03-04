@@ -41,24 +41,35 @@ const Category = () => {
     <View style={styles.container}>
       <FlatList
         data={limitedProductDetails}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            {Platform.OS === 'web' ? (
+        renderItem={({ item }) => {
+          console.log('[DEBUG] Rendering item:', item);
+          
+          let imageSource;
+          try {
+            imageSource = Platform.OS === 'web'
+              ? (item.image?.uri ? item.image : { uri: '/assets/Picture2.png' })
+              : (item.image?.uri ? item.image : require('../../assets/Picture2.png'));
+            
+            console.log('[DEBUG] Image source resolved:', 
+              typeof imageSource === 'object' ? 'object' : imageSource);
+          } catch (error) {
+            console.error('[DEBUG] Error resolving image source:', error);
+            // Fallback to a safe default
+            imageSource = { uri: '' };
+          }
+          
+          return (
+            <View style={styles.card}>
               <Image 
-                source={item.image?.uri ? item.image : { uri: '/assets/Picture2.png' }} 
+                source={imageSource}
                 style={styles.image} 
-                resizeMode="contain" 
+                resizeMode="contain"
+                onError={(e) => console.error('[DEBUG] Image loading error:', e.nativeEvent.error)}
               />
-            ) : (
-              <Image 
-                source={item.image?.uri ? item.image : require('../../assets/Picture2.png')} 
-                style={styles.image} 
-                resizeMode="contain" 
-              />
-            )}
-            <Text style={styles.categoryText}>{item.category}</Text>
-          </View>
-        )}
+              <Text style={styles.categoryText}>{item.category}</Text>
+            </View>
+          );
+        }}
         keyExtractor={(item) => item.id}
         numColumns={numColumns}
       />
