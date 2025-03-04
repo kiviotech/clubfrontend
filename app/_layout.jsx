@@ -35,6 +35,30 @@ const RootLayout = () => {
       if (isIOS) {
         console.log('Running on iOS Safari');
         // Reduce animations or special handling for iOS
+        console.log('Running on iOS Safari - applying optimizations');
+        
+        // Apply iOS Safari specific optimizations
+        // 1. Limit animation frame rate
+        if (window.requestAnimationFrame) {
+          const originalRAF = window.requestAnimationFrame;
+          window.requestAnimationFrame = callback => {
+            return originalRAF(() => {
+              if (typeof callback === 'function') callback();
+            });
+          };
+        }
+        
+        // 2. Add iOS-specific CSS to document
+        const style = document.createElement('style');
+        style.innerHTML = `
+          * {
+            -webkit-overflow-scrolling: touch;
+          }
+          img {
+            -webkit-user-select: none;
+          }
+        `;
+        document.head.appendChild(style);
       }
     }
   }, [fontsLoaded, error]);
