@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { getBrands } from '../../src/api/repositories/brandRepository';
 import { MEDIA_BASE_URL } from '../../src/api/apiClient';
 import { useRouter } from "expo-router";
 import { useBrandStore } from '../../src/store/brandStore';
-import { Image as RNImage } from 'react-native';
-
-const getFallbackImage = () => {
-  const imageSource = require('../../assets/Picture2.png');
-  return RNImage.resolveAssetSource(imageSource).uri;
-};
+import { getImageSource } from '../utils/imageUtils';
 
 const BrandPage = () => {
 
@@ -65,7 +60,7 @@ const BrandPage = () => {
     const logoUrl = `${MEDIA_BASE_URL}${item.brand_logo.url}`;
     const brandPosterUrl = item.brand_poster?.[0]?.url
       ? `${MEDIA_BASE_URL}${item.brand_poster[0].url}`
-      : getFallbackImage();
+      : null;
 
     return (
       <View style={styles.container}>
@@ -80,7 +75,7 @@ const BrandPage = () => {
           <View style={styles.header}>
             <View style={styles.logoContainer}>
               <Image
-                source={{ uri: logoUrl }}
+                source={getImageSource(logoUrl)}
                 style={styles.brandLogo}
                 resizeMode="contain"
               />
@@ -98,7 +93,7 @@ const BrandPage = () => {
           {/* Image */}
           <View style={styles.imageContainer}>
             <Image
-              source={{ uri: brandPosterUrl }}
+              source={getImageSource(brandPosterUrl)}
               style={styles.image}
             />
           </View>

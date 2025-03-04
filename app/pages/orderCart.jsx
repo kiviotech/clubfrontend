@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import useOrderStorelevel from "../../src/store/useOrderStorelevel"
-import { Image as RNImage } from 'react-native';
-
-const getFallbackImage = () => {
-  const imageSource = require('../../assets/Picture2.png');
-  return RNImage.resolveAssetSource(imageSource).uri;
-};
+import { getImageSource } from '../utils/imageUtils';
 
 const OrderCart = ({ imageUrl, productName, productPrice, level, id, documentId, total, quantity, updatedAt }) => {
   const router = useRouter();
@@ -44,7 +39,7 @@ const OrderCart = ({ imageUrl, productName, productPrice, level, id, documentId,
     <View style={styles.card}>
       <View style={styles.row}>
         <Image
-          source={{ uri: imageUrl || getFallbackImage() }}
+          source={getImageSource(imageUrl)}
           style={styles.productImage}
         />
         <View style={styles.details}>

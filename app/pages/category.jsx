@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { View, Text, Image, StyleSheet, FlatList, Dimensions } from 'react-native';
+import { View, Text, Image, StyleSheet, FlatList, Dimensions, Platform } from 'react-native';
 import useProductStore from '../../src/store/useProductStore';
 import { getProducts } from '../../src/api/repositories/productRepository';
 import { MEDIA_BASE_URL } from '../../src/api/apiClient';
+import { getFallbackImageSource } from '../utils/imageUtils';
 
 const numColumns = 2;
 const screenWidth = Dimensions.get('window').width;
@@ -18,8 +19,8 @@ const Category = () => {
           const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
           return {
             id: product.id,
-            image: { uri: imageUrl }, // Wrap the image URL in an object with `uri` key
-            category: product.category || "Product Category", // Replace with the actual category field
+            image: { uri: imageUrl },
+            category: product.category || "Product Category",
           };
         });
         setProductDetails(products);
@@ -42,11 +43,19 @@ const Category = () => {
         data={limitedProductDetails}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Image 
-              source={item.image?.uri ? item.image : require('../../assets/Picture2.png')} 
-              style={styles.image} 
-              resizeMode="contain" 
-            />
+            {Platform.OS === 'web' ? (
+              <Image 
+                source={item.image?.uri ? item.image : { uri: '/assets/Picture2.png' }} 
+                style={styles.image} 
+                resizeMode="contain" 
+              />
+            ) : (
+              <Image 
+                source={item.image?.uri ? item.image : require('../../assets/Picture2.png')} 
+                style={styles.image} 
+                resizeMode="contain" 
+              />
+            )}
             <Text style={styles.categoryText}>{item.category}</Text>
           </View>
         )}

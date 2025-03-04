@@ -1,22 +1,17 @@
 import React, { useEffect } from 'react';
-import { View, Image, StyleSheet, FlatList, Text, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, FlatList, Text, TouchableOpacity, Platform } from 'react-native';
 import { getProducts } from '../../src/api/repositories/productRepository';
 import useProductStore from '../../src/store/useProductStore';
 import { MEDIA_BASE_URL } from '../../src/api/apiClient';
 import { useBrandStore } from '../../src/store/brandStore';
 import { useRouter } from 'expo-router';
-import { Image as RNImage } from 'react-native';
-
-const getFallbackImage = () => {
-  const imageSource = require('../../assets/Picture2.png');
-  return RNImage.resolveAssetSource(imageSource).uri;
-};
+import { getImageSource } from '../utils/imageUtils';
 
 const BrandCard = ({ mainImage, brandName, handleIconPress }) => (
   <TouchableOpacity style={styles.cardContainer} onPress={() => handleIconPress(brandName)}>
     <View style={styles.upperContainer}>
       <Image 
-        source={{ uri: mainImage || getFallbackImage() }} 
+        source={getImageSource(mainImage)} 
         style={styles.mainImage} 
       />
     </View>

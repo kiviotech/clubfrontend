@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Linking,
   Alert,
+  Platform
 } from "react-native";
 import { useRouter } from "expo-router";
 import useBrandCollabStore from "../../src/store/useBrandCollabStore";
@@ -16,6 +17,7 @@ import { getBrandCollabs } from "../../src/api/repositories/brandCollabRepositor
 import { MEDIA_BASE_URL } from "../../src/api/apiClient";
 import { getBrandById } from "../../src/api/repositories/brandRepository";
 import { useBrandStore } from "../../src/store/brandStore";
+import { getImageSource } from '../utils/imageUtils';
 
 const { width } = Dimensions.get("window"); // Fetch the screen width
 const ITEM_SPACING = 5; // Spacing between items
@@ -168,8 +170,8 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
       extrapolate: "clamp",
     });
 
-    const imageUrl = item.collab_image?.[0]?.url
-      ? `${MEDIA_BASE_URL}${item.collab_image[0].url}`
+    const imageUrl = item.brand_collab_image?.url
+      ? `${MEDIA_BASE_URL}${item.brand_collab_image.url}`
       : null;
 
     return (
@@ -181,14 +183,10 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
           style={{ flex: 1 }}
           activeOpacity={0.9}
         >
-          {imageUrl ? (
-            <Image
-              source={{ uri: imageUrl || require('../../assets/Picture2.png') }}
-              style={styles.image}
-            />
-          ) : (
-            <Text style={{ color: "#fff" }}>Image not available</Text>
-          )}
+          <Image
+            source={getImageSource(imageUrl)}
+            style={styles.image}
+          />
         </TouchableOpacity>
         {index === 0 && (
           <TouchableOpacity style={styles.whatsappButton} onPress={openWhatsApp}>

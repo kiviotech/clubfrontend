@@ -9,6 +9,7 @@ import {
   ScrollView,
   Modal,
   Alert,
+  Platform
 } from "react-native";
 // Import AsyncStorage
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
@@ -16,12 +17,7 @@ import { useLocalSearchParams } from "expo-router";
 import { updateOrderDetailById, fetchOrderDetailById } from "../../src/api/services/orderDetailService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useOrderStorelevel from "../../src/store/useOrderStorelevel"
-import { Image as RNImage } from 'react-native';
-
-const getFallbackImage = () => {
-  const imageSource = require('../../assets/Picture2.png');
-  return RNImage.resolveAssetSource(imageSource).uri;
-};
+import { getImageSource } from '../utils/imageUtils';
 
 const TrackOrderScreen = () => {
   const trackingProgress = useRef(new Animated.Value(0)).current;
@@ -122,7 +118,7 @@ const TrackOrderScreen = () => {
       {/* Product Information */}
       <View style={styles.productContainer}>
         <Image
-          source={{ uri: imageUrl || getFallbackImage() }}
+          source={getImageSource(imageUrl)}
           style={styles.productImage}
         />
         <View style={styles.productDetails}>
