@@ -12,34 +12,52 @@ export const getFallbackImageSource = () => {
 
 // Add this function to optimize image loading on iOS - without hook dependency
 export const optimizeImageForWeb = (imageUrl, options = {}) => {
-  // Only apply optimization on web
+  // Early return if not on web platform
   if (Platform.OS !== 'web') {
     return imageUrl;
   }
   
-  // Check for iOS in web browser using navigator.userAgent
+  // Check for iOS in web browser
   const isIOSWeb = Platform.OS === 'web' && 
     typeof navigator !== 'undefined' && 
     /iPad|iPhone|iPod/.test(navigator.userAgent) && 
     !window.MSStream;
     
-  // If it's a remote URL and on iOS, we can add query params to request a smaller image
-  if (imageUrl && imageUrl.startsWith('http') && isIOSWeb) {
-    // For many CDNs, adding width/height params can return optimized images
-    const separator = imageUrl.includes('?') ? '&' : '?';
-    const width = options.width || 300; // Default optimized width
-    return `${imageUrl}${separator}width=${width}&optimize=medium`;
+  // Always initialize optimizedUrl
+  let optimizedUrl = imageUrl; 
+  
+  // Only modify URLs for iOS web and if URL exists and is a remote URL
+  if (imageUrl && typeof imageUrl === 'string' && imageUrl.startsWith('http') && isIOSWeb) {
+    try {
+      const separator = imageUrl.includes('?') ? '&' : '?';
+      const width = options.width || 300;
+      optimizedUrl = `${imageUrl}${separator}width=${width}&optimize=medium`;
+    } catch (error) {
+      console.error('Error optimizing image URL:', error);
+      // Fall back to original URL on error
+      optimizedUrl = imageUrl;
+    }
   }
   
-  return imageUrl;
+  return optimizedUrl;
 };
 
 // Helper function for image source with fallback
 export const getImageSource = (imageUrl, options = {}) => {
-  if (imageUrl) {
-    // Apply optimization for web
-    const optimizedUrl = Platform.OS === 'web' ? optimizeImageForWeb(imageUrl, options) : imageUrl;
-    return { uri: optimizedUrl };
+  try {
+    if (imageUrl) {
+      // Apply optimization for web with safety checks
+      let finalUrl = imageUrl;
+      
+      if (Platform.OS === 'web') {
+        finalUrl = optimizeImageForWeb(imageUrl, options) || imageUrl;
+      }
+      
+      return { uri: finalUrl };
+    }
+    return getFallbackImageSource();
+  } catch (error) {
+    console.error('Error in getImageSource:', error);
+    return getFallbackImageSource();
   }
-  return getFallbackImageSource();
 }; 

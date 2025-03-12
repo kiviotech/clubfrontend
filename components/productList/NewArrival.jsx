@@ -41,44 +41,41 @@ const NewArrival = ({ limit }) => {
       const fetchProducts = async () => {
         try {
           const response = await getProducts();
-          setProducts(response.data.data);
+          // Limit the number of products to reduce memory usage
+          const limitedProducts = response.data.data.slice(0, 6);
+          setProducts(limitedProducts);
     
-          const updatedProducts = [...response.data.data];
+          // Process stock updates in batches
+          let hasUpdates = false;
+          const updatedProducts = [...limitedProducts];
     
           for (let i = 0; i < updatedProducts.length; i++) {
             const product = updatedProducts[i];
-    
-            // Check if any size has available stock
             const hasAvailableStock = product.sizes.some(
               (size) => size.number_of_items > 0
             );
     
-            // If any size has stock, mark the product as in stock
-            const updatedProductData = {
-              data: {
-                in_stock: hasAvailableStock,
-              },
-            };
-    
-            // Update product stock locally first
             if (hasAvailableStock !== product.in_stock) {
               updatedProducts[i] = {
                 ...product,
-                in_stock: hasAvailableStock, // Update the in_stock property immediately
+                in_stock: hasAvailableStock,
               };
-    
-              setProducts(updatedProducts); // Update the state immediately for the UI
-    
-              // Then, send the updated data to the server
-              await updateProduct(product.documentId, updatedProductData);
-              // console.log(`Product ${product.name} stock status updated.`);
+              hasUpdates = true;
+              
+              // Update on server in background
+              updateProduct(product.documentId, {
+                data: { in_stock: hasAvailableStock }
+              }).catch(err => console.log('Error updating product:', err));
             }
           }
     
+          if (hasUpdates) {
+            setProducts(updatedProducts);
+          }
         } catch (error) {
           setError("Failed to load products");
         } finally {
-          // setLoading(false);
+          setLoading(false);
         }
       };
     
@@ -165,26 +162,13 @@ const NewArrival = ({ limit }) => {
       renderItem={({ item }) => (
         <View style={styles.card}>
           <View style={styles.cardContent}>
-            {/* <TouchableOpacity
-              onPress={() => handleWishlistAdd(item)}
-              style={styles.favoriteIcon}
-            >
-              <MaterialIcons
-                name={wishlist.some((wishItem) => wishItem.id === item.id)
-                  ? "favorite"
-                  : "favorite-border"}
-                size={18}
-                color={wishlist.some((wishItem) => wishItem.id === item.id)
-                  ? "red"
-                  : "#fff"}
-              />
-            </TouchableOpacity> */}
-
-            {/* Display only the first image of each product */}
             <Image
               source={{ uri: getImageUrl(item.product_image) }}
               style={styles.productImage}
               resizeMode="contain"
+              // Add error handling and loading placeholder
+              onError={() => console.log('Image loading error for product:', item.id)}
+              progressiveRenderingEnabled={true}
             />
 
             <TouchableOpacity
@@ -197,7 +181,6 @@ const NewArrival = ({ limit }) => {
             </TouchableOpacity>
           </View>
 
-          {/* Add to cart button */}
           <TouchableOpacity onPress={handleNotify}>
             <View style={styles.addToCartButton}>
               <Icon name="add" size={18} color="#fff" />
@@ -209,6 +192,11 @@ const NewArrival = ({ limit }) => {
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.listContainer}
+      // Add these props to improve performance
+      initialNumToRender={3}
+      maxToRenderPerBatch={3}
+      windowSize={3}
+      removeClippedSubviews={true}
     />
   </View>
   );

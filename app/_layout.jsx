@@ -1,11 +1,88 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
-import { ErrorBoundary } from 'react-error-boundary';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { PlatformProvider } from '../src/context/PlatformContext';
+import ErrorBoundary from './components/ErrorBoundary';
+import * as memoryManager from './utils/memoryManager';
 
+// Keep splash screen visible until fonts are loaded
 SplashScreen.preventAutoHideAsync();
+
+// Simple iOS Safari optimizations
+const applyIOSSafariOptimizations = () => {
+  console.log('Running on iOS Safari - applying essential optimizations');
+  
+  // Check if optimizations have already been applied
+  if (window._iOSOptimizationsApplied) {
+    console.log('iOS optimizations already applied, skipping');
+    return;
+  }
+  
+  try {
+    // 1. Add iOS-specific CSS to document
+    const style = document.createElement('style');
+    style.innerHTML = `
+      * {
+        -webkit-overflow-scrolling: touch;
+      }
+      img {
+        -webkit-user-select: none;
+        max-height: 100vh;
+      }
+      body {
+        -webkit-text-size-adjust: 100%;
+      }
+      * {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // 2. Set viewport meta for iOS
+    const meta = document.createElement('meta');
+    meta.name = 'viewport';
+    meta.content = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';
+    document.head.appendChild(meta);
+    
+    // 3. Monitor memory usage
+    if (window.performance && window.performance.memory) {
+      const memoryMonitorId = setInterval(() => {
+        const used = window.performance.memory.usedJSHeapSize;
+        console.log(`Memory usage: ${Math.round(used / 1048576)}MB`);
+        
+        // If memory usage is critical, take action
+        if (used > 250 * 1048576) { // Over 250MB
+          console.warn('Critical memory usage detected, attempting cleanup');
+          memoryManager.forceGarbageCollection();
+        }
+      }, 30000); // Check every 30 seconds
+      
+      // Store interval ID for cleanup
+      window._memoryMonitorId = memoryMonitorId;
+    }
+    
+    // Mark optimizations as applied
+    window._iOSOptimizationsApplied = true;
+    
+    // Add event listener for page visibility changes
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        // Page is hidden, force garbage collection
+        memoryManager.forceGarbageCollection();
+      }
+    });
+    
+    // Prevent reload on iOS when pulling down
+    document.body.style.overscrollBehavior = 'none';
+    
+  } catch (error) {
+    console.error('Error applying iOS Safari optimizations:', error);
+  }
+};
 
 const RootLayout = () => {
   const [fontsLoaded, error] = useFonts({
@@ -19,212 +96,83 @@ const RootLayout = () => {
     "Poppins-SemiBold": require("../assets/fonts/Poppins-SemiBold.ttf"),
     "Poppins-Thin": require("../assets/fonts/Poppins-Thin.ttf"),
   });
+  
+  const [optimizationsApplied, setOptimizationsApplied] = useState(false);
 
+  // Handle font loading and iOS optimizations
   useEffect(() => {
     if (error) {
-      throw error;
+      console.error('Font loading error:', error);
+      // Don't throw the error, just log it to prevent crashes
+      SplashScreen.hideAsync().catch(e => console.error('Error hiding splash screen:', e));
     }
 
     if (fontsLoaded) {
-      SplashScreen.hideAsync();
+      // Fonts are loaded, let the index.jsx handle the splash screen
+      console.log('Fonts loaded successfully');
     }
 
-    if (Platform.OS === 'web') {
-      console.log('Running on web platform');
-      // Add special handling for iOS Safari
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-      if (isIOS) {
-        console.log('Running on iOS Safari');
-        // Reduce animations or special handling for iOS
-        console.log('Running on iOS Safari - applying optimizations');
-        
-        // Apply iOS Safari specific optimizations
-        // 1. Limit animation frame rate
-        if (window.requestAnimationFrame) {
-          const originalRAF = window.requestAnimationFrame;
-          window.requestAnimationFrame = callback => {
-            return originalRAF(() => {
-              if (typeof callback === 'function') callback();
-            });
-          };
-        }
-        
-        // 2. Add iOS-specific CSS to document
-        const style = document.createElement('style');
-        style.innerHTML = `
-          * {
-            -webkit-overflow-scrolling: touch;
-          }
-          img {
-            -webkit-user-select: none;
-          }
-        `;
-        document.head.appendChild(style);
-
-        // Add this section to observe images and unload those not in view
-        setTimeout(() => {
-          try {
-            const observer = new IntersectionObserver((entries) => {
-              entries.forEach(entry => {
-                if (entry.target instanceof HTMLImageElement) {
-                  if (!entry.isIntersecting) {
-                    // Lower resolution of off-screen images to save memory
-                    if (!entry.target._originalSrc) {
-                      entry.target._originalSrc = entry.target.src;
-                    }
-                    entry.target.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; // 1px transparent GIF
-                  } else if (entry.target._originalSrc) {
-                    // Restore original when back in view
-                    entry.target.src = entry.target._originalSrc;
-                  }
-                }
-              });
-            }, { rootMargin: '200px' });
-            
-            // Observe all images
-            document.querySelectorAll('img').forEach(img => {
-              observer.observe(img);
-            });
-            
-            // Periodically check for new images
-            const checkInterval = setInterval(() => {
-              document.querySelectorAll('img:not([observed])').forEach(img => {
-                img.setAttribute('observed', 'true');
-                observer.observe(img);
-              });
-            }, 2000);
-            
-            return () => {
-              clearInterval(checkInterval);
-              observer.disconnect();
-            };
-          } catch (e) {
-            console.error('Error setting up IntersectionObserver', e);
-          }
-        }, 1000);
-
-        // Global config for iOS Safari
-        window.iosSafariConfig = {
-          // Limit the number of simultaneous network requests
-          maxConcurrentRequests: 4,
-          // Limit images displayed at once
-          maxImagesPerScreen: 6,
-          // Throttle animations
-          reduceAnimations: true
-        };
-        
-        // Patch fetch to limit concurrent requests
-        const originalFetch = window.fetch;
-        let activeRequests = 0;
-        const requestQueue = [];
-        
-        window.fetch = function(...args) {
-          if (activeRequests >= window.iosSafariConfig.maxConcurrentRequests) {
-            // Queue this request for later
-            return new Promise((resolve) => {
-              requestQueue.push(() => {
-                originalFetch(...args).then(resolve);
-              });
-            });
-          }
+    // Apply iOS Safari optimizations only once
+    if (!optimizationsApplied && Platform.OS === 'web') {
+      try {
+        // Check for iOS Safari
+        const isIOS = typeof navigator !== 'undefined' && 
+          /iPad|iPhone|iPod/.test(navigator.userAgent) && 
+          !window.MSStream;
           
-          activeRequests++;
-          return originalFetch(...args).finally(() => {
-            activeRequests--;
-            if (requestQueue.length > 0) {
-              const nextRequest = requestQueue.shift();
-              nextRequest();
-            }
-          });
-        };
-
-        // Monitor large network responses
-        const originalXHROpen = XMLHttpRequest.prototype.open;
-        XMLHttpRequest.prototype.open = function(...args) {
-          this.addEventListener('load', function() {
-            if (this.responseText && this.responseText.length > 1000000) {
-              console.warn('Large XHR response detected:', 
-                Math.round(this.responseText.length / 1024), 'KB');
-            }
-          });
-          return originalXHROpen.apply(this, args);
-        };
-
-        // Add viewport meta tag with specific settings for iOS Safari
-        const meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no';
-        document.head.appendChild(meta);
-        
-        // Force hardware acceleration
-        const styleHardwareAccel = document.createElement('style');
-        styleHardwareAccel.innerHTML = `
-          * {
-            -webkit-transform: translateZ(0);
-            -moz-transform: translateZ(0);
-            -ms-transform: translateZ(0);
-            -o-transform: translateZ(0);
-            transform: translateZ(0);
-            -webkit-backface-visibility: hidden;
-            -moz-backface-visibility: hidden;
-            -ms-backface-visibility: hidden;
-            backface-visibility: hidden;
-            -webkit-perspective: 1000;
-            -moz-perspective: 1000;
-            -ms-perspective: 1000;
-            perspective: 1000;
-          }
-        `;
-        document.head.appendChild(styleHardwareAccel);
+        if (isIOS) {
+          applyIOSSafariOptimizations();
+          setOptimizationsApplied(true);
+        }
+      } catch (e) {
+        console.error('Error detecting platform:', e);
       }
     }
-  }, [fontsLoaded, error]);
+    
+    // Cleanup function
+    return () => {
+      if (Platform.OS === 'web' && window._memoryMonitorId) {
+        clearInterval(window._memoryMonitorId);
+      }
+    };
+  }, [fontsLoaded, error, optimizationsApplied]);
 
+  // Handle errors in a way that doesn't crash the app
+  const handleError = useCallback((error, errorInfo) => {
+    console.error('[GLOBAL ERROR]', error, errorInfo);
+  }, []);
+  
+  // Handle retry in a way that doesn't cause reloads
+  const handleRetry = useCallback(() => {
+    console.log('Attempting to recover from error');
+    if (Platform.OS === 'web') {
+      memoryManager.forceGarbageCollection();
+    }
+  }, []);
+
+  // If fonts aren't loaded yet, return null to keep the splash screen visible
   if (!fontsLoaded && !error) return null;
 
   return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
+    <ErrorBoundary
+      onError={handleError}
+      onRetry={handleRetry}
+    >
       <PlatformProvider>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{headerShown: false}} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="pages" options={{ headerShown: false }} />
+        <Stack 
+          screenOptions={{ 
+            animation: 'fade',
+            headerShown: false
+          }}
+        >
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="pages" />
         </Stack>
       </PlatformProvider>
     </ErrorBoundary>
   );
 };
-
-function ErrorFallback({ error }) {
-  console.error('[GLOBAL ERROR]', error);
-  return (
-    <View style={styles.errorContainer}>
-      <Text style={styles.errorTitle}>Something went wrong</Text>
-      <Text style={styles.errorMessage}>{error.message}</Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#222',
-  },
-  errorTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ff5252',
-    marginBottom: 10,
-  },
-  errorMessage: {
-    fontSize: 16,
-    color: '#fff',
-    textAlign: 'center',
-  },
-});
 
 export default RootLayout;

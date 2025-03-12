@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Linking,
   StyleSheet,
+  Dimensions,
+  InteractionManager,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import svgs from "../../constants/svgs";
@@ -30,20 +32,47 @@ const Home = () => {
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadedComponents, setLoadedComponents] = useState({
+    slider: false,
+    brandIcons: false,
+    productList: false,
+    newArrival: false,
+  });
   const router = useRouter();
 
   const userId = useUserDataStore((state) => state.users[0]?.id);
 
+  // Use InteractionManager to defer non-critical operations
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      setLoadedComponents({
+        slider: true,
+        brandIcons: true,
+        productList: false,
+        newArrival: false,
+      });
+      
+      // Load remaining components after a delay
+      setTimeout(() => {
+        setLoadedComponents({
+          slider: true,
+          brandIcons: true,
+          productList: true,
+          newArrival: true,
+        });
+      }, 500);
+    });
+  }, []);
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await getUserById(userId); // Fetch user data by ID
-        // console.log(response.data.username);
-        setUser(response.data); // Set the fetched user data to the state
+        const response = await getUserById(userId);
+        setUser(response.data);
       } catch (error) {
-        // console.error("Failed to fetch user data", error);
+        // Handle error silently
       } finally {
-        setLoading(false); // Set loading to false once the data is fetched
+        setLoading(false);
       }
     };
 
@@ -102,25 +131,27 @@ const Home = () => {
         <Header />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        removeClippedSubviews={true} // Improve memory usage
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
         <View style={styles.welcomeBox}>
           <Text style={styles.welcomeText}>Welcome 👋</Text>
           {user?.username ? (
-            <Text style={styles.userName}>{user.username}</Text> // Display the username
+            <Text style={styles.userName}>{user.username}</Text>
           ) : (
             <></>
           )}
           <Text style={styles.exploreBrand}>Club Features</Text>
-          <Slider />
+          {loadedComponents.slider && <Slider />}
         </View>
 
         <View style={styles.mostRatedDesigners}>
           <Text style={styles.sectionTitle}>
             Most Rated Creator Clothing lines
           </Text>
-          {/* <ScrollView horizontal showsHorizontalScrollIndicator={false}> */}
-          <BrandIcons />
-          {/* </ScrollView> */}
+          {loadedComponents.brandIcons && <BrandIcons />}
         </View>
 
         <View style={styles.card}>
@@ -158,7 +189,7 @@ const Home = () => {
           </TouchableOpacity>
         </View>
         <View>
-          <ProductList limit={4} />
+          {loadedComponents.productList && <ProductList limit={4} />}
         </View>
 
         {/* <View style={styles.sale}>
@@ -167,7 +198,7 @@ const Home = () => {
 
         <View>
           <Text style={styles.popularProductsTitle}>New Arrival</Text>
-          <NewArrival />
+          {loadedComponents.newArrival && <NewArrival />}
         </View>
 
         {/* <View>
@@ -176,15 +207,15 @@ const Home = () => {
         </View> */}
 
         <View>
-          <View  style={styles.popularProductsHeader}>
-          <Text style={styles.popularProductsTitle}>Just For You</Text>
-          <TouchableOpacity>
-            <Text style={styles.viewAll} onPress={handleView}>
-              View All
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.popularProductsHeader}>
+            <Text style={styles.popularProductsTitle}>Just For You</Text>
+            <TouchableOpacity>
+              <Text style={styles.viewAll} onPress={handleView}>
+                View All
+              </Text>
+            </TouchableOpacity>
           </View>
-          <ProductList limit={4} />
+          {loadedComponents.productList && <ProductList limit={4} />}
         </View>
         <View>
           <Brand_page />
@@ -287,7 +318,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   exploreImage: {
-    width: "100%",
+    width: Dimensions.get('window').width - 24,
     height: 240,
     borderRadius: 10,
   },

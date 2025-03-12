@@ -52,17 +52,27 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
   // Auto-slide effect
   useEffect(() => {
     let currentIndex = 0;
-    const interval = setInterval(() => {
-      if (scrollRef.current && fetchedBrandCollabs.length > 0) {
-        currentIndex = (currentIndex + 1) % fetchedBrandCollabs.length;
-        scrollRef.current.scrollToOffset({
-          offset: currentIndex * (ITEM_WIDTH + ITEM_SPACING),
-          animated: true,
-        });
-      }
-    }, 5000);
+    let intervalId = null;
+    
+    // Only start the interval if we have items to display
+    if (fetchedBrandCollabs.length > 0) {
+      intervalId = setInterval(() => {
+        if (scrollRef.current) {
+          currentIndex = (currentIndex + 1) % fetchedBrandCollabs.length;
+          scrollRef.current.scrollToOffset({
+            offset: currentIndex * (ITEM_WIDTH + ITEM_SPACING),
+            animated: true,
+          });
+        }
+      }, 5000);
+    }
 
-    return () => clearInterval(interval);
+    // Clean up the interval when component unmounts
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
   }, [fetchedBrandCollabs]);
 
   const openWhatsApp = () => {
@@ -187,6 +197,9 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
           <Image
             source={{ uri: imageUrl || '/assets/Picture2.png' }}
             style={styles.image}
+            onError={(e) => console.log('Image loading error:', e.nativeEvent.error)}
+            // Add default placeholder while loading
+            defaultSource={require("../../assets/placeholder.png")}
           />
         </TouchableOpacity>
         {index === 0 && (

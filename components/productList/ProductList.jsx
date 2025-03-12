@@ -57,45 +57,43 @@ const ProductList = ({ limit }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        // Limit the number of products fetched to reduce memory usage
         const response = await getProducts();
-        setProducts(response.data.data);
-        //  console.log(response.data.data[0].sizes[1].number_of_items)
+        
+        // Only process a limited number of products to avoid memory issues
+        const limitedProducts = response.data.data.slice(0, 10); // Limit to 10 products
+        setProducts(limitedProducts);
 
-        const updatedProducts = [...response.data.data];
+        // Process stock updates in batches to avoid too many state updates
+        const updatedProducts = [...limitedProducts];
+        let hasChanges = false;
 
         for (let i = 0; i < updatedProducts.length; i++) {
           const product = updatedProducts[i];
-
-          // Check if any size has available stock
           const hasAvailableStock = product.sizes.some(
             (size) => size.number_of_items > 0
           );
 
-          // If any size has stock, mark the product as in stock
-          const updatedProductData = {
-            data: {
-              in_stock: hasAvailableStock,
-            },
-          };
-
-          // Update product stock locally first
           if (hasAvailableStock !== product.in_stock) {
             updatedProducts[i] = {
               ...product,
-              in_stock: hasAvailableStock, // Update the in_stock property immediately
+              in_stock: hasAvailableStock,
             };
-
-            setProducts(updatedProducts); // Update the state immediately for the UI
-
-            // Then, send the updated data to the server
-            await updateProduct(product.documentId, updatedProductData);
-            // console.log(`Product ${product.name} stock status updated.`);
+            hasChanges = true;
+            
+            // Update on server in background
+            updateProduct(product.documentId, {
+              data: { in_stock: hasAvailableStock }
+            }).catch(err => console.log('Error updating product:', err));
           }
+        }
+
+        // Only update state if changes were made
+        if (hasChanges) {
+          setProducts(updatedProducts);
         }
       } catch (error) {
         setError("Failed to load products");
-      } finally {
-        //  setLoading(false);
       }
     };
 
@@ -195,6 +193,14 @@ const ProductList = ({ limit }) => {
     }, 2000);
   };
 
+  // Optimize image rendering
+  const productimage = {
+    width: "100%",
+    height: 130,
+    // Use aspectRatio instead of fixed height for better scaling
+    aspectRatio: 1,
+  };
+
   return (
     <View style={styles.container}>
       {displayedProducts.map((product, index) => {
@@ -215,7 +221,7 @@ const ProductList = ({ limit }) => {
             {imageUrl && (
               <Image
                 source={{ uri: imageUrl }}
-                style={styles.productimage}
+                style={productimage}
                 resizeMode="contain"
               />
             )}
@@ -313,10 +319,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   productimage: {
-    width: "100%", // Make image responsive
-    height: 130, // Increase image height for a larger appearance
-    // borderTopLeftRadius: 10,
-    // borderTopRightRadius: 10,
+    width: "100%",
+    height: 130,
+    // Use aspectRatio instead of fixed height for better scaling
+    aspectRatio: 1,
   },
   stockText: {
     color: "#FF6347",

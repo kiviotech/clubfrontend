@@ -133,7 +133,7 @@ const SignIn = () => {
 
   const handleGuestLogin = () => {
     // Navigate to the home page as a guest
-    router.replace("/home");
+    router.push("/home");
   };
 
 

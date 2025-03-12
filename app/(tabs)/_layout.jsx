@@ -1,7 +1,9 @@
-import { View, Text, StyleSheet, Dimensions, useWindowDimensions } from "react-native";
-import React from "react";
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, Dimensions, useWindowDimensions, Platform } from "react-native";
 import { Tabs } from "expo-router";
 import Svgs from "../../constants/svgs";
+import { usePlatform } from '../../src/context/PlatformContext';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 const TabIcon = ({ SvgIcon, AfterSvgIcon, color, name, focused, screenWidth }) => {
   const iconSize = screenWidth > 400 ? 28 : 22; // Adjust icon size based on screen width
@@ -25,6 +27,37 @@ const TabIcon = ({ SvgIcon, AfterSvgIcon, color, name, focused, screenWidth }) =
 
 const TabsLayout = () => {
   const { width: screenWidth } = useWindowDimensions();
+  const { isIOSWeb } = usePlatform();
+
+  // Prevent iOS Safari from reloading when switching tabs
+  useEffect(() => {
+    if (Platform.OS === 'web' && isIOSWeb) {
+      // Prevent pull-to-refresh behavior which can cause reloads
+      document.body.style.overscrollBehavior = 'none';
+      
+      // Prevent iOS Safari from reloading when the address bar appears/disappears
+      const meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no';
+      document.head.appendChild(meta);
+      
+      // Add event listener to prevent beforeunload events
+      const handleBeforeUnload = (e) => {
+        // Only prevent unload for same-origin navigation
+        if (window.location.origin === document.activeElement?.href?.split('#')[0]) {
+          e.preventDefault();
+          e.returnValue = '';
+          return '';
+        }
+      };
+      
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
+    }
+  }, [isIOSWeb]);
 
   const tabScreens = [
     {
@@ -58,43 +91,46 @@ const TabsLayout = () => {
   ];
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarShowLabel: false,
-        tabBarActiveTintColor: "#8FFA09", 
-        tabBarInactiveTintColor: "#B0B0B0",
-        tabBarStyle: {
-          backgroundColor: "black",
-          height: screenWidth > 400 ? 80 : 60,
-          position: "absolute",
-          borderTopWidth: 0,
-          overflow: "hidden",
-          paddingLeft: 10,
-          paddingRight: 10,
-        },
-      }}
-    >
-      {tabScreens.map((screen) => (
-        <Tabs.Screen
-          key={screen.name}
-          name={screen.name}
-          options={{
-            title: screen.title,
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                SvgIcon={screen.SvgIcon}
-                AfterSvgIcon={screen.AfterSvgIcon}
-                color={color}
-                name={screen.label}
-                focused={focused}
-                screenWidth={screenWidth}
-              />
-            ),
-          }}
-        />
-      ))}
-    </Tabs>
+    <ErrorBoundary>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarActiveTintColor: "#8FFA09", 
+          tabBarInactiveTintColor: "#B0B0B0",
+          tabBarStyle: {
+            backgroundColor: "black",
+            height: screenWidth > 400 ? 80 : 60,
+            position: "absolute",
+            borderTopWidth: 0,
+            overflow: "hidden",
+            paddingLeft: 10,
+            paddingRight: 10,
+          },
+          animationEnabled: !isIOSWeb, // Disable animations on iOS web
+        }}
+      >
+        {tabScreens.map((screen) => (
+          <Tabs.Screen
+            key={screen.name}
+            name={screen.name}
+            options={{
+              title: screen.title,
+              tabBarIcon: ({ color, focused }) => (
+                <TabIcon
+                  SvgIcon={screen.SvgIcon}
+                  AfterSvgIcon={screen.AfterSvgIcon}
+                  color={color}
+                  name={screen.label}
+                  focused={focused}
+                  screenWidth={screenWidth}
+                />
+              ),
+            }}
+          />
+        ))}
+      </Tabs>
+    </ErrorBoundary>
   );
 };
 
