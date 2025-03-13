@@ -52,79 +52,127 @@
 
 
 // utils/tokenExpiryCheck.js (Frontend Utility)
-import { useEffect } from "react";
-import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import useUserDataStore from "../store/userData";
-import { Alert } from "react-native";
-import dayjs from "dayjs"; // Install with `npm install dayjs`
+import { useEffect, useRef } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
+import { Alert } from 'react-native';
+import jwtDecode from 'jwt-decode';
 
-const useTokenExpiryCheck = () => {
+/**
+ * Custom hook to check if the JWT token has expired and handle logout
+ * @param {Object} options - Configuration options
+ * @param {boolean} options.showAlert - Whether to show an alert when token expires (default: true)
+ * @param {boolean} options.redirectToLogin - Whether to redirect to login page when token expires (default: true)
+ * @param {number} options.checkInterval - Interval in milliseconds to check token expiry (default: 60000 - 1 minute)
+ * @returns {Object} - Object containing isTokenExpired state and logout function
+ */
+const useTokenExpiryCheck = (options = {}) => {
+  const {
+    showAlert = true,
+    redirectToLogin = true,
+    checkInterval = 60000, // Check every minute by default
+  } = options;
+  
   const router = useRouter();
-  const clearUsers = useUserDataStore((state) => state.clearUsers);
+  const intervalRef = useRef(null);
+  const isMounted = useRef(true);
 
-  useEffect(() => {
-    const checkTokenExpiry = async () => {
-      try {
-        const token = await AsyncStorage.getItem("token");
-        const expiryTime = await AsyncStorage.getItem("expiryTime");
-
-        if (token && expiryTime) {
-          const currentTime = dayjs();
-          const tokenExpiry = dayjs(expiryTime);
-
-          if (tokenExpiry.isBefore(currentTime)) {
-            // Token has already expired
-            await clearSession();
-          } else {
-            // Time left until expiration
-            const timeLeft = tokenExpiry.diff(currentTime);
-
-            setTimeout(() => {
-              Alert.alert(
-                "Session Expiring Soon",
-                "Your session will expire in 1 day.",
-                [{ text: "OK" }]
-              );
-            }, timeLeft - 24 * 60 * 60 * 1000); // Show alert 1 day before expiration
-
-            setTimeout(async () => {
-              await clearSession();
-            }, timeLeft);
-          }
-        }
-      } catch (error) {
-        // console.error("Token check error:", error);
+  // Function to check if token is expired
+  const checkTokenExpiry = async () => {
+    try {
+      const token = await AsyncStorage.getItem('jwt');
+      
+      if (!token) {
+        // No token found, consider as expired
+        return true;
       }
-    };
+      
+      // Decode the token to get expiration time
+      const decodedToken = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+      
+      return decodedToken.exp < currentTime;
+    } catch (error) {
+      console.error('Error checking token expiry:', error);
+      // If there's an error decoding the token, consider it expired
+      return true;
+    }
+  };
 
-    const clearSession = async () => {
-      try {
-        clearUsers();
-        await AsyncStorage.clear();
+  // Function to handle logout
+  const handleLogout = async () => {
+    try {
+      // Clear all authentication data
+      await AsyncStorage.multiRemove(['jwt', 'userId', 'userEmail']);
+      
+      // Clear interval to prevent memory leaks
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      
+      // Show alert if enabled
+      if (showAlert && isMounted.current) {
         Alert.alert(
-          "Session Expired",
-          "Your session has expired. Please log in again.",
-          [{ text: "OK" }]
+          'Session Expired',
+          'Your session has expired. Please log in again.',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                // Redirect to login page if enabled
+                if (redirectToLogin && isMounted.current) {
+                  router.replace('/sign-in');
+                }
+              },
+            },
+          ]
         );
-        router.replace("/(auth)/sign-in");
-      } catch (error) {
-        // console.error("Error /clearing storage:", error);
+      } else if (redirectToLogin && isMounted.current) {
+        // Redirect without alert
+        router.replace('/sign-in');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
+  // Set up token expiry check on component mount
+  useEffect(() => {
+    isMounted.current = true;
+    
+    // Initial check
+    const initialCheck = async () => {
+      const isExpired = await checkTokenExpiry();
+      if (isExpired && isMounted.current) {
+        handleLogout();
       }
     };
+    
+    initialCheck();
+    
+    // Set up interval for periodic checks
+    intervalRef.current = setInterval(async () => {
+      const isExpired = await checkTokenExpiry();
+      if (isExpired && isMounted.current) {
+        handleLogout();
+      }
+    }, checkInterval);
+    
+    // Clean up on unmount
+    return () => {
+      isMounted.current = false;
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [router, showAlert, redirectToLogin, checkInterval]);
 
-    checkTokenExpiry();
-  }, []);
-};
-
-export const setTokenWithExpiry = async (token) => {
-  try {
-    const expiryTime = dayjs().add(30, "day").toISOString();
-    await AsyncStorage.setItem("token", token);
-    await AsyncStorage.setItem("expiryTime", expiryTime);
-  } catch (error) {
-    // console.error("Error setting token:", error);
-  }
+  return {
+    checkTokenExpiry,
+    handleLogout,
+  };
 };
 
 export default useTokenExpiryCheck;

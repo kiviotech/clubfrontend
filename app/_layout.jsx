@@ -1,21 +1,24 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import { Platform } from 'react-native';
 import { PlatformProvider } from '../src/context/PlatformContext';
-import ErrorBoundary from './components/ErrorBoundary';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import * as memoryManager from './utils/memoryManager';
+import * as ExpoSplashScreen from 'expo-splash-screen';
+import * as debugUtils from './utils/debugUtils';
 
 // Keep splash screen visible until fonts are loaded
 SplashScreen.preventAutoHideAsync();
+ExpoSplashScreen.preventAutoHideAsync();
 
 // Simple iOS Safari optimizations
 const applyIOSSafariOptimizations = () => {
-  console.log('Running on iOS Safari - applying essential optimizations');
+  debugUtils.debugLog('Running on iOS Safari - applying essential optimizations');
   
   // Check if optimizations have already been applied
   if (window._iOSOptimizationsApplied) {
-    console.log('iOS optimizations already applied, skipping');
+    debugUtils.debugLog('iOS optimizations already applied, skipping');
     return;
   }
   
@@ -51,12 +54,11 @@ const applyIOSSafariOptimizations = () => {
     // 3. Monitor memory usage
     if (window.performance && window.performance.memory) {
       const memoryMonitorId = setInterval(() => {
-        const used = window.performance.memory.usedJSHeapSize;
-        console.log(`Memory usage: ${Math.round(used / 1048576)}MB`);
+        debugUtils.logMemoryUsage();
         
         // If memory usage is critical, take action
-        if (used > 250 * 1048576) { // Over 250MB
-          console.warn('Critical memory usage detected, attempting cleanup');
+        if (memoryManager.isMemoryUsageCritical()) {
+          debugUtils.debugLog('Critical memory usage detected, attempting cleanup');
           memoryManager.forceGarbageCollection();
         }
       }, 30000); // Check every 30 seconds
@@ -72,6 +74,7 @@ const applyIOSSafariOptimizations = () => {
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') {
         // Page is hidden, force garbage collection
+        debugUtils.debugLog('Page hidden, forcing garbage collection');
         memoryManager.forceGarbageCollection();
       }
     });
@@ -80,11 +83,50 @@ const applyIOSSafariOptimizations = () => {
     document.body.style.overscrollBehavior = 'none';
     
   } catch (error) {
-    console.error('Error applying iOS Safari optimizations:', error);
+    debugUtils.logError('Error applying iOS Safari optimizations', error);
   }
 };
 
 const RootLayout = () => {
+  // Add logging for app initialization
+  debugUtils.debugLog('App initializing...');
+  
+  // Add logging for navigation events
+  const routeNameRef = useRef();
+  const navigationRef = useRef();
+  
+  // Track memory usage
+  useEffect(() => {
+    const logMemoryUsage = () => {
+      debugUtils.logMemoryUsage();
+    };
+    
+    const interval = setInterval(logMemoryUsage, 10000); // Log every 10 seconds
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  // Log when screens change
+  const onReady = () => {
+    if (navigationRef.current) {
+      routeNameRef.current = navigationRef.current.getCurrentRoute().name;
+      debugUtils.logNavigation('Initial', routeNameRef.current);
+    }
+  };
+  
+  const onStateChange = () => {
+    if (navigationRef.current) {
+      const previousRouteName = routeNameRef.current;
+      const currentRouteName = navigationRef.current.getCurrentRoute().name;
+      
+      if (previousRouteName !== currentRouteName) {
+        debugUtils.logNavigation(previousRouteName, currentRouteName);
+      }
+      
+      routeNameRef.current = currentRouteName;
+    }
+  };
+
   const [fontsLoaded, error] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
     "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
@@ -102,14 +144,14 @@ const RootLayout = () => {
   // Handle font loading and iOS optimizations
   useEffect(() => {
     if (error) {
-      console.error('Font loading error:', error);
+      debugUtils.logError('Font loading error', error);
       // Don't throw the error, just log it to prevent crashes
-      SplashScreen.hideAsync().catch(e => console.error('Error hiding splash screen:', e));
+      SplashScreen.hideAsync().catch(e => debugUtils.logError('Error hiding splash screen', e));
     }
 
     if (fontsLoaded) {
       // Fonts are loaded, let the index.jsx handle the splash screen
-      console.log('Fonts loaded successfully');
+      debugUtils.debugLog('Fonts loaded successfully');
     }
 
     // Apply iOS Safari optimizations only once
@@ -125,7 +167,7 @@ const RootLayout = () => {
           setOptimizationsApplied(true);
         }
       } catch (e) {
-        console.error('Error detecting platform:', e);
+        debugUtils.logError('Error detecting platform', e);
       }
     }
     
@@ -139,12 +181,12 @@ const RootLayout = () => {
 
   // Handle errors in a way that doesn't crash the app
   const handleError = useCallback((error, errorInfo) => {
-    console.error('[GLOBAL ERROR]', error, errorInfo);
+    debugUtils.logError('[GLOBAL ERROR]', error);
   }, []);
   
   // Handle retry in a way that doesn't cause reloads
   const handleRetry = useCallback(() => {
-    console.log('Attempting to recover from error');
+    debugUtils.debugLog('Attempting to recover from error');
     if (Platform.OS === 'web') {
       memoryManager.forceGarbageCollection();
     }

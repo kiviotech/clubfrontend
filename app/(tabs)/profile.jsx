@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import logo from "../../assets/logo.png";
@@ -14,12 +14,11 @@ import { getUserProfile } from '../../src/api/repositories/userRepository';
 import useProfileStore from '../../src/store/useProfileStore';
 import useCartStore from '../../src/store/useCartStore';
 import useStore from '../../src/store/useStore';
-import { useFocusEffect } from '@react-navigation/native';
 import useWishlistStore from '../../src/store/useWishlistStore';
 import { Alert } from 'react-native';
 import useLogoutStateStore from '../../src/store/useLogoutStateStore';
 import { usePreventBackAfterLogout } from '../../src/middleware/usePreventBackAfterLogout';
-
+import withErrorBoundary from "../../components/ErrorBoundary";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -49,14 +48,8 @@ const Profile = () => {
     }
   }, [isLoggedOut, userId]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchProfile();
-    }, [])
-  );
-
-  // Move fetchProfile function outside the first useEffect for reusability
-  const fetchProfile = async () => {
+  // Replace useFocusEffect with useEffect and useCallback
+  const fetchProfile = useCallback(async () => {
     try {
       if (userId) {
         const response = await getUserProfile(userId);
@@ -75,12 +68,26 @@ const Profile = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
+
+  // Use regular useEffect instead of useFocusEffect
+  useEffect(() => {
+    fetchProfile();
+    
+    // Set up an interval to refresh the profile periodically
+    const refreshInterval = setInterval(() => {
+      fetchProfile();
+    }, 60000); // Refresh every minute
+    
+    return () => {
+      clearInterval(refreshInterval);
+    };
+  }, [fetchProfile]);
 
   // Keep the original useEffect that calls fetchProfile on mount
   useEffect(() => {
     fetchProfile();
-  }, [userId]);
+  }, [userId, fetchProfile]);
 
   const ProfileRequest = () => {
     if (!user) return;
@@ -409,4 +416,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Profile;
+export default withErrorBoundary(Profile);

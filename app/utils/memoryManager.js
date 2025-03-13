@@ -5,6 +5,7 @@
 
 import { Platform } from 'react-native';
 import { usePlatform } from '../../src/context/PlatformContext';
+import { useRef, useEffect } from 'react';
 
 // Memory usage thresholds in MB
 const MEMORY_WARNING_THRESHOLD = 150; // MB
@@ -173,6 +174,107 @@ export const throttle = (func, limit = 300) => {
   };
 };
 
+/**
+ * Hook to safely manage component lifecycle and prevent memory leaks
+ * @returns {Object} Object with isMounted ref and safeCleanup function
+ */
+export const useSafeCleanup = () => {
+  const isMounted = useRef(true);
+  
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+  
+  /**
+   * Safely run a cleanup function only if the component is still mounted
+   * @param {Function} cleanupFn The cleanup function to run
+   */
+  const safeCleanup = (cleanupFn) => {
+    if (isMounted.current && typeof cleanupFn === 'function') {
+      cleanupFn();
+    }
+  };
+  
+  return { isMounted, safeCleanup };
+};
+
+/**
+ * Hook to safely manage timers and prevent memory leaks
+ * @returns {Object} Object with timer management functions
+ */
+export const useTimers = () => {
+  const timers = useRef([]);
+  
+  // Clear all timers when component unmounts
+  useEffect(() => {
+    return () => {
+      timers.current.forEach(timer => {
+        if (timer.type === 'timeout') {
+          clearTimeout(timer.id);
+        } else if (timer.type === 'interval') {
+          clearInterval(timer.id);
+        }
+      });
+      timers.current = [];
+    };
+  }, []);
+  
+  /**
+   * Set a timeout that will be automatically cleared on unmount
+   * @param {Function} fn Function to execute
+   * @param {number} delay Delay in milliseconds
+   * @returns {number} Timeout ID
+   */
+  const setTimeout = (fn, delay) => {
+    const id = window.setTimeout(fn, delay);
+    timers.current.push({ id, type: 'timeout' });
+    return id;
+  };
+  
+  /**
+   * Set an interval that will be automatically cleared on unmount
+   * @param {Function} fn Function to execute
+   * @param {number} delay Delay in milliseconds
+   * @returns {number} Interval ID
+   */
+  const setInterval = (fn, delay) => {
+    const id = window.setInterval(fn, delay);
+    timers.current.push({ id, type: 'interval' });
+    return id;
+  };
+  
+  /**
+   * Clear a specific timeout
+   * @param {number} id Timeout ID
+   */
+  const clearTimeout = (id) => {
+    window.clearTimeout(id);
+    timers.current = timers.current.filter(timer => 
+      !(timer.id === id && timer.type === 'timeout')
+    );
+  };
+  
+  /**
+   * Clear a specific interval
+   * @param {number} id Interval ID
+   */
+  const clearInterval = (id) => {
+    window.clearInterval(id);
+    timers.current = timers.current.filter(timer => 
+      !(timer.id === id && timer.type === 'interval')
+    );
+  };
+  
+  return {
+    setTimeout,
+    setInterval,
+    clearTimeout,
+    clearInterval
+  };
+};
+
 export default {
   isMemoryUsageHigh,
   isMemoryUsageCritical,
@@ -182,4 +284,6 @@ export default {
   unloadResources,
   debounce,
   throttle,
+  useSafeCleanup,
+  useTimers,
 }; 

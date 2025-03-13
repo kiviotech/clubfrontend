@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import useProductStore from "../../src/store/useProductStore";
 import useCartStore from "../../src/store/useCartStore";
 import useWishlistStore from "../../src/store/useWishlistStore";
 import { updateProduct } from "../../src/api/repositories/productRepository";
+import * as ImageUtils from "../../app/utils/imageUtils";
 
 const ProductList = ({ limit }) => {
   const [products, setProducts] = useState([]);
@@ -36,13 +37,14 @@ const ProductList = ({ limit }) => {
       ? [`${MEDIA_BASE_URL}${products.images}`]
       : (products.images || []).map((img) => `${MEDIA_BASE_URL}${img}`);
 
-  // Helper function to get the first image URL
-  const getImageUrl = (images) => {
+  // Helper function to get the first image URL with optimized format
+  const getImageUrl = useCallback((images) => {
     if (Array.isArray(images) && images.length > 0) {
-      return `${MEDIA_BASE_URL}${images[0].url}`; // Assuming each image has a `url` field
+      // Use the optimized image URL for list view
+      return ImageUtils.getOptimizedImageUrl(images[0], 'list');
     }
     return null; // Fallback if no images
-  };
+  }, []);
 
   const increment = () => {
     setQuantity(quantity + 1);
@@ -102,13 +104,12 @@ const ProductList = ({ limit }) => {
 
   const displayedProducts = limit ? products.slice(0, limit) : products;
 
-  const handleProductDetails = (product) => {
-    // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
+  const handleProductDetails = useCallback((product) => {
+    // Use full-size images for product details
     const images = product.product_image.map(
-      (img) => `${MEDIA_BASE_URL}${img.url}`
+      (img) => ImageUtils.getOptimizedImageUrl(img, 'detail')
     );
 
-    // console.log(sizes)
     setProductDetails({
       id: product.id,
       images: images,
@@ -121,7 +122,7 @@ const ProductList = ({ limit }) => {
     });
 
     router.push("../../pages/productDetails");
-  };
+  }, [router, setProductDetails]);
 
   // if (loading) {
   //   return <ActivityIndicator size="large" color="#0000ff" />;
@@ -205,7 +206,6 @@ const ProductList = ({ limit }) => {
     <View style={styles.container}>
       {displayedProducts.map((product, index) => {
         const imageUrl = getImageUrl(product.product_image);
-        // const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
         const isOutOfStock = !product.in_stock;
         const isInWishlist = wishlist.some(
           (wishItem) => wishItem.id === product.id
@@ -221,8 +221,12 @@ const ProductList = ({ limit }) => {
             {imageUrl && (
               <Image
                 source={{ uri: imageUrl }}
-                style={productimage}
+                style={styles.productimage}
                 resizeMode="contain"
+                // Add error handling and loading placeholder
+                onError={(e) => console.log('Image loading error:', e.nativeEvent.error)}
+                progressiveRenderingEnabled={true}
+                fadeDuration={300}
               />
             )}
             <View style={styles.buttonContainer}>

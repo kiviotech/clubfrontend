@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   View,
   Text,
@@ -26,6 +26,7 @@ import { getUserById } from "../../src/api/repositories/userRepository";
 import Header from "../pages/header";
 import Icon from "react-native-vector-icons/Ionicons";
 import useTokenExpiryCheck from "../../src/utils/tokenExpiryCheck";
+import withErrorBoundary from "../../components/ErrorBoundary";
 
 const Home = () => {
   useTokenExpiryCheck();
@@ -70,7 +71,7 @@ const Home = () => {
         const response = await getUserById(userId);
         setUser(response.data);
       } catch (error) {
-        // Handle error silently
+        console.error("Failed to fetch user data", error);
       } finally {
         setLoading(false);
       }
@@ -81,26 +82,27 @@ const Home = () => {
     }
   }, [userId]);
 
-  const openVideoLink = (videoUrl) => {
+  const openVideoLink = useCallback((videoUrl) => {
     Linking.openURL(videoUrl);
-  };
+  }, []);
 
-  const handleRequest = () => {
+  const handleRequest = useCallback(() => {
     if (!userId) {
       router.push("/sign-in");
     } else {
       router.push("/pages/CustomizePage");
     }
-  };
+  }, [userId, router]);
 
-  const handleNotify = () => {
+  const handleNotify = useCallback(() => {
     router.push("/pages/notification");
-  };
-  const handleView = () => {
-    router.push("/pages/viewProduct");
-  };
+  }, [router]);
 
-  const handleProfileNavigation = (designer) => {
+  const handleView = useCallback(() => {
+    router.push("/pages/viewProduct");
+  }, [router]);
+
+  const handleProfileNavigation = useCallback((designer) => {
     router.push({
       pathname: "/pages/view-profile",
       params: {
@@ -114,7 +116,7 @@ const Home = () => {
         education: designer.education,
       },
     });
-  };
+  }, [router]);
 
   const Nicon = svgs.nbell;
 
@@ -445,4 +447,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default withErrorBoundary(Home);

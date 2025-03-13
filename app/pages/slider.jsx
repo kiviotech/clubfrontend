@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback, memo } from "react";
 import {
   View,
   Text,
@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   Linking,
   Alert,
-  Platform
+  Platform,
+  InteractionManager
 } from "react-native";
 import { useRouter } from "expo-router";
 import useBrandCollabStore from "../../src/store/useBrandCollabStore";
@@ -32,31 +33,44 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
   const router = useRouter();
   const [brandById, setBrandById] = useState(null);
   const setSelectedBrand = useBrandStore((state) => state.setSelectedBrand);
+  const intervalRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Fetch brand collabs with proper error handling
   useEffect(() => {
     const fetchBrandCollabs = async () => {
       try {
+        setIsLoading(true);
         const response = await getBrandCollabs();
         const data = response.data.data;
-        setBrandCollabs(data);
-        setFetchedBrandCollabs(data);
         
+        // Run after interactions to prevent UI blocking
+        InteractionManager.runAfterInteractions(() => {
+          setBrandCollabs(data);
+          setFetchedBrandCollabs(data);
+          setIsLoading(false);
+        });
       } catch (error) {
-        // console.error("Failed to fetch brand collabs:", error);
+        console.error("Failed to fetch brand collabs:", error);
+        setIsLoading(false);
       }
     };
 
     fetchBrandCollabs();
   }, [setBrandCollabs]);
 
-  // Auto-slide effect
+  // Auto-slide effect with proper cleanup
   useEffect(() => {
     let currentIndex = 0;
-    let intervalId = null;
     
     // Only start the interval if we have items to display
     if (fetchedBrandCollabs.length > 0) {
-      intervalId = setInterval(() => {
+      // Clear any existing interval first
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      
+      intervalRef.current = setInterval(() => {
         if (scrollRef.current) {
           currentIndex = (currentIndex + 1) % fetchedBrandCollabs.length;
           scrollRef.current.scrollToOffset({
@@ -69,13 +83,14 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
 
     // Clean up the interval when component unmounts
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
   }, [fetchedBrandCollabs]);
 
-  const openWhatsApp = () => {
+  const openWhatsApp = useCallback(() => {
     const phoneNumber = "+919611717711"; // Replace with your WhatsApp phone number
     const message = "Hello, I am interested in your brand collaborations.";
     const url = `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(
@@ -88,81 +103,54 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
         "WhatsApp is not installed on your device. Please install it to proceed."
       );
     });
-  };
+  }, []);
 
-
-  const handleImagePress = async (index) => {
-    if (index === 5) {
-      router.push("/pages/GalleryPage");
-    } else if (index === 3) {
-      router.push("/pages/request-design");
-    } else if (index === 1 || index === 2) {
-      const brandId = "lagbzfc1r1ltzf7pobf893q4";
-      if (brandId) {
-        try {
-          const response = await getBrandById(brandId);
-          // console.log(response.data.data.brand_poster[0].url)
-          const brandData = response.data.data;
-          const brandName = brandData.brand_name;
-          const brandDescription = brandData.description;
-          const brandImage = `${MEDIA_BASE_URL}${brandData.brand_logo.url}`;
-          const brandPoster = `${MEDIA_BASE_URL}${brandData.brand_poster[0].url}`;
-          const id = brandData.id;
-          
-
-          setBrandById(brandData);
-          setSelectedBrand(brandName);
-          router.push({
-            pathname: "/pages/brand_info",
-            params: {
-              brandName,
-              brandDescription,
-              brandImage,
-              brandPoster,
-              id,
-            },
-          });
-        } catch (error) {
-          // console.error("Failed to fetch brand details:", error);
+  const handleImagePress = useCallback(async (index) => {
+    try {
+      if (index === 5) {
+        router.push("/pages/GalleryPage");
+      } else if (index === 3) {
+        router.push("/pages/request-design");
+      } else if (index === 1 || index === 2 || index === 4) {
+        const brandId = index === 4 ? "o3palnwfu9qs18guh09a1it1" : "lagbzfc1r1ltzf7pobf893q4";
+        
+        if (brandId) {
+          try {
+            const response = await getBrandById(brandId);
+            const brandData = response.data.data;
+            const brandName = brandData.brand_name;
+            const brandDescription = brandData.description;
+            const brandImage = `${MEDIA_BASE_URL}${brandData.brand_logo.url}`;
+            const brandPoster = `${MEDIA_BASE_URL}${brandData.brand_poster[0].url}`;
+            const id = brandData.id;
+            
+            // Update state after interactions to prevent UI blocking
+            InteractionManager.runAfterInteractions(() => {
+              setBrandById(brandData);
+              setSelectedBrand(brandName);
+              
+              router.push({
+                pathname: "/pages/brand_info",
+                params: {
+                  brandName,
+                  brandDescription,
+                  brandImage,
+                  brandPoster,
+                  id,
+                },
+              });
+            });
+          } catch (error) {
+            console.error("Failed to fetch brand details:", error);
+          }
         }
       }
-    }else if(index === 4){
-      const brandId = "o3palnwfu9qs18guh09a1it1";
-      if (brandId) {
-        try {
-          const response = await getBrandById(brandId);
-          // console.log(response.data.data.brand_poster[0].url)
-          const brandData = response.data.data;
-          const brandName = brandData.brand_name;
-          const brandDescription = brandData.description;
-          const brandImage = `${MEDIA_BASE_URL}${brandData.brand_logo.url}`;
-          const brandPoster = `${MEDIA_BASE_URL}${brandData.brand_poster[0].url}`;
-          const id = brandData.id;
-          
-
-          setBrandById(brandData);
-          setSelectedBrand(brandName);
-          router.push({
-            pathname: "/pages/brand_info",
-            params: {
-              brandName,
-              brandDescription,
-              brandImage,
-              brandPoster,
-              id,
-            },
-          });
-        } catch (error) {
-          // console.error("Failed to fetch brand details:", error);
-        }
-      }
-    } 
-    else {
-      // console.warn("No action defined for this item");
+    } catch (error) {
+      console.error("Navigation error:", error);
     }
-  };
+  }, [router, setBrandById, setSelectedBrand]);
 
-  const renderItem = ({ item, index }) => {
+  const renderItem = useCallback(({ item, index }) => {
     const inputRange = [
       (index - 1) * (ITEM_WIDTH + ITEM_SPACING),
       index * (ITEM_WIDTH + ITEM_SPACING),
@@ -200,6 +188,9 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
             onError={(e) => console.log('Image loading error:', e.nativeEvent.error)}
             // Add default placeholder while loading
             defaultSource={require("../../assets/placeholder.png")}
+            // Improve image loading performance
+            progressiveRenderingEnabled={true}
+            fadeDuration={300}
           />
         </TouchableOpacity>
         {index === 0 && (
@@ -213,7 +204,16 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
         )}
       </Animated.View>
     );
-  };
+  }, [handleImagePress, openWhatsApp, scrollX]);
+
+  // Show loading state
+  if (isLoading && fetchedBrandCollabs.length === 0) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <ErrorBoundary FallbackComponent={({ error }) => (
@@ -238,6 +238,11 @@ const HorizontalCarousel = ({ direction = "left-to-right" }) => {
         )}
         scrollEventThrottle={16}
         inverted={direction === "right-to-left"}
+        // Performance optimizations
+        initialNumToRender={3}
+        maxToRenderPerBatch={3}
+        windowSize={5}
+        removeClippedSubviews={true}
       />
     </ErrorBoundary>
   );
@@ -250,55 +255,54 @@ const styles = StyleSheet.create({
   },
   card: {
     width: ITEM_WIDTH,
-    height: 190,
+    height: 180,
     borderRadius: 10,
-    marginRight: ITEM_SPACING,
-    justifyContent: "center",
-    position: "relative",
+    overflow: "hidden",
+    marginHorizontal: ITEM_SPACING / 2,
+    backgroundColor: "#333",
   },
   image: {
     width: "100%",
     height: "100%",
     borderRadius: 10,
-    resizeMode: "cover",
   },
   whatsappButton: {
     position: "absolute",
-    bottom: 40,
-    right: 20,
+    bottom: 10,
+    right: 10,
+    backgroundColor: "#25D366",
+    borderRadius: 20,
+    padding: 8,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#8FFA09", // WhatsApp green color
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-    elevation: 5, // Adds shadow for depth
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
   },
   whatsappIcon: {
-    width: 24,
-    height: 24,
-    marginLeft: 8,
-    resizeMode: "contain", // Ensures the icon retains its aspect ratio
-  },
-  whatsappText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "bold",
+    width: 20,
+    height: 20,
+    marginLeft: 5,
   },
   errorContainer: {
     padding: 20,
-    backgroundColor: '#222',
-    borderRadius: 8,
+    backgroundColor: "#ffeeee",
+    borderRadius: 10,
     marginVertical: 10,
   },
   errorText: {
-    color: '#fff',
-    textAlign: 'center',
+    color: "#cc0000",
+    textAlign: "center",
+  },
+  loadingContainer: {
+    height: 180,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#333",
+    borderRadius: 10,
+  },
+  loadingText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
 
-export default HorizontalCarousel;
+// Use memo to prevent unnecessary re-renders
+export default memo(HorizontalCarousel);

@@ -24,6 +24,7 @@ import Header from "../pages/header";
 import { Video } from "expo-av";
 import { Asset } from "expo-asset";
 import Loading from "../pages/loading";
+import withErrorBoundary from "../../components/ErrorBoundary";
 
 
 const categories = ["All", "Men", "Women", "Kids Wear"];
@@ -249,4 +250,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default store;
+export default withErrorBoundary(store);

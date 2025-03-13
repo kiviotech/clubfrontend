@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import useRequestDetailsStore from '../../src/store/useRequestDetailsStore';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get('window');
 
 const DetailRequest = () => {
     const requestDetails = useRequestDetailsStore((state) => state.requestDetails); // Access stored details
-    const navigation = useNavigation();
+    const router = useRouter();
     const [currentIndex, setCurrentIndex] = useState(0); // To track the current image in the carousel
     // console.log(requestDetails.customDesignName)
 
@@ -23,8 +23,8 @@ const DetailRequest = () => {
             {/* Back Button */}
             <TouchableOpacity 
                 onPress={() => {
-                    if (navigation.canGoBack()) {
-                        navigation.goBack();
+                    if (router.canGoBack()) {
+                        router.goBack();
                     }
                 }} 
                 style={styles.backButton}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo, memo } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Image,
   FlatList,
   Dimensions,
+  InteractionManager,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { getProducts } from "../../src/api/repositories/productRepository";
@@ -18,13 +19,12 @@ import useCartStore from "../../src/store/useCartStore";
 import useWishlistStore from "../../src/store/useWishlistStore";
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import ProductList from "./ProductList";
 import { updateProduct } from "../../src/api/repositories/productRepository";
-
+import * as ImageUtils from "../../app/utils/imageUtils";
 
 const { width } = Dimensions.get('window');
 
-const NewArrival = ({ limit }) => {
+const NewArrival = ({ limit = 6 }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,14 +35,23 @@ const NewArrival = ({ limit }) => {
   const addToWishlist = useWishlistStore((state) => state.addToWishlist);
   const { wishlist, removeFromWishlist } = useWishlistStore();
   const [popupMessage, setPopupMessage] = useState("");
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-
+  // Use useEffect with proper cleanup
   useEffect(() => {
-      const fetchProducts = async () => {
-        try {
-          const response = await getProducts();
+    let isMounted = true;
+    setLoading(true);
+
+    const fetchProducts = async () => {
+      try {
+        const response = await getProducts();
+        
+        // Process data after interactions to prevent UI blocking
+        InteractionManager.runAfterInteractions(() => {
+          if (!isMounted) return;
+          
           // Limit the number of products to reduce memory usage
-          const limitedProducts = response.data.data.slice(0, 6);
+          const limitedProducts = response.data.data.slice(0, limit);
           setProducts(limitedProducts);
     
           // Process stock updates in batches
@@ -62,163 +71,235 @@ const NewArrival = ({ limit }) => {
               };
               hasUpdates = true;
               
-              // Update on server in background
+              // Update on server in background without awaiting
               updateProduct(product.documentId, {
                 data: { in_stock: hasAvailableStock }
               }).catch(err => console.log('Error updating product:', err));
             }
           }
     
-          if (hasUpdates) {
+          if (hasUpdates && isMounted) {
             setProducts(updatedProducts);
           }
-        } catch (error) {
-          setError("Failed to load products");
-        } finally {
+          
           setLoading(false);
+          setIsRefreshing(false);
+        });
+      } catch (error) {
+        console.error("Failed to load products:", error);
+        if (isMounted) {
+          setError("Failed to load products");
+          setLoading(false);
+          setIsRefreshing(false);
         }
-      };
+      }
+    };
     
-      fetchProducts();
-    }, [selectedBrand]);
+    fetchProducts();
+    
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedBrand, limit]);
 
-  const displayedProducts = limit ? products.slice(0, limit) : products;
+  // Memoize displayed products to prevent unnecessary calculations
+  const displayedProducts = useMemo(() => {
+    return limit ? products.slice(0, limit) : products;
+  }, [products, limit]);
 
-  const getImageUrl = (images) => {
+  // Memoize image URL function
+  const getImageUrl = useCallback((images) => {
     if (Array.isArray(images) && images.length > 0) {
-      return `${MEDIA_BASE_URL}${images[0].url}`; // Display only the first image
+      // Use optimized image URL for list view
+      return ImageUtils.getOptimizedImageUrl(images[0], 'list');
     }
     return null; // Fallback if no images
-  };
+  }, []);
 
-  // Function to handle product details click
+  // Function to handle product details click with useCallback
+  const handleProductDetails = useCallback((product) => {
+    try {
+      // Use optimized image URLs for detail view
+      const images = product.product_image.map(img => 
+        ImageUtils.getOptimizedImageUrl(img, 'detail')
+      );
+      
+      setProductDetails({
+        id: product.id,
+        images: images,
+        name: product.name,
+        price: product.price,
+        in_stock: product.in_stock,
+        sizes: product.sizes,
+        documentId: product.documentId,
+        description: product.description
+      });
+  
+      router.push("../../pages/productDetails");
+    } catch (error) {
+      console.error("Navigation error:", error);
+    }
+  }, [router, setProductDetails]);
 
-  const handleProductDetails = (product) => {
-    // const sizes = product.sizes?.map((size) => size.size).join(", ") || "";
-    const images = product.product_image.map(img => `${MEDIA_BASE_URL}${img.url}`);
-    // console.log(sizes)
-    setProductDetails({
-      id: product.id,
-      images: images,
-      name: product.name,
-      price: product.price,
-      in_stock: product.in_stock,
-      sizes: product.sizes, // Include sizes in the details
-      documentId:product.documentId,
-      description:product.description
-    });
+  const handleWishlistAdd = useCallback((product) => {
+    try {
+      const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
+      const imageUrl = getImageUrl(product.product_image);
+      
+      const item = {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: imageUrl,
+        in_stock: product.in_stock,
+      };
+  
+      if (isInWishlist) {
+        removeFromWishlist(product.id);
+        setPopupMessage("Removed from wishlist! ❌");
+      } else {
+        addToWishlist(item);
+        setPopupMessage("Added to wishlist! ✔️");
+      }
+  
+      setTimeout(() => {
+        setPopupMessage("");
+      }, 2000);
+    } catch (error) {
+      console.error("Wishlist operation error:", error);
+    }
+  }, [wishlist, removeFromWishlist, addToWishlist, getImageUrl]);
 
-    router.push("../../pages/productDetails");
-  };
-  // if (loading) {
-  //   return <ActivityIndicator size="large" color="#0000ff" />;
-  // }
+  const handleNotify = useCallback(() => {
+    router.push("/pages/viewProduct");
+  }, [router]);
 
-  if (error) {
-    return <Text>{error}</Text>;
+  const onRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    // Trigger the same effect as when selectedBrand changes
+    const fetchProducts = async () => {
+      try {
+        const response = await getProducts();
+        
+        // Limit the number of products to reduce memory usage
+        const limitedProducts = response.data.data.slice(0, limit);
+        setProducts(limitedProducts);
+        setIsRefreshing(false);
+      } catch (error) {
+        console.error("Failed to refresh products:", error);
+        setError("Failed to refresh products");
+        setIsRefreshing(false);
+      }
+    };
+    
+    fetchProducts();
+  }, [limit]);
+
+  // Memoize renderItem function to prevent unnecessary re-renders
+  const renderItem = useCallback(({ item }) => {
+    const imageUrl = getImageUrl(item.product_image);
+    
+    return (
+      <View style={styles.card}>
+        <View style={styles.cardContent}>
+          <Image
+            source={{ uri: imageUrl }}
+            style={styles.productImage}
+            resizeMode="contain"
+            // Add error handling and loading placeholder
+            onError={() => console.log('Image loading error for product:', item.id)}
+            progressiveRenderingEnabled={true}
+            fadeDuration={300}
+            defaultSource={require("../../assets/placeholder.png")}
+          />
+
+          <TouchableOpacity
+            onPress={() => handleProductDetails(item)}
+            style={styles.cardDetails}
+          >
+            <Text style={styles.productName}>{item.name}</Text>
+            <Text style={styles.productBrand}>{item.brand?.brand_name}</Text>
+            <Text style={styles.productPrice}>₹{item.price}</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity onPress={handleNotify}>
+          <View style={styles.addToCartButton}>
+            <Icon name="add" size={18} color="#fff" />
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  }, [getImageUrl, handleProductDetails, handleNotify]);
+
+  // Memoize keyExtractor function
+  const keyExtractor = useCallback((item) => item.id.toString(), []);
+
+  if (loading && !isRefreshing) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#8FFA09" />
+      </View>
+    );
   }
 
-  const handleWishlistAdd = (product) => {
-    const isInWishlist = wishlist.some((wishItem) => wishItem.id === product.id);
-    // console.log("Is product in wishlist:", isInWishlist);
-    const imageUrl = `${MEDIA_BASE_URL}${product.product_image.url}`;
-    const item = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: imageUrl,
-      in_stock: product.in_stock,
-    };
-
-    if (isInWishlist) {
-      removeFromWishlist(product.id);
-      // console.log("Removed from wishlist");
-      setPopupMessage("Removed from wishlist! ❌");
-    } else {
-      addToWishlist(item);
-      // console.log("Added to wishlist");
-      setPopupMessage("Added to wishlist! ✔️");
-    }
-
-    setTimeout(() => {
-      setPopupMessage("");
-    }, 2000);
-  };
-
-  const handleNotify = () => {
-    router.push("/pages/viewProduct");
-  };
-
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={onRefresh}>
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-    {popupMessage ? (
-      <View style={styles.popup}>
-        <Text style={styles.popupText}>{popupMessage}</Text>
-      </View>
-    ) : null}
-    <FlatList
-      data={displayedProducts}
-      renderItem={({ item }) => (
-        <View style={styles.card}>
-          <View style={styles.cardContent}>
-            <Image
-              source={{ uri: getImageUrl(item.product_image) }}
-              style={styles.productImage}
-              resizeMode="contain"
-              // Add error handling and loading placeholder
-              onError={() => console.log('Image loading error for product:', item.id)}
-              progressiveRenderingEnabled={true}
-            />
-
-            <TouchableOpacity
-              onPress={() => handleProductDetails(item)}
-              style={styles.cardDetails}
-            >
-              <Text style={styles.productName}>{item.name}</Text>
-              <Text style={styles.productBrand}>{item.brand?.brand_name}</Text>
-              <Text style={styles.productPrice}>₹{item.price}</Text>
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity onPress={handleNotify}>
-            <View style={styles.addToCartButton}>
-              <Icon name="add" size={18} color="#fff" />
-            </View>
-          </TouchableOpacity>
+      {popupMessage ? (
+        <View style={styles.popup}>
+          <Text style={styles.popupText}>{popupMessage}</Text>
         </View>
-      )}
-      keyExtractor={(item) => item.id.toString()}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.listContainer}
-      // Add these props to improve performance
-      initialNumToRender={3}
-      maxToRenderPerBatch={3}
-      windowSize={3}
-      removeClippedSubviews={true}
-    />
-  </View>
+      ) : null}
+      <FlatList
+        data={displayedProducts}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.listContainer}
+        // Performance optimizations
+        initialNumToRender={3}
+        maxToRenderPerBatch={2}
+        windowSize={3}
+        removeClippedSubviews={true}
+        onRefresh={onRefresh}
+        refreshing={isRefreshing}
+        getItemLayout={(data, index) => ({
+          length: width * 0.50 + 10, // card width + margin
+          offset: (width * 0.50 + 10) * index,
+          index,
+        })}
+      />
+    </View>
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
-    // No padding here to eliminate space on the left
     paddingLeft: 5,
     paddingBottom: 15,
   },
   listContainer: {
-    // Removed horizontal padding to remove space on the left
     // No extra padding
   },
   card: {
-    width: width * 0.50,  // Keep the width the same
-    height: 250,  // Adjust the card height
+    width: width * 0.50,
+    height: 250,
     backgroundColor: '#333',
     borderRadius: 10,
-    marginRight: 10,  // Only keep margin on the right for spacing
+    marginRight: 10,
     padding: 10,
     position: 'relative',
   },
@@ -235,7 +316,7 @@ const styles = StyleSheet.create({
   },
   productImage: {
     width: '100%',
-    height: 150,  // Image height
+    height: 150,
     resizeMode: 'contain',
   },
   productName: {
@@ -251,50 +332,61 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  popup: {
-    position: 'absolute',
-    top: '10%',
-    left: '50%',
-    transform: [{ translateX: -50 }],
-    backgroundColor: '#000',
-    padding: 12,
-    borderRadius: 8,
-    zIndex: 100,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-  },
-  popupText: {
-    color: '#fff',
-    textAlign: 'center',
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-  },
-  reviewsText: {
-    color: '#999',
-    fontSize: 12,
-    marginLeft: 5,
+    marginTop: 5,
   },
   addToCartButton: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 10,
     right: 10,
-    backgroundColor: '#666',
-    padding: 6,
-    borderRadius: 20,
+    backgroundColor: '#8FFA09',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  popup: {
+    position: 'absolute',
+    top: 10,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    padding: 10,
+    borderRadius: 5,
+    zIndex: 1000,
+    alignItems: 'center',
+  },
+  popupText: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  loadingContainer: {
+    height: 250,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    height: 250,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    color: '#ff6b6b',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  retryButton: {
+    backgroundColor: '#8FFA09',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+  },
+  retryButtonText: {
+    color: '#000',
+    fontWeight: 'bold',
   },
 });
 
-
-
-
-export default NewArrival;
+// Use memo to prevent unnecessary re-renders
+export default memo(NewArrival);
